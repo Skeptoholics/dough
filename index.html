@@ -153,14 +153,15 @@
               <div class="subgroup">
                 <div class="subgroup-title">Fermentation times</div>
                 <div class="field"><label>Bulk ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBulk" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">rec. <b id="sBulkRec"></b></span></div></div>
-                <div class="field"><label>Ball ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBall" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">rec. <b id="sBallRec"></b></span></div></div>
-                <div class="field" style="margin-bottom:0"><label id="mainYeastLabel">Yeast</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="mainYeast" min="0" max="5" step="0.01" /><span class="suffix">%</span></div><span class="rec">rec. <b id="mainYeastRec"></b></span></div></div>
+                <div class="field" style="margin-bottom:0"><label>Ball ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBall" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">rec. <b id="sBallRec"></b></span></div></div>
                 <div class="calc-total" id="calcTotal"></div>
               </div>
 
               <div class="field"><label>Yeast type</label><select class="ctrl" id="yeastType">
                 <option value="instant">Instant dry</option><option value="active">Active dry</option><option value="fresh">Fresh</option>
               </select></div>
+
+              <div class="field"><label id="mainYeastLabel">Yeast</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="mainYeast" min="0" max="5" step="0.01" /><span class="suffix">%</span></div><span class="rec">rec. <b id="mainYeastRec"></b></span></div></div>
 
               <div class="field"><label>Hydration</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="hydration" min="40" max="100" step="0.5" /><span class="suffix">%</span></div><span class="rec">rec. <b id="hydrationRec"></b></span></div></div>
               <div class="field"><label>Salt</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="salt" min="0" max="6" step="0.1" /><span class="suffix">%</span></div><span class="rec">rec. <b id="saltRec"></b></span></div></div>
@@ -262,6 +263,8 @@ const PREFERMENTS={
 };
 const YEAST={instant:{name:"Instant dry",factor:1},active:{name:"Active dry",factor:1.25},fresh:{name:"Fresh",factor:3}};
 const DEFAULT_TOTAL={easy:6,trad:18};
+/* optimum default total time per preferment (well inside each range) */
+const PREFERMENT_DEFAULT_TOTAL={poolish:12,biga:20};
 /* total-time guard rails per method (hours) */
 const TIME_LIMITS={
   easy:{min:1,max:12},
@@ -411,8 +414,8 @@ function calculate(opts){
     ingredients,
     stageAmounts:{flour:{preferment:r0(stageFlour.preferment),final:r0(stageFlour.final)},water:{preferment:r0(stageWater.preferment),final:r0(stageWater.final)},finalYeast:mainYeastG},
     bake:base.bake,cookTime:cookTime(styleKey,opts.ovenTemp),flags,
-    method:buildMethod({base,isTrad,p,prefermentObj,poolishStyle,yeastType,stages,quantity,styleKey,expanded:false,ingredients,stageAmounts:{flour:{preferment:r0(stageFlour.preferment),final:r0(stageFlour.final)},water:{preferment:r0(stageWater.preferment),final:r0(stageWater.final)},finalYeast:mainYeastG}}),
-    methodExpanded:buildMethod({base,isTrad,p,prefermentObj,poolishStyle,yeastType,stages,quantity,styleKey,expanded:true,ingredients,stageAmounts:{flour:{preferment:r0(stageFlour.preferment),final:r0(stageFlour.final)},water:{preferment:r0(stageWater.preferment),final:r0(stageWater.final)},finalYeast:mainYeastG}})
+    method:buildMethod({base,isTrad,p,prefermentObj,poolishStyle,yeastType,stages,quantity,styleKey,expanded:false,ingredients,ovenTemp:opts.ovenTemp,cookTimeStr:cookTime(styleKey,opts.ovenTemp),stageAmounts:{flour:{preferment:r0(stageFlour.preferment),final:r0(stageFlour.final)},water:{preferment:r0(stageWater.preferment),final:r0(stageWater.final)},finalYeast:mainYeastG}}),
+    methodExpanded:buildMethod({base,isTrad,p,prefermentObj,poolishStyle,yeastType,stages,quantity,styleKey,expanded:true,ingredients,ovenTemp:opts.ovenTemp,cookTimeStr:cookTime(styleKey,opts.ovenTemp),stageAmounts:{flour:{preferment:r0(stageFlour.preferment),final:r0(stageFlour.final)},water:{preferment:r0(stageWater.preferment),final:r0(stageWater.final)},finalYeast:mainYeastG}})
   };
 }
 
@@ -420,9 +423,18 @@ function calculate(opts){
 function elapsed(h){ if(h<=0) return ""; return ` (≈${fmtH(h)} in)`; }
 
 function buildMethod(ctx){
-  const {base,isTrad,p,prefermentObj,poolishStyle,yeastType,stages,quantity,styleKey,expanded,ingredients,stageAmounts}=ctx;
+  const {base,isTrad,p,prefermentObj,poolishStyle,yeastType,stages,quantity,styleKey,expanded,ingredients,stageAmounts,ovenTemp,cookTimeStr}=ctx;
   const s=[];const hasOil=p.oil>0,hasSugar=p.sugar>0;
   const ballWord=quantity===1?"ball":"balls";
+  // final baking step (always last)
+  function bakeStep(){
+    const t=ovenTemp;
+    let txt=`Bake at ${t}°C for about ${cookTimeStr}, until the crust is golden and cooked through.`;
+    if((styleKey==="neapolitan"||styleKey==="ny") && Number(t)<base.bake.idealMin){
+      txt+=` (A home oven won't quite match a pizzeria — bake until it colours, it'll still be good.)`;
+    }
+    return txt;
+  }
   const why=txt=>expanded?" "+txt:"";
   // seasoning list with amounts
   const I=ingredients||{};
@@ -446,6 +458,7 @@ function buildMethod(ctx){
     elapsedH+=stages.ball.val;
     s.push(`Cover the ${ballWord} and rest for the ball ferment — about ${fmtH(stages.ball.val)}.`+(expanded?elapsed(elapsedH):"")+why("The final proof relaxes the dough so it stretches without tearing and puffs in the oven. Under-proofed dough fights back and stays tight; over-proofed dough goes slack and won't hold its shape."));
     s.push(base.shapeStep);
+    s.push(bakeStep());
     return s;
   }
 
@@ -474,6 +487,7 @@ function buildMethod(ctx){
   elapsedH+=stages.ball.val;
   s.push(`Cover the ${ballWord} and rest for the ball ferment — about ${fmtH(stages.ball.val)}.`+(expanded?elapsed(elapsedH):"")+why(" A final short proof to relax the balls before shaping."));
   s.push(base.shapeStep);
+  s.push(bakeStep());
   return s;
 }
 function fmtH(h){if(h==null)return"";if(h<1)return Math.round(h*60)+" min";if(h===Math.round(h))return h+(h===1?" hour":" hours");return h+" hours";}
@@ -505,6 +519,10 @@ STYLE_ORDER.forEach(k=>{const b=document.createElement("button");b.className="st
 
 function fmtPct(v){return v+"%";}
 function currentLimitKey(){return currentMethod==="easy"?"easy":$("preferment").value;}
+function defaultTotalFor(){
+  if(currentMethod==="easy")return DEFAULT_TOTAL.easy;
+  return PREFERMENT_DEFAULT_TOTAL[$("preferment").value]||DEFAULT_TOTAL.trad;
+}
 function updateTotalRec(){
   const k=currentLimitKey();const L=TIME_LIMITS[k];
   $("totalRec").textContent=L.min+"–"+L.max+" hrs";
@@ -530,7 +548,7 @@ function selectStyle(k){
   $("qty").value=2;
   if(s.shape==="round"){$("diameter").value=s.defaultSize;$("diameterRec").textContent=s.defaultSize+" in";}
   else{$("panL").value=s.defaultLength;$("panW").value=s.defaultWidth;}
-  $("totalHours").value=DEFAULT_TOTAL[currentMethod];updateTotalRec();
+  $("totalHours").value=defaultTotalFor();updateTotalRec();
   $("oven").value=s.bake.idealMin;$("ovenRec").textContent=s.bake.idealMin+"–"+s.bake.max+"°C";
   $("hydration").value=s.hydration;$("hydrationRec").textContent=fmtPct(s.hydration);
   $("salt").value=s.salt;$("saltRec").textContent=fmtPct(s.salt);
@@ -607,9 +625,9 @@ $("sPreferment").addEventListener("input",()=>{stageTouched.preferment=true;yeas
 $("prefHydration").addEventListener("input",()=>{prefTouched.hydration=true;render();});
 $("poolishPct").addEventListener("input",()=>{prefTouched.poolishPct=true;render();});
 $("prefYeast").addEventListener("input",()=>{prefTouched.yeast=true;render();});
-["preferment","poolishStyle","yeastType"].forEach(id=>$(id).addEventListener("change",()=>{if(id==="preferment"){prefTouched={};updateTotalRec();}syncMethodUI();refreshStageDefaults();render();}));
-$("mEasy").onclick=()=>{currentMethod="easy";stageTouched={};prefTouched={};yeastTouched={};$("totalHours").value=DEFAULT_TOTAL.easy;updateTotalRec();syncMethodUI();refreshStageDefaults();render();};
-$("mTrad").onclick=()=>{currentMethod="trad";stageTouched={};prefTouched={};yeastTouched={};$("totalHours").value=DEFAULT_TOTAL.trad;updateTotalRec();syncMethodUI();refreshStageDefaults();render();};
+["preferment","poolishStyle","yeastType"].forEach(id=>$(id).addEventListener("change",()=>{if(id==="preferment"){prefTouched={};stageTouched={};yeastTouched={};$("totalHours").value=defaultTotalFor();updateTotalRec();}syncMethodUI();refreshStageDefaults();render();}));
+$("mEasy").onclick=()=>{currentMethod="easy";stageTouched={};prefTouched={};yeastTouched={};$("totalHours").value=defaultTotalFor();updateTotalRec();syncMethodUI();refreshStageDefaults();render();};
+$("mTrad").onclick=()=>{currentMethod="trad";stageTouched={};prefTouched={};yeastTouched={};$("totalHours").value=defaultTotalFor();updateTotalRec();syncMethodUI();refreshStageDefaults();render();};
 $("accToggle").onclick=()=>$("accordion").classList.toggle("open");
 $("reset").onclick=()=>{const o=$("accordion").classList.contains("open");selectStyle(current);if(o)$("accordion").classList.add("open");};
 $("briefBtn").onclick=()=>{mode="brief";$("briefBtn").classList.add("on");$("expandBtn").classList.remove("on");render();};
