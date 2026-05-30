@@ -718,16 +718,8 @@ function render(){
   const fn=$("flagNotes");fn.innerHTML="";
   r.flags.forEach(f=>{const d=document.createElement("div");d.className="note warn";d.innerHTML=`<span class="icon">!</span><span>${f.msg}</span>`;fn.appendChild(d);});
 
-  // end notes
+  // (baking guidance now lives in the final method step, so no duplicate note here)
   const nb=$("notesBlock");nb.innerHTML="";
-  const cn=document.createElement("div");cn.className="nt";
-  cn.innerHTML=`<b style="font-style:normal;color:var(--ink)">Baking:</b> at ${$("oven").value}°C, expect about ${r.cookTime}.`;
-  nb.appendChild(cn);
-  if((current==="neapolitan"||current==="ny")&&Number($("oven").value)<s.bake.idealMin){
-    const e=document.createElement("div");e.className="nt";
-    e.textContent="A thin pizza in a home oven won't match a pizzeria — that's the oven's limit, not a fault in the dough. It'll still be good.";
-    nb.appendChild(e);
-  }
 }
 function fmtHShort(h){if(h<1)return Math.round(h*60)+"m";if(h===Math.round(h))return h+"h";return h+"h";}
 
