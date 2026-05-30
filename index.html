@@ -36,7 +36,7 @@
   .ctrl:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(192,73,47,.1)}
   .rec{font-family:'Spline Sans Mono',monospace;font-size:12px;color:var(--ink-soft);white-space:nowrap;flex-shrink:0}
   .rec b{color:var(--gold);font-weight:500}
-  .suffix-wrap{position:relative;flex:1}
+  .suffix-wrap{position:relative;flex:0 0 130px;max-width:130px}
   .suffix-wrap .suffix{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-family:'Spline Sans Mono',monospace;font-size:13px;color:var(--ink-soft);pointer-events:none}
   .suffix-wrap .ctrl{padding-right:38px}
   select.ctrl{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%236b6155' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:34px}
@@ -111,13 +111,13 @@
 
           <div class="field"><label>How many pizzas</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="qty" min="1" step="1" /></div><span class="rec">recommended <b>2</b></span></div></div>
 
-          <div class="field" id="roundSize"><label>Pizza size (diameter)</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="diameter" min="6" step="0.5" /><span class="suffix">in</span></div><span class="rec">rec. <b id="diameterRec"></b></span></div></div>
+          <div class="field" id="roundSize"><label>Pizza size (diameter)</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="diameter" min="6" step="0.5" /><span class="suffix">in</span></div><span class="rec">recommended <b id="diameterRec"></b></span></div></div>
           <div class="field" id="rectSize" style="display:none"><div class="field-row">
             <div><label>Pan length</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="panL" min="4" step="0.5" /><span class="suffix">in</span></div></div></div>
             <div><label>Pan width</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="panW" min="4" step="0.5" /><span class="suffix">in</span></div></div></div>
           </div></div>
 
-          <div class="field"><label>Total time from start to finish</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="totalHours" min="2" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">rec. <b id="totalRec"></b></span></div></div>
+          <div class="field"><label>Total time from start to finish</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="totalHours" min="2" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="totalRec"></b></span></div></div>
 
           <div class="field"><label>Your cooking temperature</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="oven" min="150" max="550" step="5" /><span class="suffix">°C</span></div><span class="rec">ideal <b id="ovenRec"></b></span></div><div class="mono" style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5">Enter the temperature you can actually bake at. If your oven can't reach the ideal, enter its max. If it can exceed the ideal, that's fine for thin styles, but not recommended for thicker styles.</div></div>
 
@@ -144,29 +144,31 @@
                   <option value="stiff">Chewier dough — add flour first</option>
                   <option value="wet">Softer dough — add water first</option>
                 </select></div>
-                <div class="field" id="poolishPctField"><label>Poolish amount (% of flour)</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="poolishPct" min="10" max="100" step="5" /><span class="suffix">%</span></div><span class="rec">rec. <b id="poolishPctRec"></b></span></div></div>
-                <div class="field"><label>Preferment hydration</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="prefHydration" min="40" max="120" step="1" /><span class="suffix">%</span></div><span class="rec">rec. <b id="prefHydrationRec"></b></span></div></div>
-                <div class="field"><label>Preferment time</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sPreferment" min="1" step="1" /><span class="suffix">hrs</span></div><span class="rec">rec. <b id="sPrefermentRec"></b></span></div></div>
+                <div class="field" id="poolishPctField"><label>Poolish amount (% of total flour)</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="poolishPct" min="10" max="100" step="5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="poolishPctRec"></b></span></div><div class="mono" style="font-size:11px;color:var(--ink-soft);margin-top:6px;line-height:1.5">This is a share of the <b>total</b> flour, not the flour added later. At 30%, the poolish holds 30% of all the flour and the rest goes in when completing the dough.</div></div>
+                <div class="field"><label>Preferment hydration</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="prefHydration" min="40" max="120" step="1" /><span class="suffix">%</span></div><span class="rec">recommended <b id="prefHydrationRec"></b></span></div></div>
+                <div class="field"><label>Preferment time</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sPreferment" min="1" step="1" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sPrefermentRec"></b></span></div></div>
                 <div class="field" style="margin-bottom:0"><label>Preferment yeast</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="prefYeast" min="0" max="3" step="0.01" /><span class="suffix">%</span></div><span class="rec">auto <b id="prefYeastRec"></b></span></div></div>
               </div>
 
               <div class="subgroup">
                 <div class="subgroup-title">Fermentation times</div>
-                <div class="field"><label>Bulk ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBulk" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">rec. <b id="sBulkRec"></b></span></div></div>
-                <div class="field" style="margin-bottom:0"><label>Ball ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBall" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">rec. <b id="sBallRec"></b></span></div></div>
+                <div class="field"><label>Bulk ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBulk" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sBulkRec"></b></span></div></div>
+                <div class="field" style="margin-bottom:0"><label>Ball ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBall" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sBallRec"></b></span></div></div>
                 <div class="calc-total" id="calcTotal"></div>
               </div>
 
-              <div class="field"><label>Yeast type</label><select class="ctrl" id="yeastType">
-                <option value="instant">Instant dry</option><option value="active">Active dry</option><option value="fresh">Fresh</option>
-              </select></div>
-
-              <div class="field"><label id="mainYeastLabel">Yeast</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="mainYeast" min="0" max="5" step="0.01" /><span class="suffix">%</span></div><span class="rec">rec. <b id="mainYeastRec"></b></span></div></div>
-
-              <div class="field"><label>Hydration</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="hydration" min="40" max="100" step="0.5" /><span class="suffix">%</span></div><span class="rec">rec. <b id="hydrationRec"></b></span></div></div>
-              <div class="field"><label>Salt</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="salt" min="0" max="6" step="0.1" /><span class="suffix">%</span></div><span class="rec">rec. <b id="saltRec"></b></span></div></div>
-              <div class="field"><label>Oil</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="oil" min="0" max="15" step="0.5" /><span class="suffix">%</span></div><span class="rec">rec. <b id="oilRec"></b></span></div></div>
-              <div class="field"><label>Sugar</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sugar" min="0" max="8" step="0.5" /><span class="suffix">%</span></div><span class="rec">rec. <b id="sugarRec"></b></span></div></div>
+              <div class="subgroup">
+                <div class="subgroup-title">Completing the dough</div>
+                <div class="mono" style="font-size:11px;color:var(--ink-soft);margin:-6px 0 14px;line-height:1.5">These set the <b>final dough</b> — the whole thing, preferment included. Hydration here is the finished dough's hydration, not just this stage.</div>
+                <div class="field"><label>Yeast type</label><select class="ctrl" id="yeastType">
+                  <option value="instant">Instant dry</option><option value="active">Active dry</option><option value="fresh">Fresh</option>
+                </select></div>
+                <div class="field"><label>Hydration</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="hydration" min="40" max="100" step="0.5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="hydrationRec"></b></span></div></div>
+                <div class="field"><label id="mainYeastLabel">Yeast</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="mainYeast" min="0" max="5" step="0.01" /><span class="suffix">%</span></div><span class="rec">recommended <b id="mainYeastRec"></b></span></div></div>
+                <div class="field"><label>Salt</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="salt" min="0" max="6" step="0.1" /><span class="suffix">%</span></div><span class="rec">recommended <b id="saltRec"></b></span></div></div>
+                <div class="field"><label>Oil</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="oil" min="0" max="15" step="0.5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="oilRec"></b></span></div></div>
+                <div class="field" style="margin-bottom:0"><label>Sugar</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sugar" min="0" max="8" step="0.5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="sugarRec"></b></span></div></div>
+              </div>
               <div class="mono" style="font-size:11px;color:var(--ink-soft);margin-top:6px;line-height:1.5">Percentages are baker's % (of total flour). Yeast amount is worked out from the fermentation time and type.</div>
               <button class="reset" id="reset">reset to recommended</button>
             </div>
