@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dough — pizza dough, made plain</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&family=Spline+Sans+Mono:wght@400;500&display=swap');
+  :root{--bg:#f4efe6;--panel:#fbf8f2;--ink:#2a241d;--ink-soft:#6b6155;--line:#e0d7c7;--accent:#c0492f;--accent-soft:#e8c9bf;--gold:#caa24a;--ok:#5a7d4f;--warn:#b5762a;--hot:#b23a26;--radius:14px;--shadow:0 1px 2px rgba(42,36,29,.04), 0 8px 28px rgba(42,36,29,.06);}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;background-image:radial-gradient(circle at 12% 18%, rgba(202,162,74,.05), transparent 40%),radial-gradient(circle at 88% 82%, rgba(192,73,47,.05), transparent 42%);}
+  .mono{font-family:'Spline Sans Mono',monospace}
+  header{padding:30px 40px 20px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:baseline;gap:14px}
+  .brand h1{font-size:32px;font-weight:900;letter-spacing:-.02em;line-height:1}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);display:inline-block;transform:translateY(-3px)}
+  .tag{font-size:14px;color:var(--ink-soft);font-style:italic}
+  main{max-width:1180px;margin:0 auto;padding:26px 40px 80px;display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start;}
+  @media(max-width:880px){ main{grid-template-columns:1fr;gap:22px} .col-out{position:static!important} }
+  .col{min-width:0}.col-out{position:sticky;top:20px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
+  .panel-head{padding:15px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(0deg,rgba(224,215,199,.18),transparent);}
+  .panel-head h2{font-size:13px;text-transform:uppercase;letter-spacing:.14em;font-weight:600;color:var(--ink-soft)}
+  .panel-body{padding:22px}
+  .styles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  @media(max-width:520px){.styles{grid-template-columns:repeat(2,1fr)}}
+  .style-btn{font-family:'Fraunces',serif;font-size:14.5px;font-weight:600;padding:11px 6px;border:1px solid var(--line);background:#fff;border-radius:10px;cursor:pointer;color:var(--ink);transition:all .18s ease;text-align:center;}
+  .style-btn:hover{border-color:var(--accent-soft);transform:translateY(-1px)}
+  .style-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 4px 14px rgba(192,73,47,.22)}
+  .desc{font-size:14px;line-height:1.55;color:var(--ink-soft);font-style:italic;padding:14px 0 4px;border-bottom:1px dashed var(--line);margin:14px 0 18px;}
+  .field{margin-bottom:16px}.field:last-child{margin-bottom:0}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  label{display:block;font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:7px;font-weight:500}
+  .input-line{display:flex;align-items:center;gap:11px}
+  .ctrl{width:100%;font-family:'Spline Sans Mono',monospace;font-size:15px;color:var(--ink);padding:10px 13px;border:1px solid var(--line);border-radius:9px;background:#fff;transition:border .15s;}
+  .ctrl:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(192,73,47,.1)}
+  .rec{font-family:'Spline Sans Mono',monospace;font-size:12px;color:var(--ink-soft);white-space:nowrap;flex-shrink:0}
+  .rec b{color:var(--gold);font-weight:500}
+  .suffix-wrap{position:relative;flex:1}
+  .suffix-wrap .suffix{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-family:'Spline Sans Mono',monospace;font-size:13px;color:var(--ink-soft);pointer-events:none}
+  .suffix-wrap .ctrl{padding-right:38px}
+  select.ctrl{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%236b6155' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:34px}
+  .method-pick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
+  .accordion{margin-top:20px;border:1px solid var(--line);border-radius:11px;overflow:hidden;background:#fff}
+  .accordion-head{width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:linear-gradient(0deg,rgba(224,215,199,.25),#fff);border:none;cursor:pointer;font-family:'Fraunces',serif;font-size:15.5px;font-weight:600;color:var(--ink);}
+  .accordion-head:hover{background:rgba(232,201,191,.25)}
+  .accordion-head .chev{transition:transform .22s ease;color:var(--accent);font-size:13px}
+  .accordion.open .chev{transform:rotate(180deg)}
+  .accordion-head .hint{font-size:12px;font-weight:400;font-style:italic;color:var(--ink-soft)}
+  .accordion-body{display:none;padding:20px 18px 18px;border-top:1px solid var(--line)}
+  .accordion.open .accordion-body{display:block}
+  .subgroup{padding:16px;border:1px dashed var(--line);border-radius:10px;margin-bottom:16px;background:rgba(224,215,199,.12)}
+  .subgroup-title{font-size:11.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);font-weight:600;margin-bottom:14px}
+  .calc-total{font-family:'Spline Sans Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-top:10px;padding:8px 11px;background:rgba(202,162,74,.1);border-radius:7px}
+  .calc-total b{color:var(--accent);font-weight:500}
+  .reset{font-family:'Spline Sans Mono',monospace;font-size:11.5px;color:var(--ink-soft);background:none;border:1px solid var(--line);border-radius:7px;padding:6px 11px;cursor:pointer;margin-top:14px}
+  .reset:hover{border-color:var(--accent-soft);color:var(--accent)}
+  /* floating pinned totals */
+  .totals{display:flex;flex-wrap:wrap;border:1px solid var(--accent-soft);border-radius:11px;overflow:hidden;margin-bottom:18px;background:#fff;position:sticky;top:0;z-index:5}
+  .total-cell{flex:1 1 33%;padding:13px 10px;text-align:center;border-right:1px solid var(--accent-soft);border-bottom:1px solid var(--accent-soft)}
+  .total-cell .v{font-family:'Spline Sans Mono',monospace;font-size:19px;font-weight:500;color:var(--accent);line-height:1}
+  .total-cell .k{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin-top:5px}
+  .method-tag{display:inline-block;font-size:12px;font-style:italic;color:var(--ink-soft);margin-bottom:16px;padding:5px 12px;background:rgba(202,162,74,.1);border-radius:20px}
+  .ing-title{font-size:12.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);font-weight:600;margin:0 0 12px;display:flex;justify-content:space-between;align-items:center}
+  .toggle{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .toggle button{font-family:'Spline Sans Mono',monospace;font-size:11px;padding:5px 11px;border:none;background:#fff;color:var(--ink-soft);cursor:pointer;letter-spacing:.03em}
+  .toggle button.on{background:var(--accent);color:#fff}
+  .method-title{font-size:12.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);font-weight:600;margin:26px 0 12px}
+  ol.method{list-style:none;counter-reset:step}
+  ol.method li{counter-increment:step;position:relative;padding:0 0 16px 38px;font-size:15px;line-height:1.55;color:var(--ink);}
+  ol.method li:before{content:counter(step);position:absolute;left:0;top:-1px;width:25px;height:25px;border-radius:50%;background:var(--accent);color:#fff;font-family:'Spline Sans Mono',monospace;font-size:12.5px;display:flex;align-items:center;justify-content:center;font-weight:500;}
+  ol.method li:last-child{padding-bottom:0}
+  .note{margin-top:14px;padding:13px 16px;border-radius:11px;font-size:13.5px;line-height:1.55;display:flex;gap:11px;align-items:flex-start;}
+  .note .icon{flex-shrink:0;font-family:'Spline Sans Mono',monospace;font-weight:700;width:18px;text-align:center}
+  .note.ok{background:rgba(90,125,79,.1);color:#3f5837;border:1px solid rgba(90,125,79,.25)}
+  .note.adjust{background:rgba(181,118,42,.1);color:#7d5318;border:1px solid rgba(181,118,42,.28)}
+  .note.warn{background:rgba(178,58,38,.1);color:#852b1c;border:1px solid rgba(178,58,38,.3)}
+  .notes-block{margin-top:22px;padding-top:18px;border-top:1px dashed var(--line)}
+  .notes-block .nt{font-size:13px;line-height:1.55;color:var(--ink-soft);font-style:italic;margin-bottom:8px}
+  /* recipe sections + ingredient list */
+  .rsection{margin-bottom:20px}
+  .rsection-head{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+  .rsection-meta{font-size:12px;font-style:italic;color:var(--ink-soft);margin-bottom:10px}
+  .ilist{list-style:none}
+  .ilist li{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line)}
+  .ilist li:last-child{border-bottom:none}
+  .ilist .n{font-size:15.5px}
+  .ilist .w{font-family:'Spline Sans Mono',monospace;font-size:15.5px;font-weight:500}
+  .ilist .w .u{font-size:11px;color:var(--ink-soft);margin-left:2px}
+  .ilist li.flash{animation:flash .5s ease}
+  @keyframes flash{0%{background:var(--accent-soft)}100%{background:transparent}}
+  .pcttable{margin-top:6px;border:1px solid var(--line);border-radius:10px;padding:12px 15px;background:rgba(224,215,199,.14)}
+  .pcttable .pt-title{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft);font-weight:600;margin-bottom:8px}
+  .pcttable .pt-row{display:flex;justify-content:space-between;font-family:'Spline Sans Mono',monospace;font-size:12.5px;padding:3px 0;color:var(--ink)}
+  .pcttable .pt-row .pv{color:var(--ink-soft)}
+  footer{text-align:center;padding:0 40px 40px;color:var(--ink-soft);font-size:12.5px;font-style:italic}
+</style>
+</head>
+<body>
+  <header>
+    <div class="brand"><h1>Dough<span class="dot"></span></h1><span class="tag">pizza dough, made plain</span></div>
+    <span class="tag mono" style="font-size:12px">v1</span>
+  </header>
+  <main>
+    <section class="col">
+      <div class="panel">
+        <div class="panel-head"><h2>What you're making</h2></div>
+        <div class="panel-body">
+          <div class="styles" id="styles"></div>
+          <p class="desc" id="desc"></p>
+
+          <div class="field"><label>How many pizzas</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="qty" min="1" step="1" /></div><span class="rec">recommended <b>2</b></span></div></div>
+
+          <div class="field" id="roundSize"><label>Pizza size (diameter)</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="diameter" min="6" step="0.5" /><span class="suffix">in</span></div><span class="rec">rec. <b id="diameterRec"></b></span></div></div>
+          <div class="field" id="rectSize" style="display:none"><div class="field-row">
+            <div><label>Pan length</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="panL" min="4" step="0.5" /><span class="suffix">in</span></div></div></div>
+            <div><label>Pan width</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="panW" min="4" step="0.5" /><span class="suffix">in</span></div></div></div>
+          </div></div>
+
+          <div class="field"><label>Total time from start to finish</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="totalHours" min="2" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">rec. <b id="totalRec"></b></span></div></div>
+
+          <div class="field"><label>Your cooking temperature</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="oven" min="150" max="550" step="5" /><span class="suffix">°C</span></div><span class="rec">ideal <b id="ovenRec"></b></span></div><div class="mono" style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5">Enter the temperature you'll actually bake at. If your oven can't reach the ideal, enter its max. If it can exceed the ideal, that's fine for thin styles.</div></div>
+
+          <div class="accordion" id="accordion">
+            <button class="accordion-head" id="accToggle"><span class="left">Fine-tune the dough <span class="hint">— method &amp; recipe options</span></span><span class="chev">▼</span></button>
+            <div class="accordion-body">
+
+              <div class="field">
+                <label>Dough method</label>
+                <div class="method-pick">
+                  <button class="style-btn active" data-method="easy" id="mEasy">Easy<br><span style="font-weight:400;font-size:11px">all-in-one dough</span></button>
+                  <button class="style-btn" data-method="trad" id="mTrad">Traditional<br><span style="font-weight:400;font-size:11px">preferment · more time</span></button>
+                </div>
+              </div>
+              <p class="desc" id="methodBlurb" style="border-bottom:none;margin-bottom:8px"></p>
+
+              <div class="subgroup" id="prefGroup" style="display:none">
+                <div class="subgroup-title">Preferment</div>
+                <div class="field"><label>Type</label><select class="ctrl" id="preferment">
+                  <option value="poolish">Poolish — liquid, aromatic</option>
+                  <option value="biga">Biga — stiff, strong, nutty</option>
+                </select></div>
+                <div class="field" id="poolishStyleField"><label>Poolish finish</label><select class="ctrl" id="poolishStyle">
+                  <option value="stiff">Chewier dough — add flour first</option>
+                  <option value="wet">Softer dough — add water first</option>
+                </select></div>
+                <div class="field" id="poolishPctField"><label>Poolish amount (% of flour)</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="poolishPct" min="10" max="100" step="5" /><span class="suffix">%</span></div><span class="rec">rec. <b id="poolishPctRec"></b></span></div></div>
+                <div class="field"><label>Preferment hydration</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="prefHydration" min="40" max="120" step="1" /><span class="suffix">%</span></div><span class="rec">rec. <b id="prefHydrationRec"></b></span></div></div>
+                <div class="field"><label>Preferment time</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sPreferment" min="1" step="1" /><span class="suffix">hrs</span></div><span class="rec">rec. <b id="sPrefermentRec"></b></span></div></div>
+                <div class="field" style="margin-bottom:0"><label>Preferment yeast</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="prefYeast" min="0" max="3" step="0.01" /><span class="suffix">%</span></div><span class="rec">auto <b id="prefYeastRec"></b></span></div></div>
+              </div>
+
+              <div class="subgroup">
+                <div class="subgroup-title">Fermentation times</div>
+                <div class="field"><label>Bulk ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBulk" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">rec. <b id="sBulkRec"></b></span></div></div>
+                <div class="field"><label>Ball ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBall" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">rec. <b id="sBallRec"></b></span></div></div>
+                <div class="field" style="margin-bottom:0"><label id="mainYeastLabel">Yeast</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="mainYeast" min="0" max="5" step="0.01" /><span class="suffix">%</span></div><span class="rec">rec. <b id="mainYeastRec"></b></span></div></div>
+                <div class="calc-total" id="calcTotal"></div>
+              </div>
+
+              <div class="field"><label>Yeast type</label><select class="ctrl" id="yeastType">
+                <option value="instant">Instant dry</option><option value="active">Active dry</option><option value="fresh">Fresh</option>
+              </select></div>
+
+              <div class="field"><label>Hydration</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="hydration" min="40" max="100" step="0.5" /><span class="suffix">%</span></div><span class="rec">rec. <b id="hydrationRec"></b></span></div></div>
+              <div class="field"><label>Salt</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="salt" min="0" max="6" step="0.1" /><span class="suffix">%</span></div><span class="rec">rec. <b id="saltRec"></b></span></div></div>
+              <div class="field"><label>Oil</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="oil" min="0" max="15" step="0.5" /><span class="suffix">%</span></div><span class="rec">rec. <b id="oilRec"></b></span></div></div>
+              <div class="field"><label>Sugar</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sugar" min="0" max="8" step="0.5" /><span class="suffix">%</span></div><span class="rec">rec. <b id="sugarRec"></b></span></div></div>
+              <div class="mono" style="font-size:11px;color:var(--ink-soft);margin-top:6px;line-height:1.5">Percentages are baker's % (of total flour). Yeast amount is worked out from the fermentation time.</div>
+              <button class="reset" id="reset">reset to recommended</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="col col-out">
+      <div class="panel">
+        <div class="panel-head"><h2>Your recipe</h2><span class="mono" id="recipeStyle" style="font-size:12px;color:var(--accent)"></span></div>
+        <div class="panel-body">
+          <div class="totals" id="totalsBar">
+            <div class="total-cell"><div class="v" id="tDough">—</div><div class="k">total dough</div></div>
+            <div class="total-cell"><div class="v" id="tTime">—</div><div class="k">total time</div></div>
+            <div class="total-cell"><div class="v" id="tBall">—</div><div class="k" id="tBallK">per ball</div></div>
+          </div>
+          <div class="method-tag" id="methodTag"></div>
+
+          <div id="recipeSections"></div>
+
+          <div class="pcttable" id="pctTable"></div>
+
+          <div class="ing-title" style="margin-top:24px">Method
+            <span class="toggle"><button id="briefBtn" class="on">Brief</button><button id="expandBtn">Detailed</button></span>
+          </div>
+          <ol class="method" id="method-steps"></ol>
+
+          <div class="note" id="bakeNote"></div>
+          <div id="flagNotes"></div>
+          <div class="notes-block" id="notesBlock"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>Recommendations are starting points — change anything and the recipe follows. Built for the cook, not the nerd.</footer>
+
+<script>
+/* ============================================================
+   DOUGH ENGINE v3 — portable framework (pure logic, no UI)
+   Time-driven model. Two methods (Easy, Traditional).
+   Room temperature only. Yeast derived from ferment time.
+   ============================================================ */
+
+/* ============================================================
+   DOUGH ENGINE v4 — portable framework (pure logic, no UI)
+   Yeast is now a USER INPUT (recommended from time + type).
+   Two methods (Easy, Traditional). Room temperature only.
+   ============================================================ */
+
+/* ============================================================
+   DOUGH ENGINE v4 — portable framework (pure logic, no UI)
+   Yeast is now a USER INPUT (recommended from time + type).
+   Two methods (Easy, Traditional). Room temperature only.
+   ============================================================ */
+
+const STYLES = {
+  neapolitan:{name:"Neapolitan",shape:"round",density:2.39,defaultSize:12,hydration:58,salt:2.5,oil:0,sugar:0,
+    bake:{min:375,max:450,idealMin:400},
+    shapeStep:"Stretch each ball by hand, starting from the middle and working outward. Take care not to flatten the rim — that's what gives the puffy, blistered crust.",
+    description:"Neapolitan pizza has a very thin, soft centre and a large, puffy, blistered border. It uses minimal toppings, usually just simple tomato, mozzarella, basil, and olive oil. The base is soft, lightly chewy, and often slightly wet in the centre. It is baked extremely hot and very fast, usually with visible charring."},
+  ny:{name:"New York",shape:"round",density:3.2,defaultSize:16,hydration:62,salt:2.5,oil:2,sugar:1,
+    bake:{min:375,max:450,idealMin:375},
+    shapeStep:"Stretch each ball by hand to an even, flat round. New York style is uniformly flat, so you can use a rolling pin if you prefer.",
+    description:"New York pizza is typically a large, flat, thin pizza with a narrow, low border, moderate sauce, moderate cheese, often having a large variety of minimal toppings. The sauce is often slightly sweeter than other styles. The base should be crisp, flexible, and chewy, with slices large enough to fold lengthways when eaten. It is baked hot and fast."},
+  detroit:{name:"Detroit",shape:"rectangle",density:6.0,defaultLength:12,defaultWidth:8,hydration:65,salt:2.8,oil:2,sugar:0,
+    bake:{min:250,max:350,idealMin:250},
+    shapeStep:"Press the dough into a well-oiled rectangular pan, pushing it to the edges and corners. Detroit style takes plenty of toppings and cheese to the edges.",
+    description:"Detroit pizza is typically a rectangular, thick pan pizza with a light, airy interior and a crisp, fried bottom and edges. Cheese is spread to the edges of the pan, creating a caramelised cheese crust. Sauce is often applied on top, sometimes in stripes, either before or after baking. It is more structured and bread-like than thin pizza styles and often has a generous amount of toppings."},
+  focaccia:{name:"Focaccia",shape:"rectangle",density:6.0,defaultLength:13,defaultWidth:9,hydration:80,salt:3.0,oil:5,sugar:0,
+    bake:{min:200,max:220,idealMin:200},
+    shapeStep:"Spread the dough into a well-oiled pan toward the edges, then dimple the whole surface deeply with your fingertips. Add toppings and bake.",
+    description:"Focaccia is typically a very thick and very airy, olive-oil-rich baked flatbread with a dimpled surface and an open, soft crumb. The exterior should be golden and lightly crisp, while the inside remains moist and tender. It is usually topped simply with salt, herbs, olive oil, or very minimal pizza-like toppings, sometimes before or after baking, and is really more bread-forward than pizza."}
+};
+const STYLE_ORDER=["neapolitan","ny","detroit","focaccia"];
+
+function cookTime(styleKey,ovenTemp){
+  const t=Number(ovenTemp);
+  const map={neapolitan:{lowT:375,lowS:120,highT:450,highS:60},ny:{lowT:375,lowS:180,highT:450,highS:90},detroit:{lowT:250,lowS:420,highT:350,highS:300},focaccia:{lowT:200,lowS:1320,highT:220,highS:1080}};
+  const m=map[styleKey];let secs;
+  if(t<=m.lowT)secs=m.lowS;else if(t>=m.highT)secs=m.highS;else secs=m.lowS+(m.highS-m.lowS)*((t-m.lowT)/(m.highT-m.lowT));
+  return fmtDuration(secs);
+}
+function fmtDuration(secs){
+  if(secs<90)return Math.round(secs/5)*5+" seconds";
+  if(secs<180)return "1–2 minutes";
+  const m=secs/60,lo=Math.floor(m*0.85),hi=Math.ceil(m*1.15);
+  return lo===hi?lo+" minutes":lo+"–"+hi+" minutes";
+}
+
+const PREFERMENTS={
+  biga:{name:"Biga",flourPct:100,hydration:50,minHours:12,maxHours:24},
+  poolish:{name:"Poolish",flourPct:30,hydration:100,minHours:4,maxHours:8}
+};
+const YEAST={instant:{name:"Instant dry",factor:1},active:{name:"Active dry",factor:1.25},fresh:{name:"Fresh",factor:3}};
+const DEFAULT_TOTAL={easy:6,trad:18};
+/* total-time guard rails per method (hours) */
+const TIME_LIMITS={
+  easy:{min:1,max:12},
+  poolish:{min:7,max:16},
+  biga:{min:15,max:32}
+};
+
+function num(v,f){return v===undefined||v===null||v===""||isNaN(Number(v))?f:Number(v);}
+function r0(n){return Math.round(n);}function r1(n){return Math.round(n*10)/10;}function r2(n){return Math.round(n*100)/100;}
+function area(s,sz){if(s.shape==="round"){const r=sz.diameter/2;return Math.PI*r*r;}return sz.length*sz.width;}
+function resolveSize(b,sz){if(b.shape==="round"){return{diameter:sz&&sz.diameter?Number(sz.diameter):b.defaultSize};}return{length:sz&&sz.length?Number(sz.length):b.defaultLength,width:sz&&sz.width?Number(sz.width):b.defaultWidth};}
+function convYeast(g,t){return r2(g*(YEAST[t]?YEAST[t].factor:1));}
+/* recommended yeast % (instant baseline) from ferment hours, then convert for type */
+function recYeastPctInstant(h){if(!h||h<=0)return 1.2;return r2(0.1*(24/h));}
+function recYeastPctForType(h,type){return r2(recYeastPctInstant(h)*(YEAST[type]?YEAST[type].factor:1));}
+
+function easySplit(totalH){
+  let ball=0,bulk=0;
+  if(totalH<=2){ball=totalH;bulk=0;return{bulk:r1(bulk),ball:r1(ball)};}
+  ball=2;let rem=totalH-2;const evenPortion=Math.min(rem,4);
+  ball+=evenPortion/2;bulk+=evenPortion/2;rem-=evenPortion;
+  if(rem>0)bulk+=rem;
+  return{bulk:r1(bulk),ball:r1(ball)};
+}
+/* preferment time scales from its min (at method-min total) to its max (at method-max total), whole hours */
+function stepPreferment(total, pf, lim){
+  if(total<=lim.min)return pf.minHours;
+  if(total>=lim.max)return pf.maxHours;
+  const frac=(total-lim.min)/(lim.max-lim.min);
+  return Math.round(pf.minHours + frac*(pf.maxHours-pf.minHours));
+}
+
+function calculate(opts){
+  const { styleKey, methodKey="easy", quantity=2, size=null, overrides={},
+          yeastType="instant", preferment="poolish", poolishStyle="stiff",
+          totalHours=null, stageOverrides={}, yeastOverrides={} } = opts;
+
+  const base=STYLES[styleKey];
+  const isTrad=methodKey==="trad";
+  const p={hydration:num(overrides.hydration,base.hydration),salt:num(overrides.salt,base.salt),oil:num(overrides.oil,base.oil),sugar:num(overrides.sugar,base.sugar)};
+  const sz=resolveSize(base,size);
+  const a=area(base,sz),perBall=a*base.density,totalDough=perBall*quantity;
+  const total=num(totalHours,DEFAULT_TOTAL[isTrad?"trad":"easy"]);
+
+  // --- TIME ALLOCATION (whole hours) ---
+  let stages={},mainFermentHours;
+  if(!isTrad){
+    const rec=easySplit(total);
+    const recBulk=Math.round(rec.bulk), recBall=Math.max(1,Math.round(rec.ball));
+    const bulk=Math.round(num(stageOverrides.bulk,recBulk)),ball=Math.round(num(stageOverrides.ball,recBall));
+    stages={bulk:{rec:recBulk,val:bulk},ball:{rec:recBall,val:ball}};
+    mainFermentHours=bulk+ball;
+  } else {
+    const pf=PREFERMENTS[preferment];
+    const lim=TIME_LIMITS[preferment];
+    // preferment fills toward its cap as total grows
+    const recPre=stepPreferment(total, pf, lim);
+    // final dough gets the remainder; split so it grows from bulk1/ball2 (min) toward bulk4/ball4 (max)
+    let remainder=Math.max(2, Math.round(total-recPre));
+    // ball gets priority up to 4, bulk takes the rest, but bulk never exceeds ball until both hit 4
+    let recBall, recBulk;
+    if(remainder<=2){ recBall=remainder; recBulk=0; }
+    else if(remainder<=4){ recBall=2; recBulk=remainder-2; }      // 3->b1/ball2, 4->b2/ball2
+    else if(remainder<=8){ recBall=Math.min(4, remainder-2); recBulk=remainder-recBall; } // grow ball to 4
+    else { recBall=4; recBulk=remainder-4; }
+    // ensure bulk doesn't exceed ball below the 8 mark in the remainder (ball-priority)
+    if(recBulk>recBall && remainder<8){ const t=recBall; recBall=Math.max(recBall,Math.ceil(remainder/2)); recBulk=remainder-recBall; }
+    const pre=Math.round(num(stageOverrides.preferment,recPre)),bulk=Math.round(num(stageOverrides.bulk,recBulk)),ball=Math.round(num(stageOverrides.ball,recBall));
+    stages={preferment:{rec:recPre,val:pre},bulk:{rec:recBulk,val:bulk},ball:{rec:recBall,val:ball}};
+    mainFermentHours=bulk+ball;
+  }
+
+  // --- YEAST (user input, recommended from time+type) ---
+  const mainYeastRec=recYeastPctForType(mainFermentHours,yeastType);
+  const mainYeastPct=num(yeastOverrides.main,mainYeastRec);
+
+  // flour back-calc uses instant-equivalent of main yeast for mass (tiny anyway)
+  const mainYeastInstantEquiv=mainYeastPct/(YEAST[yeastType].factor||1);
+  const pctSum=p.hydration+p.salt+p.oil+p.sugar+mainYeastInstantEquiv;
+  const totalFlour=totalDough/(1+pctSum/100);
+  const totalWater=totalFlour*(p.hydration/100);
+  const saltG=totalFlour*(p.salt/100),oilG=p.oil>0?totalFlour*(p.oil/100):0,sugarG=p.sugar>0?totalFlour*(p.sugar/100):0;
+  const mainYeastG=convYeast(totalFlour*(mainYeastInstantEquiv/100),yeastType);
+
+  // baker's % table (final dough, of total flour)
+  const pctTable={flour:100,water:p.hydration,salt:p.salt,
+    yeast:r2(mainYeastPct), oil:p.oil>0?p.oil:null, sugar:p.sugar>0?p.sugar:null};
+
+  let prefermentObj=null,stageFlour={preferment:0,final:totalFlour},stageWater={preferment:0,final:totalWater};
+  if(isTrad){
+    const pf=PREFERMENTS[preferment];
+    // poolish flour % is user-definable; biga is locked at 100%
+    const pfFlourPct = preferment==="poolish" ? num(overrides.poolishPct, pf.flourPct) : pf.flourPct;
+    const pfHydration=num(overrides.prefHydration,pf.hydration);
+    const pfFlour=totalFlour*(pfFlourPct/100);
+    const pfWater=pfFlour*(pfHydration/100);
+    const pfYeastRec=recYeastPctForType(stages.preferment.val,yeastType);
+    const pfYeastPct=num(yeastOverrides.preferment,pfYeastRec);
+    const pfYeastInstantEquiv=pfYeastPct/(YEAST[yeastType].factor||1);
+    const pfYeastG=convYeast(pfFlour*(pfYeastInstantEquiv/100),yeastType);
+
+    stageFlour={preferment:pfFlour,final:totalFlour-pfFlour};
+    stageWater={preferment:pfWater,final:totalWater-pfWater};
+
+    prefermentObj={type:preferment,name:pf.name,flour:r0(pfFlour),water:r0(pfWater),hydration:pfHydration,
+      yeastPct:r2(pfYeastPct),yeastRec:pfYeastRec,yeast:pfYeastG,hours:stages.preferment.val,minHours:pf.minHours,maxHours:pf.maxHours,flourPct:pfFlourPct};
+    // add preferment flour-% to the baker's % table
+    pctTable.preferment={label:pf.name+" (% of flour prefermented)", value:r0(pfFlourPct)};
+  }
+
+  const ingredients={flour:r0(totalFlour),water:r0(totalWater),salt:r1(saltG),yeast:mainYeastG,oil:p.oil>0?r1(oilG):null,sugar:p.sugar>0?r1(sugarG):null};
+
+  // --- RED FLAGS / GUARD RAILS ---
+  const flags=[];
+  const lim = TIME_LIMITS[isTrad?preferment:"easy"];
+  if(isTrad){
+    // below the preferment minimum total → not worth the extra steps
+    if(total < lim.min){
+      flags.push({level:"warn",msg:`At ${fmtH(total)} total, a ${preferment} can't get the time it needs to be worth the extra steps. Below about ${fmtH(lim.min)}, you're better off with the all-in-one (Easy) dough and giving it the whole time to ferment.`});
+    }
+    // over the preferment maximum total → fridge territory
+    if(total > lim.max){
+      flags.push({level:"warn",msg:`${fmtH(total)} is longer than this method should run at room temperature — pushed this far, the yeast exhausts and the dough can collapse. If you need to delay things, that's what the fridge is for: it just slows everything down. You'd work the fridge timing out yourself — this tool stays room-temperature so it doesn't hand you guesses.`});
+    }
+  } else {
+    if(total > lim.max){
+      flags.push({level:"warn",msg:`${fmtH(total)} is about as long as an all-in-one dough should ferment at room temperature. Beyond this you want a preferment (Poolish or Biga) method, or — if you just need to delay — the fridge, which only slows things down. Fridge timing is yours to work out; this tool stays room-temperature.`});
+    }
+  }
+  // overproof: main ferment far beyond recommended for the yeast in use
+  const recMain=stages.bulk.rec+stages.ball.rec;
+  if(mainFermentHours>recMain*1.5&&recMain>0){
+    flags.push({level:"warn",msg:`Fermenting the final dough ${fmtH(mainFermentHours)} is well over the recommended ${fmtH(recMain)} for this much yeast — it can exhaust and collapse. Lower the yeast or shorten the time.`});
+  }
+
+  const totalTime = isTrad ? (stages.preferment.val+stages.bulk.val+stages.ball.val) : (stages.bulk.val+stages.ball.val);
+
+  return {
+    styleKey,styleName:base.name,methodKey,methodName:isTrad?"Traditional":"Easy",
+    shape:base.shape,size:sz,quantity,percentages:p,
+    yeastType,yeastTypeName:YEAST[yeastType].name,
+    isTrad,preferment:prefermentObj,poolishStyle,
+    totalHours:total,totalTime:r1(totalTime),stages,
+    mainYeastPct:r2(mainYeastPct),mainYeastRec,
+    pctTable,
+    totals:{doughWeight:r0(totalDough),ballWeight:r0(perBall),...ingredients},
+    ingredients,
+    stageAmounts:{flour:{preferment:r0(stageFlour.preferment),final:r0(stageFlour.final)},water:{preferment:r0(stageWater.preferment),final:r0(stageWater.final)},finalYeast:mainYeastG},
+    bake:base.bake,cookTime:cookTime(styleKey,opts.ovenTemp),flags,
+    method:buildMethod({base,isTrad,p,prefermentObj,poolishStyle,yeastType,stages,quantity,styleKey,expanded:false,ingredients,stageAmounts:{flour:{preferment:r0(stageFlour.preferment),final:r0(stageFlour.final)},water:{preferment:r0(stageWater.preferment),final:r0(stageWater.final)},finalYeast:mainYeastG}}),
+    methodExpanded:buildMethod({base,isTrad,p,prefermentObj,poolishStyle,yeastType,stages,quantity,styleKey,expanded:true,ingredients,stageAmounts:{flour:{preferment:r0(stageFlour.preferment),final:r0(stageFlour.final)},water:{preferment:r0(stageWater.preferment),final:r0(stageWater.final)},finalYeast:mainYeastG}})
+  };
+}
+
+/* cumulative time marker helper */
+function elapsed(h){ if(h<=0) return ""; return ` (≈${fmtH(h)} in)`; }
+
+function buildMethod(ctx){
+  const {base,isTrad,p,prefermentObj,poolishStyle,yeastType,stages,quantity,styleKey,expanded,ingredients,stageAmounts}=ctx;
+  const s=[];const hasOil=p.oil>0,hasSugar=p.sugar>0;
+  const ballWord=quantity===1?"ball":"balls";
+  const why=txt=>expanded?" "+txt:"";
+  // seasoning list with amounts
+  const I=ingredients||{};
+  function seasoningStr(){
+    const parts=[`${I.salt}g salt`];
+    if(hasOil)parts.push(`${I.oil}g oil`);
+    if(hasSugar)parts.push(`${I.sugar}g sugar`);
+    if(parts.length===1)return parts[0];
+    if(parts.length===2)return parts[0]+" and "+parts[1];
+    return parts.slice(0,-1).join(", ")+" and "+parts[parts.length-1];
+  }
+
+  if(!isTrad){
+    let elapsedH=0;
+    s.push(`Dissolve all ${I.yeast}g yeast into all ${I.water}g water and leave 10 minutes.`+why("Yeast wakes up in water, not in dry flour — flour competes with it for moisture and slows it down. Ten minutes gets it active before it meets the flour."));
+    s.push(`Add all ${I.flour}g flour and the ${seasoningStr()} to the water and mix into a rough dough.`+why("Salt, oil and sugar slow gluten development, so in a longer ferment some bakers add them at the end. At room temperature the difference is small, and salt added now also keeps the fermentation steadier — so for this dough, all-in is fine."));
+    s.push(`Knead by hand or machine for about 5 minutes, until the dough becomes smooth.`+why("Kneading builds the gluten network that traps gas and gives structure. A spiral or stand mixer develops gluten faster than hands — if mixing by hand, knead a little longer to reach the same smoothness."));
+    elapsedH+=stages.bulk.val;
+    s.push(`Cover and rest in a warm place for the bulk ferment — about ${fmtH(stages.bulk.val)}.`+(expanded?elapsed(elapsedH):"")+why("This is the first and longest stretch of fermentation. The whole mass ferments together, building flavour and gas. Too short and the dough is bland and dense; too long and the yeast starts to exhaust and the dough can over-soften."));
+    s.push(`Divide the dough into ${quantity} ${ballWord} and shape each into a tight ball. Weighing the ${ballWord} is recommended for even sizes.`+why("Tightening into balls pushes the gas out and resets the gluten, so the dough builds fresh structure for its final rise."));
+    elapsedH+=stages.ball.val;
+    s.push(`Cover the ${ballWord} and rest for the ball ferment — about ${fmtH(stages.ball.val)}.`+(expanded?elapsed(elapsedH):"")+why("The final proof relaxes the dough so it stretches without tearing and puffs in the oven. Under-proofed dough fights back and stays tight; over-proofed dough goes slack and won't hold its shape."));
+    s.push(base.shapeStep);
+    return s;
+  }
+
+  const pf=prefermentObj,isBiga=pf.type==="biga";
+  const remFlour=stageAmounts?stageAmounts.flour.final:0;
+  const remWater=stageAmounts?stageAmounts.water.final:0;
+  const finalYeast=stageAmounts?stageAmounts.finalYeast:I.yeast;
+  let elapsedH=0;
+  s.push(`Make the ${pf.name.toLowerCase()}: dissolve ${pf.yeast}g yeast in ${pf.water}g water, leave 10 minutes, then mix in ${pf.flour}g flour${isBiga?" to a stiff, shaggy dough":" to a smooth batter"}.`+why(isBiga?" A stiff biga uses all the flour at low hydration. It ferments slowly and evenly, building strength and a deep, nutty flavour.":" A loose poolish uses part of the flour at high hydration. It ferments fast and adds extensibility and an aromatic, slightly sweet note."));
+  elapsedH+=pf.hours;
+  s.push(`Cover and leave the ${pf.name.toLowerCase()} about ${fmtH(pf.hours)} at room temperature, until risen, bubbly and smelling fermented.`+(expanded?elapsed(elapsedH):"")+why(` Below about ${fmtH(pf.minHours)} it hasn't fermented enough to be worth the extra step. The preferment is doing the slow flavour work here, which is why the final dough then needs much less time.`));
+
+  if(isBiga){
+    s.push(`Dissolve ${finalYeast}g yeast in the remaining ${remWater}g water, leave 10 minutes, then add it to the biga with the ${seasoningStr()} and mix to a cohesive dough. No more flour — it's all in the biga.`+why(" Everything was already in the biga, so finishing only means loosening it with the rest of the water and bringing in the seasonings."));
+  } else if(poolishStyle==="stiff"){
+    s.push(`Add the remaining ${remFlour}g flour to the poolish and work it into a firm, dry dough. Knead until strong, then rest 10 minutes.`+why(" Forming the dough with as little water as possible first forces the gluten strands together hard, building a stronger, chewier network. This trick comes from stiff-noodle doughs."));
+    s.push(`Now add the remaining ${remWater}g water, ${finalYeast}g yeast (dissolved and rested 10 minutes), and the ${seasoningStr()}, and mix until smooth.`+why(" Adding the water only after the gluten is already strong keeps that chew."));
+  } else {
+    s.push(`Add the remaining ${remWater}g water and ${finalYeast}g yeast (dissolved and rested 10 minutes) to the poolish and mix well until all the water is incorporated.`+why(" Bringing all the water in first, before the bulk of the flour, keeps the gluten looser and the final crumb softer and more delicate."));
+    s.push(`Then add the remaining ${remFlour}g flour and the ${seasoningStr()}, and mix to a dough.`);
+  }
+
+  elapsedH+=stages.bulk.val;
+  s.push(`Cover and rest in a warm place for the bulk ferment — about ${fmtH(stages.bulk.val)}.`+(expanded?elapsed(elapsedH):"")+why(" The preferment already did most of the fermenting, so the final dough needs only a short bulk to come together."));
+  s.push(`Divide into ${quantity} ${ballWord} and shape each into a tight ball. Weighing the ${ballWord} is recommended.`);
+  elapsedH+=stages.ball.val;
+  s.push(`Cover the ${ballWord} and rest for the ball ferment — about ${fmtH(stages.ball.val)}.`+(expanded?elapsed(elapsedH):"")+why(" A final short proof to relax the balls before shaping."));
+  s.push(base.shapeStep);
+  return s;
+}
+function fmtH(h){if(h==null)return"";if(h<1)return Math.round(h*60)+" min";if(h===Math.round(h))return h+(h===1?" hour":" hours");return h+" hours";}
+
+function checkOven(styleKey,ovenTemp){
+  const b=STYLES[styleKey].bake;if(ovenTemp==null||ovenTemp==="")return null;const t=Number(ovenTemp);
+  if(t>b.max)return{level:"warn",message:`${t}°C is hotter than ${STYLES[styleKey].name.toLowerCase()} wants — it will scorch before the inside cooks. Aim for ${b.min}–${b.max}°C.`};
+  if(t>=b.idealMin)return{level:"ok",message:`Your temperature is in the right range for this style.`};
+  if(styleKey==="focaccia"||styleKey==="detroit")return{level:"adjust",message:`A little below the ideal ${b.idealMin}°C — bake a bit longer and judge by a deep golden colour rather than the clock.`};
+  return{level:"adjust",message:`Below the ${b.idealMin}°C this style really wants. That's fine — a home oven just won't match a pizzeria, because it isn't one. Use your oven's max with a preheated stone or steel (not a tray — it softens the base) and bake longer until the crust colours. Still a good pizza.`};
+}
+
+/* ===== UI CONTROLLER ===== */
+const $=id=>document.getElementById(id);
+const advIds=["hydration","salt","oil","sugar"];
+let current="neapolitan", currentMethod="easy", mode="brief";
+let touched={};            // recipe % overrides
+let yeastTouched={};       // yeast % overrides
+let stageTouched={};       // stage time overrides
+let prefTouched={};        // preferment hydration/yeast overrides
+
+const METHOD_BLURB={
+  easy:"One-step dough — all ingredients mixed together. Simple and flexible; the time you give it does the rest.",
+  trad:"Uses a preferment (biga or poolish) made ahead, then mixed into the final dough. More steps, more developed flavour and structure."
+};
+
+const stylesEl=$("styles");
+STYLE_ORDER.forEach(k=>{const b=document.createElement("button");b.className="style-btn"+(k===current?" active":"");b.textContent=STYLES[k].name;b.onclick=()=>selectStyle(k);stylesEl.appendChild(b);});
+
+function fmtPct(v){return v+"%";}
+function currentLimitKey(){return currentMethod==="easy"?"easy":$("preferment").value;}
+function updateTotalRec(){
+  const k=currentLimitKey();const L=TIME_LIMITS[k];
+  $("totalRec").textContent=L.min+"–"+L.max+" hrs";
+}
+function getSize(){const s=STYLES[current];return s.shape==="round"?{diameter:$("diameter").value}:{length:$("panL").value,width:$("panW").value};}
+
+function recalcRecommendations(){
+  // compute a fresh calc with NO stage/pref overrides to get recommended stage values
+  const s=STYLES[current];
+  const baseCalc=calculate({styleKey:current,methodKey:currentMethod,quantity:num($("qty").value,2),
+    size:getSize(),overrides:{},yeastType:$("yeastType").value,preferment:$("preferment").value,
+    poolishStyle:$("poolishStyle").value,totalHours:num($("totalHours").value,DEFAULT_TOTAL[currentMethod]),
+    ovenTemp:$("oven").value});
+  return baseCalc;
+}
+
+function selectStyle(k){
+  current=k;touched={};stageTouched={};prefTouched={};yeastTouched={};
+  [...stylesEl.children].forEach((b,i)=>b.classList.toggle("active",STYLE_ORDER[i]===k));
+  const s=STYLES[k];
+  $("roundSize").style.display=s.shape==="round"?"":"none";
+  $("rectSize").style.display=s.shape==="rectangle"?"":"none";
+  $("qty").value=2;
+  if(s.shape==="round"){$("diameter").value=s.defaultSize;$("diameterRec").textContent=s.defaultSize+" in";}
+  else{$("panL").value=s.defaultLength;$("panW").value=s.defaultWidth;}
+  $("totalHours").value=DEFAULT_TOTAL[currentMethod];updateTotalRec();
+  $("oven").value=s.bake.idealMin;$("ovenRec").textContent=s.bake.idealMin+"–"+s.bake.max+"°C";
+  $("hydration").value=s.hydration;$("hydrationRec").textContent=fmtPct(s.hydration);
+  $("salt").value=s.salt;$("saltRec").textContent=fmtPct(s.salt);
+  $("oil").value=s.oil;$("oilRec").textContent=fmtPct(s.oil);
+  $("sugar").value=s.sugar;$("sugarRec").textContent=fmtPct(s.sugar);
+  $("desc").textContent=s.description;
+  refreshStageDefaults();
+  render();
+}
+
+function refreshStageDefaults(){
+  // populate stage time inputs + preferment fields with recommended (only if not touched)
+  const rc=recalcRecommendations();
+  if(!stageTouched.bulk){$("sBulk").value=rc.stages.bulk.val;}
+  $("sBulkRec").textContent=rc.stages.bulk.rec+" hrs";
+  if(!stageTouched.ball){$("sBall").value=rc.stages.ball.val;}
+  $("sBallRec").textContent=rc.stages.ball.rec+" hrs";
+  if(!yeastTouched.main){$("mainYeast").value=rc.mainYeastRec;}
+  $("mainYeastRec").textContent=rc.mainYeastRec+"%";
+  if(currentMethod==="trad"){
+    if(!stageTouched.preferment){$("sPreferment").value=rc.stages.preferment.val;}
+    $("sPrefermentRec").textContent=rc.stages.preferment.rec+" hrs";
+    const pf=PREFERMENTS[$("preferment").value];
+    if(!prefTouched.hydration){$("prefHydration").value=pf.hydration;}
+    $("prefHydrationRec").textContent=pf.hydration+"%";
+    if($("poolishPctField")){
+      const isPool=$("preferment").value==="poolish";
+      $("poolishPctField").style.display=isPool?"":"none";
+      if(isPool){ if(!prefTouched.poolishPct){$("poolishPct").value=pf.flourPct;} $("poolishPctRec").textContent=pf.flourPct+"%"; }
+    }
+    if(rc.preferment){
+      if(!yeastTouched.preferment){$("prefYeast").value=rc.preferment.yeastRec;}
+      $("prefYeastRec").textContent=rc.preferment.yeastRec+"%";
+    }
+  }
+}
+
+function syncMethodUI(){
+  if($("mainYeastLabel"))$("mainYeastLabel").textContent=(currentMethod==="trad"?"Yeast (final mix)":"Yeast");
+  $("mEasy").classList.toggle("active",currentMethod==="easy");
+  $("mTrad").classList.toggle("active",currentMethod==="trad");
+  $("methodBlurb").textContent=METHOD_BLURB[currentMethod];
+  $("prefGroup").style.display=currentMethod==="trad"?"":"none";
+  $("poolishStyleField").style.display=$("preferment").value==="poolish"?"":"none";
+  if($("poolishPctField"))$("poolishPctField").style.display=$("preferment").value==="poolish"?"":"none";
+}
+
+function buildOpts(){
+  const overrides={};advIds.forEach(id=>{if(touched[id])overrides[id]=$(id).value;});
+  if(prefTouched.hydration)overrides.prefHydration=$("prefHydration").value;
+  if(prefTouched.poolishPct)overrides.poolishPct=$("poolishPct").value;
+  if(prefTouched.yeast)overrides.prefYeast=$("prefYeast").value;
+  const stageOverrides={};
+  if(stageTouched.bulk)stageOverrides.bulk=$("sBulk").value;
+  if(stageTouched.ball)stageOverrides.ball=$("sBall").value;
+  if(stageTouched.preferment)stageOverrides.preferment=$("sPreferment").value;
+  const yeastOverrides={};
+  if(yeastTouched.main)yeastOverrides.main=$("mainYeast").value;
+  if(yeastTouched.preferment)yeastOverrides.preferment=$("prefYeast").value;
+  return {styleKey:current,methodKey:currentMethod,quantity:num($("qty").value,2),size:getSize(),
+    overrides,yeastType:$("yeastType").value,preferment:$("preferment").value,
+    poolishStyle:$("poolishStyle").value,totalHours:num($("totalHours").value,DEFAULT_TOTAL[currentMethod]),
+    stageOverrides,yeastOverrides,ovenTemp:$("oven").value};
+}
+
+// wiring
+["qty","diameter","panL","panW","oven"].forEach(id=>$(id).addEventListener("input",()=>{refreshStageDefaults();render();}));
+$("totalHours").addEventListener("input",()=>{stageTouched={};yeastTouched={};refreshStageDefaults();render();});
+advIds.forEach(id=>$(id).addEventListener("input",()=>{touched[id]=true;render();}));
+["sBulk","sBall"].forEach(id=>$(id).addEventListener("input",()=>{stageTouched[id.replace("s","").toLowerCase()]=true;render();}));
+$("mainYeast").addEventListener("input",()=>{yeastTouched.main=true;render();});
+$("prefYeast").addEventListener("input",()=>{yeastTouched.preferment=true;render();});
+$("sPreferment").addEventListener("input",()=>{stageTouched.preferment=true;yeastTouched.preferment=false;refreshStageDefaults();render();});
+$("prefHydration").addEventListener("input",()=>{prefTouched.hydration=true;render();});
+$("poolishPct").addEventListener("input",()=>{prefTouched.poolishPct=true;render();});
+$("prefYeast").addEventListener("input",()=>{prefTouched.yeast=true;render();});
+["preferment","poolishStyle","yeastType"].forEach(id=>$(id).addEventListener("change",()=>{if(id==="preferment"){prefTouched={};updateTotalRec();}syncMethodUI();refreshStageDefaults();render();}));
+$("mEasy").onclick=()=>{currentMethod="easy";stageTouched={};prefTouched={};yeastTouched={};$("totalHours").value=DEFAULT_TOTAL.easy;updateTotalRec();syncMethodUI();refreshStageDefaults();render();};
+$("mTrad").onclick=()=>{currentMethod="trad";stageTouched={};prefTouched={};yeastTouched={};$("totalHours").value=DEFAULT_TOTAL.trad;updateTotalRec();syncMethodUI();refreshStageDefaults();render();};
+$("accToggle").onclick=()=>$("accordion").classList.toggle("open");
+$("reset").onclick=()=>{const o=$("accordion").classList.contains("open");selectStyle(current);if(o)$("accordion").classList.add("open");};
+$("briefBtn").onclick=()=>{mode="brief";$("briefBtn").classList.add("on");$("expandBtn").classList.remove("on");render();};
+$("expandBtn").onclick=()=>{mode="expanded";$("expandBtn").classList.add("on");$("briefBtn").classList.remove("on");render();};
+
+let prevIng={};
+function ingList(container, items){
+  const ul=document.createElement("ul");ul.className="ilist";
+  items.forEach(([label,val,key])=>{
+    if(val==null)return;
+    const li=document.createElement("li");
+    const flash = prevIng[key]!==undefined && prevIng[key]!==val;
+    if(flash)li.className="flash";
+    li.innerHTML=`<span class="n">${label}</span><span class="w">${val}<span class="u">g</span></span>`;
+    ul.appendChild(li);prevIng[key]=val;
+  });
+  container.appendChild(ul);
+}
+
+function render(){
+  const s=STYLES[current];
+  const r=calculate(buildOpts());
+
+  $("recipeStyle").textContent=r.styleName;
+  $("tDough").textContent=r.totals.doughWeight+"g";
+  $("tTime").textContent=fmtHShort(r.totalTime);
+  $("tBall").textContent=r.totals.ballWeight+"g";
+  $("tBallK").textContent=s.shape==="round"?"per ball":"per pan";
+
+  $("methodTag").textContent=r.methodName+" · "+r.quantity+" × "+(s.shape==="round"?(r.size.diameter+'" ball'):(r.size.length+"×"+r.size.width+'" pan'))+(r.isTrad?" · "+r.preferment.name:"");
+
+  // ---- RECIPE SECTIONS ----
+  const rs=$("recipeSections");rs.innerHTML="";
+  const yt=r.yeastTypeName.toLowerCase();
+  if(r.isTrad){
+    const pf=r.preferment;
+    // Section 1: preferment
+    const s1=document.createElement("div");s1.className="rsection";
+    s1.innerHTML=`<div class="rsection-head">Step 1 — ${pf.name}</div><div class="rsection-meta">ferment ${fmtH(pf.hours)} · ${pf.hydration}% hydration</div>`;
+    rs.appendChild(s1);
+    ingList(s1,[["Flour",pf.flour,"p_flour"],["Water",pf.water,"p_water"],["Yeast ("+yt+")",pf.yeast,"p_yeast"]]);
+    // Section 2: final dough
+    const s2=document.createElement("div");s2.className="rsection";
+    s2.innerHTML=`<div class="rsection-head">Step 2 — Final dough</div><div class="rsection-meta">add to the ${pf.name.toLowerCase()}</div>`;
+    rs.appendChild(s2);
+    const finalItems=[];
+    if(r.stageAmounts.flour.final>0)finalItems.push(["Flour",r.stageAmounts.flour.final,"f_flour"]);
+    finalItems.push(["Water",r.stageAmounts.water.final,"f_water"]);
+    finalItems.push(["Salt",r.ingredients.salt,"f_salt"]);
+    finalItems.push(["Yeast ("+yt+")",r.stageAmounts.finalYeast,"f_yeast"]);
+    if(r.ingredients.oil!=null)finalItems.push(["Oil",r.ingredients.oil,"f_oil"]);
+    if(r.ingredients.sugar!=null)finalItems.push(["Sugar",r.ingredients.sugar,"f_sugar"]);
+    ingList(s2,finalItems);
+  } else {
+    const sec=document.createElement("div");sec.className="rsection";
+    sec.innerHTML=`<div class="rsection-head">Ingredients</div>`;
+    rs.appendChild(sec);
+    ingList(sec,[["Flour",r.ingredients.flour,"flour"],["Water",r.ingredients.water,"water"],["Salt",r.ingredients.salt,"salt"],["Yeast ("+yt+")",r.ingredients.yeast,"yeast"],["Oil",r.ingredients.oil,"oil"],["Sugar",r.ingredients.sugar,"sugar"]]);
+  }
+
+  // ---- BAKER'S % TABLE (final dough) ----
+  const pt=$("pctTable");
+  const T=r.pctTable;
+  let rows=`<div class="pt-row"><span>Flour</span><span class="pv">100%</span></div>`+
+           `<div class="pt-row"><span>Water</span><span class="pv">${T.water}%</span></div>`+
+           `<div class="pt-row"><span>Salt</span><span class="pv">${T.salt}%</span></div>`+
+           `<div class="pt-row"><span>Yeast</span><span class="pv">${T.yeast}%</span></div>`;
+  if(T.oil!=null)rows+=`<div class="pt-row"><span>Oil</span><span class="pv">${T.oil}%</span></div>`;
+  if(T.sugar!=null)rows+=`<div class="pt-row"><span>Sugar</span><span class="pv">${T.sugar}%</span></div>`;
+  if(T.preferment)rows+=`<div class="pt-row" style="border-top:1px solid var(--line);margin-top:4px;padding-top:6px"><span>${T.preferment.label}</span><span class="pv">${T.preferment.value}%</span></div>`;
+  pt.innerHTML=`<div class="pt-title">Final dough — baker's percentages</div>`+rows;
+
+  // calc total time
+  $("calcTotal").innerHTML="Total time start to finish: <b>"+fmtHShort(r.totalTime)+"</b> — this is the sum of the fermentation stages, the time the dough needs before it's ready.";
+
+  // method
+  const steps=mode==="expanded"?r.methodExpanded:r.method;
+  const me=$("method-steps");me.innerHTML="";
+  steps.forEach(st=>{const li=document.createElement("li");li.textContent=st;me.appendChild(li);});
+
+  // bake note
+  const chk=checkOven(current,$("oven").value);const bn=$("bakeNote");
+  if(chk){bn.style.display="flex";bn.className="note "+chk.level;const icon=chk.level==="ok"?"✓":chk.level==="warn"?"!":"≈";bn.innerHTML=`<span class="icon">${icon}</span><span>${chk.message}</span>`;}else{bn.style.display="none";}
+
+  // red flags
+  const fn=$("flagNotes");fn.innerHTML="";
+  r.flags.forEach(f=>{const d=document.createElement("div");d.className="note warn";d.innerHTML=`<span class="icon">!</span><span>${f.msg}</span>`;fn.appendChild(d);});
+
+  // end notes
+  const nb=$("notesBlock");nb.innerHTML="";
+  const cn=document.createElement("div");cn.className="nt";
+  cn.innerHTML=`<b style="font-style:normal;color:var(--ink)">Baking:</b> at ${$("oven").value}°C, expect about ${r.cookTime}.`;
+  nb.appendChild(cn);
+  if((current==="neapolitan"||current==="ny")&&Number($("oven").value)<s.bake.idealMin){
+    const e=document.createElement("div");e.className="nt";
+    e.textContent="A thin pizza in a home oven won't match a pizzeria — that's the oven's limit, not a fault in the dough. It'll still be good.";
+    nb.appendChild(e);
+  }
+}
+function fmtHShort(h){if(h<1)return Math.round(h*60)+"m";if(h===Math.round(h))return h+"h";return h+"h";}
+
+syncMethodUI();
+selectStyle("neapolitan");
+
+</script>
+</body>
+</html>
