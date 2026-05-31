@@ -148,14 +148,36 @@
   /* UV searchlight — dark mode inline easter eggs */
   .uv-toggle{display:none;min-width:166px;text-align:center}
   html[data-theme="dark"] .uv-toggle{display:inline-block}
-  #uvLight{position:fixed;left:50%;top:50%;width:230px;height:230px;border-radius:50%;pointer-events:none;z-index:9998;opacity:0;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(143,249,255,.18) 0%,rgba(105,245,255,.13) 34%,rgba(126,74,255,.08) 56%,transparent 74%);border:1px solid rgba(165,250,255,.34);box-shadow:0 0 24px rgba(105,245,255,.18),inset 0 0 32px rgba(105,245,255,.08);mix-blend-mode:screen;transition:opacity .16s ease}
+  html[data-theme="dark"].uv-on .uv-toggle{background:linear-gradient(180deg,rgba(154,108,255,.28),rgba(105,245,255,.16));border-color:rgba(165,250,255,.5);color:#e8ffff;box-shadow:0 0 14px rgba(126,74,255,.35)}
+
+  /* darkened room so the torch reads as a real beam */
+  #uvVignette{position:fixed;inset:0;z-index:9990;pointer-events:none;opacity:0;background:radial-gradient(circle var(--uv-r,260px) at var(--uv-x,50%) var(--uv-y,50%),transparent 0%,rgba(8,6,14,.34) 46%,rgba(6,4,12,.74) 100%);transition:opacity .35s ease}
+  html[data-theme="dark"].uv-on #uvVignette{opacity:1}
+
+  /* the torch itself — violet halo + cool near-white core, like a real blacklight */
+  #uvLight{position:fixed;left:50%;top:50%;width:300px;height:300px;border-radius:50%;pointer-events:none;z-index:9998;opacity:0;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:opacity .22s ease;filter:blur(.3px)}
+  #uvLight::before,#uvLight::after{content:"";position:absolute;inset:0;border-radius:50%}
+  /* outer UV-purple bloom */
+  #uvLight::before{background:radial-gradient(circle,rgba(150,110,255,.30) 0%,rgba(126,74,255,.20) 30%,rgba(96,60,210,.10) 52%,transparent 72%);animation:uvFlicker 3.4s ease-in-out infinite}
+  /* tight cool core */
+  #uvLight::after{background:radial-gradient(circle,rgba(214,255,255,.42) 0%,rgba(143,235,255,.26) 18%,rgba(120,160,255,.10) 36%,transparent 56%);box-shadow:0 0 36px rgba(120,200,255,.22),inset 0 0 40px rgba(160,235,255,.10)}
   html[data-theme="dark"].uv-on #uvLight{opacity:1}
+  @keyframes uvFlicker{0%,100%{opacity:.92;transform:scale(1)}43%{opacity:1;transform:scale(1.015)}55%{opacity:.85}62%{opacity:.97}}
+
   #uvReadout{display:none!important}
   .uv-secret-line{display:none!important}
   .uv-secret{display:none}
-  html[data-theme="dark"] .uv-secret{display:inline;color:transparent;-webkit-text-fill-color:transparent;background:none;text-shadow:none;opacity:1;pointer-events:none;font-style:italic;font-weight:600;letter-spacing:.01em;transition:color .12s ease,text-shadow .12s ease}
-  html[data-theme="dark"].uv-on .uv-secret.uv-revealed{color:#d9ffff;-webkit-text-fill-color:#d9ffff;text-shadow:0 0 4px rgba(217,255,255,.95),0 0 12px rgba(105,245,255,.7),0 0 22px rgba(154,108,255,.46)}
-  @media print{#uvLight,#uvReadout,.uv-secret,.uv-toggle,.uv-secret-line{display:none!important}}
+  /* invisible ink: present but unreadable until the torch sweeps over it.
+     --uv (0..1) is set per-element by JS based on distance to the torch centre. */
+  html[data-theme="dark"] .uv-secret{display:inline;--uv:0;color:rgba(150,160,180,calc(.05 + .04*var(--uv)));-webkit-text-fill-color:rgba(150,160,180,calc(.05 + .04*var(--uv)));pointer-events:none;font-style:italic;font-weight:600;letter-spacing:.01em;text-shadow:none;transition:color .18s ease,-webkit-text-fill-color .18s ease,text-shadow .18s ease}
+  html[data-theme="dark"].uv-on .uv-secret{
+    color:rgba(225,255,255,calc(.12 + .88*var(--uv)));
+    -webkit-text-fill-color:rgba(225,255,255,calc(.12 + .88*var(--uv)));
+    text-shadow:0 0 calc(3px + 6px*var(--uv)) rgba(214,255,255,calc(.6*var(--uv))),
+                0 0 calc(8px + 14px*var(--uv)) rgba(120,225,255,calc(.55*var(--uv))),
+                0 0 calc(14px + 24px*var(--uv)) rgba(154,108,255,calc(.5*var(--uv)))}
+  @media print{#uvLight,#uvVignette,#uvReadout,.uv-secret,.uv-toggle,.uv-secret-line{display:none!important}}
+  @media (prefers-reduced-motion:reduce){#uvLight::before{animation:none}}
 
     #printRecipe{display:none}
   @media print{
@@ -174,9 +196,59 @@
     #printRecipe .small{font-size:12px;color:#555;line-height:1.45}
   }
   footer{text-align:center;padding:0 40px 40px;color:var(--ink-soft);font-size:12.5px;font-style:italic}
+
+  /* ===== visual polish ===== */
+  /* fine paper grain for warmth & depth */
+  body::before{content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.4;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+  html[data-theme="dark"] body::before{mix-blend-mode:screen;opacity:.18}
+  html[data-theme="dark"].uv-on body::before{opacity:.06}
+
+  /* warm ambient wash behind the layout */
+  main{position:relative}
+  main::before{content:"";position:absolute;inset:-40px 0 0;z-index:-1;pointer-events:none;
+    background:radial-gradient(60% 40% at 22% 8%,rgba(202,162,74,.10),transparent 70%),radial-gradient(55% 45% at 92% 30%,rgba(192,73,47,.07),transparent 72%)}
+
+  /* animated sheen on the brand underline */
+  .brand h1:after{background:linear-gradient(90deg,var(--accent),var(--gold),var(--accent));background-size:200% 100%;animation:sheen 6s ease-in-out infinite}
+  @keyframes sheen{0%,100%{background-position:0% 0}50%{background-position:100% 0}}
+
+  /* panels rise in on load, staggered */
+  .panel{animation:rise .6s cubic-bezier(.2,.7,.2,1) both;transition:transform .3s cubic-bezier(.2,.7,.2,1),box-shadow .3s ease}
+  section.col:nth-child(1) .panel{animation-delay:.04s}
+  section.col-out .panel{animation-delay:.14s}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .panel:hover{box-shadow:0 2px 4px rgba(42,36,29,.05),0 18px 48px rgba(42,36,29,.10)}
+  @media (prefers-reduced-motion:reduce){.panel{animation:none}.brand h1:after{animation:none}}
+
+  /* style buttons: subtle gradient + spring */
+  .style-btn{background:linear-gradient(180deg,#fff,#fdfaf4);transition:transform .16s cubic-bezier(.2,1.4,.4,1),border-color .18s,box-shadow .18s,background .18s,color .18s}
+  .style-btn:hover{box-shadow:0 4px 12px rgba(42,36,29,.07)}
+  .style-btn.active{background:linear-gradient(180deg,var(--accent),#a83c27)}
+  .style-btn:active{transform:translateY(0) scale(.97)}
+
+  /* totals bar: warm fill, top sheen, value emphasis */
+  .totals{background:linear-gradient(180deg,#fff,rgba(232,201,191,.16));box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 6px 18px rgba(192,73,47,.07)}
+  .total-cell{position:relative;transition:background .2s}
+  .total-cell .v{transition:color .2s;text-shadow:0 1px 0 rgba(255,255,255,.5)}
+  html[data-theme="dark"] .total-cell .v{text-shadow:none}
+  .total-cell:hover{background:rgba(202,162,74,.08)}
+
+  /* numbered method steps: soft ring */
+  ol.method li:before{box-shadow:0 2px 6px rgba(192,73,47,.28)}
+
+  /* inputs get a hair more life on focus */
+  .ctrl:hover{border-color:var(--accent-soft)}
+
+  /* section heading dot quietly breathes */
+  .brand .dot{animation:pulse 3s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(192,73,47,.35)}50%{box-shadow:0 0 0 5px rgba(192,73,47,0)}}
+  @media (prefers-reduced-motion:reduce){.brand .dot{animation:none}}
+  @media print{body::before,main::before{display:none!important}}
 </style>
 </head>
 <body>
+  <div id="uvVignette" aria-hidden="true"></div>
   <div id="uvLight" aria-hidden="true"></div>
   <div id="uvReadout" aria-live="polite"></div>
   <header>
@@ -779,7 +851,10 @@ function recalcRecommendations(){
 }
 
 function uvMarker(text){
-  return text ? ` <span class="uv-secret" aria-hidden="true">${esc(text)}</span>` : "";
+  if(!text)return "";
+  // wrap each word in its own secret span so the torch reveals text word-by-word as it sweeps
+  const words=text.split(/\s+/).map(w=>`<span class="uv-secret" aria-hidden="true">${esc(w)}</span>`).join(" ");
+  return ` ${words}`;
 }
 function renderDescription(styleKey){
   const el=$("desc");
@@ -989,6 +1064,7 @@ function saveRecipeText(){
 function clearUVReveal(){
   document.querySelectorAll(".uv-secret").forEach(el=>{
     el.classList.remove("uv-revealed");
+    el.style.setProperty("--uv","0");
   });
 }
 function setUV(on){
@@ -998,18 +1074,33 @@ function setUV(on){
   if(btn)btn.textContent=active?"UV Search Light: On":"UV Search Light";
   if(!active)clearUVReveal();
 }
-function moveUV(e){
+let _uvLast=null,_uvQueued=false;
+function _uvApply(){
+  _uvQueued=false;
+  const e=_uvLast; if(!e)return;
+  const root=document.documentElement;
   const light=$("uvLight");
   if(light){light.style.left=e.clientX+"px"; light.style.top=e.clientY+"px";}
-  if(!document.documentElement.classList.contains("uv-on")||document.documentElement.dataset.theme!=="dark")return;
-  const radius=120;
+  // feed the vignette hole position so the dark room opens exactly under the torch
+  root.style.setProperty("--uv-x",e.clientX+"px");
+  root.style.setProperty("--uv-y",e.clientY+"px");
+  if(!root.classList.contains("uv-on")||root.dataset.theme!=="dark")return;
+  const inner=90, outer=190;   // full glow within inner px, fades to nothing by outer px
   document.querySelectorAll(".uv-secret").forEach(el=>{
     const r=el.getBoundingClientRect();
     const dx=Math.max(r.left-e.clientX,0,e.clientX-r.right);
     const dy=Math.max(r.top-e.clientY,0,e.clientY-r.bottom);
-    const hit=Math.hypot(dx,dy)<radius;
-    el.classList.toggle("uv-revealed",hit);
+    const d=Math.hypot(dx,dy);
+    let t=0;
+    if(d<=inner)t=1; else if(d<outer)t=1-(d-inner)/(outer-inner);
+    // ease for a softer falloff
+    t=t*t*(3-2*t);
+    el.style.setProperty("--uv",t.toFixed(3));
   });
+}
+function moveUV(e){
+  _uvLast=e;
+  if(!_uvQueued){_uvQueued=true;requestAnimationFrame(_uvApply);}
 }
 
 // wiring
