@@ -150,26 +150,29 @@
   html[data-theme="dark"] .uv-toggle{display:inline-block}
   html[data-theme="dark"].uv-on .uv-toggle{background:linear-gradient(180deg,rgba(154,108,255,.28),rgba(105,245,255,.16));border-color:rgba(165,250,255,.5);color:#e8ffff;box-shadow:0 0 14px rgba(126,74,255,.35)}
 
-  /* darkened room so the torch reads as a real beam */
-  #uvVignette{position:fixed;inset:0;z-index:9990;pointer-events:none;opacity:0;background:radial-gradient(circle var(--uv-r,260px) at var(--uv-x,50%) var(--uv-y,50%),transparent 0%,rgba(8,6,14,.34) 46%,rgba(6,4,12,.74) 100%);transition:opacity .35s ease}
+  /* darkened room so the torch reads as a real beam.
+     Static layer (painted once) — the moving brightness comes from the torch
+     blending over it, so there is no per-frame full-screen repaint. */
+  #uvVignette{position:fixed;inset:0;z-index:9990;pointer-events:none;opacity:0;background:radial-gradient(120% 90% at 50% 36%,rgba(10,8,20,.40),rgba(6,4,12,.62));transition:opacity .35s ease}
   html[data-theme="dark"].uv-on #uvVignette{opacity:1}
 
-  /* the torch itself — violet halo + cool near-white core, like a real blacklight */
-  #uvLight{position:fixed;left:50%;top:50%;width:300px;height:300px;border-radius:50%;pointer-events:none;z-index:9998;opacity:0;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:opacity .22s ease;filter:blur(.3px)}
+  /* the torch itself — violet halo + cool near-white core, like a real blacklight.
+     Moved with transform only (composited, no layout/paint per frame). */
+  #uvLight{position:fixed;left:0;top:0;width:330px;height:330px;border-radius:50%;pointer-events:none;z-index:9998;opacity:0;transform:translate3d(-9999px,-9999px,0) translate(-50%,-50%);mix-blend-mode:screen;will-change:transform,opacity;transition:opacity .22s ease}
   #uvLight::before,#uvLight::after{content:"";position:absolute;inset:0;border-radius:50%}
   /* outer UV-purple bloom */
-  #uvLight::before{background:radial-gradient(circle,rgba(150,110,255,.30) 0%,rgba(126,74,255,.20) 30%,rgba(96,60,210,.10) 52%,transparent 72%);animation:uvFlicker 3.4s ease-in-out infinite}
+  #uvLight::before{background:radial-gradient(circle,rgba(160,120,255,.40) 0%,rgba(126,74,255,.26) 30%,rgba(96,60,210,.13) 52%,transparent 72%);animation:uvFlicker 3.4s ease-in-out infinite}
   /* tight cool core */
-  #uvLight::after{background:radial-gradient(circle,rgba(214,255,255,.42) 0%,rgba(143,235,255,.26) 18%,rgba(120,160,255,.10) 36%,transparent 56%);box-shadow:0 0 36px rgba(120,200,255,.22),inset 0 0 40px rgba(160,235,255,.10)}
+  #uvLight::after{background:radial-gradient(circle,rgba(220,255,255,.52) 0%,rgba(150,238,255,.32) 18%,rgba(120,160,255,.13) 36%,transparent 56%)}
   html[data-theme="dark"].uv-on #uvLight{opacity:1}
-  @keyframes uvFlicker{0%,100%{opacity:.92;transform:scale(1)}43%{opacity:1;transform:scale(1.015)}55%{opacity:.85}62%{opacity:.97}}
+  @keyframes uvFlicker{0%,100%{opacity:.92}43%{opacity:1}55%{opacity:.86}62%{opacity:.97}}
 
   #uvReadout{display:none!important}
   .uv-secret-line{display:none!important}
   .uv-secret{display:none}
   /* invisible ink: present but unreadable until the torch sweeps over it.
      --uv (0..1) is set per-element by JS based on distance to the torch centre. */
-  html[data-theme="dark"] .uv-secret{display:inline;--uv:0;color:rgba(150,160,180,calc(.05 + .04*var(--uv)));-webkit-text-fill-color:rgba(150,160,180,calc(.05 + .04*var(--uv)));pointer-events:none;font-style:italic;font-weight:600;letter-spacing:.01em;text-shadow:none;transition:color .18s ease,-webkit-text-fill-color .18s ease,text-shadow .18s ease}
+  html[data-theme="dark"] .uv-secret{display:inline;--uv:0;text-transform:none;color:rgba(150,160,180,calc(.05 + .04*var(--uv)));-webkit-text-fill-color:rgba(150,160,180,calc(.05 + .04*var(--uv)));pointer-events:none;font-style:italic;font-weight:600;letter-spacing:.01em;text-shadow:none;transition:color .18s ease,-webkit-text-fill-color .18s ease,text-shadow .18s ease}
   html[data-theme="dark"].uv-on .uv-secret{
     color:rgba(225,255,255,calc(.12 + .88*var(--uv)));
     -webkit-text-fill-color:rgba(225,255,255,calc(.12 + .88*var(--uv)));
@@ -203,6 +206,8 @@
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
   html[data-theme="dark"] body::before{mix-blend-mode:screen;opacity:.18}
   html[data-theme="dark"].uv-on body::before{opacity:.06}
+  /* the grain is a full-screen blended layer — skip it on touch/mobile GPUs */
+  @media (hover:none),(max-width:600px){body::before{display:none}}
 
   /* warm ambient wash behind the layout */
   main{position:relative}
@@ -258,7 +263,7 @@
   <main>
     <section class="col">
       <div class="panel">
-        <div class="panel-head"><h2>Design what you're making</h2></div>
+        <div class="panel-head"><h2 data-uv="Pick the style first — every number on this page bends to it.">Design what you're making</h2></div>
         <div class="panel-body">
           <div class="styles" id="styles"></div>
           <p class="desc" id="desc"></p>
@@ -273,10 +278,10 @@
 
           <div class="field"><label>Total time from start to finish</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="totalHours" min="2" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="totalRec"></b></span></div></div>
 
-          <div class="field"><label>Your cooking temperature</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="oven" min="150" max="550" step="5" /><span class="suffix">°C</span></div><span class="rec">ideal <b id="ovenRec"></b></span></div><div class="mono" style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5">Enter the temperature you can actually bake at. If your oven can't reach the ideal, enter its max. If it can exceed the ideal, that's fine for thin styles, but not recommended for thicker styles.</div></div>
+          <div class="field"><label>Your cooking temperature</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="oven" min="150" max="550" step="5" /><span class="suffix">°C</span></div><span class="rec">ideal <b id="ovenRec"></b></span></div><div class="mono" data-uv="No pizza steel? A heavy cast-iron pan flipped upside down and preheated hard is the poor cook's stone." style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5">Enter the temperature you can actually bake at. If your oven can't reach the ideal, enter its max. If it can exceed the ideal, that's fine for thin styles, but not recommended for thicker styles.</div></div>
 
           <div class="accordion" id="accordion">
-            <button class="accordion-head" id="accToggle"><span class="left">Fine-tune the dough <span class="hint">— method &amp; recipe options</span></span><span class="chev">▼</span></button>
+            <button class="accordion-head" id="accToggle"><span class="left">Fine-tune the dough <span class="hint" data-uv="Most doughs fail on time and temperature long before they fail on a recipe.">— method &amp; recipe options</span></span><span class="chev">▼</span></button>
             <div class="accordion-body">
 
               <div class="field">
@@ -287,7 +292,7 @@
                 </div>
               </div>
               <p class="desc" id="methodBlurb" style="border-bottom:none;margin-bottom:8px"></p>
-              <div class="guide-note"><b>Steered, not wide-open:</b> this calculator gives control over useful dough variables, while avoiding method-mixing that creates confusion without improving the dough.</div>
+              <div class="guide-note" data-uv="Cold dough is just slow dough — the fridge buys you time, not flavour you didn't put in."><b>Steered, not wide-open:</b> this calculator gives control over useful dough variables, while avoiding method-mixing that creates confusion without improving the dough.</div>
 
               <div class="subgroup" id="prefGroup" style="display:none">
                 <div class="subgroup-title">Preferment</div>
@@ -315,7 +320,7 @@
 
               <div class="subgroup">
                 <div class="subgroup-title">Completing the dough</div>
-                <div class="mono" style="font-size:11px;color:var(--ink-soft);margin:-6px 0 14px;line-height:1.5">These set the <b>final dough</b> — the whole thing, preferment included. Hydration here is the finished dough's hydration, not just this stage.</div>
+                <div class="mono" data-uv="Keep salt off the yeast until they meet in the dough — dumped straight on top, salt stuns it." style="font-size:11px;color:var(--ink-soft);margin:-6px 0 14px;line-height:1.5">These set the <b>final dough</b> — the whole thing, preferment included. Hydration here is the finished dough's hydration, not just this stage.</div>
                 <div class="field"><label>Yeast type</label><select class="ctrl" id="yeastType">
                   <option value="instant">Instant dry</option><option value="active">Active dry</option><option value="fresh">Fresh</option>
                 </select></div>
@@ -335,7 +340,7 @@
 
     <section class="col col-out">
       <div class="panel">
-        <div class="panel-head"><h2>Your recipe</h2><span class="mono" id="recipeStyle" style="font-size:12px;color:var(--accent)"></span></div>
+        <div class="panel-head"><h2 data-uv="Numbers get you close; your hands and your eyes finish the dough.">Your recipe</h2><span class="mono" id="recipeStyle" style="font-size:12px;color:var(--accent)"></span></div>
         <div class="panel-body">
           <div class="totals" id="totalsBar">
             <div class="total-cell"><div class="v" id="tDough">—</div><div class="k">total dough</div></div>
@@ -374,7 +379,7 @@
     </section>
   </main>
   <div id="printRecipe" aria-hidden="true"></div>
-  <footer>Recommendations are starting points — change anything and the recipe follows. Built for cooks who like to tinker. ™ MPM inc.</footer>
+  <footer data-uv="Weigh everything in grams. Cups and spoons are how recipes quietly lie to you.">Recommendations are starting points — change anything and the recipe follows. Built for cooks who like to tinker. ™ MPM inc.</footer>
 
 <script>
 /* ============================================================
@@ -704,7 +709,7 @@ function buildMethod(ctx){
 
   if(!isTrad){
     let elapsedH=0;
-    s.push(`Dissolve all ${I.yeast}g yeast into all ${I.water}g water and leave 10 minutes.`+why("Yeast wakes up in water, not in dry flour — flour competes with it for moisture and slows it down. Ten minutes gets it active before it meets the flour."));
+    s.push(`Dissolve all ${I.yeast}g yeast into all ${I.water}g water and leave 10 minutes${yeastType==="instant"?" (instant yeast can also go straight into the flour — dissolving just guarantees an even start)":""}.`+why("Yeast wakes up in water, not in dry flour — flour competes with it for moisture and slows it down. Ten minutes gets it active before it meets the flour. Active dry and fresh yeast really do want this head start; instant dry is milled fine enough to skip it."));
     s.push(`Add all ${I.flour}g flour and the ${seasoningStr()} to the water and mix into a rough dough.`+why("Salt, oil and sugar slow gluten development, so in a longer ferment some bakers add them at the end. At room temperature the difference is small, and salt added now also keeps the fermentation steadier — so for this dough, all-in is fine."));
     s.push(`Knead by hand or machine for about 5 minutes, until the dough becomes smooth.`+why("Kneading builds the gluten network that traps gas and gives structure. A spiral or stand mixer develops gluten faster than hands — if mixing by hand, knead a little longer to reach the same smoothness."));
     elapsedH+=stages.bulk.val;
@@ -760,10 +765,9 @@ function setTheme(mode){
   if(theme !== "dark") setUV(false);
 }
 function initTheme(){
-  let saved=null;
-  try{saved=localStorage.getItem("doughTheme");}catch(e){}
-  // Light mode is the default. A saved user choice can still restore dark mode.
-  setTheme(saved === "dark" ? "dark" : "light");
+  // Always land in light mode. Dark is a per-session toggle and is intentionally
+  // NOT restored on reload, so every fresh visit opens light.
+  setTheme("light");
 }
 const advIds=["hydration","salt","oil","sugar"];
 let current="neapolitan", currentMethod="easy", mode="brief";
@@ -1063,7 +1067,6 @@ function saveRecipeText(){
 
 function clearUVReveal(){
   document.querySelectorAll(".uv-secret").forEach(el=>{
-    el.classList.remove("uv-revealed");
     el.style.setProperty("--uv","0");
   });
 }
@@ -1072,36 +1075,50 @@ function setUV(on){
   document.documentElement.classList.toggle("uv-on",active);
   const btn=$("uvToggle");
   if(btn)btn.textContent=active?"UV Search Light: On":"UV Search Light";
-  if(!active)clearUVReveal();
+  if(active){uvDirty=true;} else {clearUVReveal();}
 }
+
+/* --- UV reveal, optimised for mobile --- */
 let _uvLast=null,_uvQueued=false;
+let uvTargets=[],uvDirty=true;
+function refreshUVTargets(){
+  const nodes=document.querySelectorAll(".uv-secret");
+  uvTargets.length=0;
+  for(let i=0;i<nodes.length;i++){
+    const el=nodes[i],r=el.getBoundingClientRect();
+    // skip anything off-screen so we touch fewer nodes per frame
+    if(r.bottom<-200||r.top>innerHeight+200){el.style.setProperty("--uv","0");continue;}
+    uvTargets.push({el,l:r.left,t:r.top,rt:r.right,b:r.bottom});
+  }
+  uvDirty=false;
+}
 function _uvApply(){
   _uvQueued=false;
   const e=_uvLast; if(!e)return;
   const root=document.documentElement;
   const light=$("uvLight");
-  if(light){light.style.left=e.clientX+"px"; light.style.top=e.clientY+"px";}
-  // feed the vignette hole position so the dark room opens exactly under the torch
-  root.style.setProperty("--uv-x",e.clientX+"px");
-  root.style.setProperty("--uv-y",e.clientY+"px");
+  // transform-only move: composited, no layout/paint thrash
+  if(light)light.style.transform=`translate3d(${e.clientX}px,${e.clientY}px,0) translate(-50%,-50%)`;
   if(!root.classList.contains("uv-on")||root.dataset.theme!=="dark")return;
-  const inner=90, outer=190;   // full glow within inner px, fades to nothing by outer px
-  document.querySelectorAll(".uv-secret").forEach(el=>{
-    const r=el.getBoundingClientRect();
-    const dx=Math.max(r.left-e.clientX,0,e.clientX-r.right);
-    const dy=Math.max(r.top-e.clientY,0,e.clientY-r.bottom);
-    const d=Math.hypot(dx,dy);
-    let t=0;
-    if(d<=inner)t=1; else if(d<outer)t=1-(d-inner)/(outer-inner);
-    // ease for a softer falloff
-    t=t*t*(3-2*t);
-    el.style.setProperty("--uv",t.toFixed(3));
-  });
+  if(uvDirty)refreshUVTargets();          // measure rarely, read cache every frame
+  const inner=90,outer=190,span=outer-inner;
+  const x=e.clientX,y=e.clientY;
+  for(let i=0;i<uvTargets.length;i++){
+    const o=uvTargets[i];
+    const dx=Math.max(o.l-x,0,x-o.rt);
+    const dy=Math.max(o.t-y,0,y-o.b);
+    const d=Math.sqrt(dx*dx+dy*dy);
+    let t=d<=inner?1:(d<outer?1-(d-inner)/span:0);
+    if(t>0)t=t*t*(3-2*t);              // smoothstep falloff
+    o.el.style.setProperty("--uv",t.toFixed(3));
+  }
 }
 function moveUV(e){
+  // PointerEvent covers mouse + touch-drag; store coords, do the work in one rAF
   _uvLast=e;
   if(!_uvQueued){_uvQueued=true;requestAnimationFrame(_uvApply);}
 }
+function markUVDirty(){uvDirty=true;}
 
 // wiring
 ["qty","diameter","panL","panW","totalHours","oven","hydration","salt","oil","sugar","sBulk","sBall","sPreferment","mainYeast","prefYeast","prefHydration","poolishPct"].forEach(id=>{const el=$(id); if(el) el.addEventListener("change",()=>{protectInputs();refreshStageDefaults();render();});});
@@ -1135,9 +1152,11 @@ $("saveRecipeBtn").onclick=saveRecipeText;
 $("printRecipeBtn").onclick=()=>{render();window.print();};
 $("themeToggle").onclick=()=>setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
 $("uvToggle").onclick=()=>setUV(!document.documentElement.classList.contains("uv-on"));
-document.addEventListener("pointermove",moveUV);
+document.addEventListener("pointermove",moveUV,{passive:true});
 document.addEventListener("pointerleave",clearUVReveal);
 window.addEventListener("blur",clearUVReveal);
+window.addEventListener("scroll",markUVDirty,{passive:true});
+window.addEventListener("resize",markUVDirty,{passive:true});
 
 let prevIng={};
 function ingList(container, items){
@@ -1274,10 +1293,15 @@ function render(){
   nb.hidden=!$("recipeHelp").classList.contains("open");
   lastRecipeText=recipeText(r,steps);
   updatePrintRecipe(r,steps);
+  uvDirty=true;   // secret spans were re-created; remeasure on next sweep
 }
 function fmtHShort(h){if(h<1)return Math.round(h*60)+"m";if(h===Math.round(h))return h+"h";return h+"h";}
 
 initTheme();
+// scatter static hidden UV tips into elements carrying a data-uv attribute
+document.querySelectorAll("[data-uv]").forEach(el=>{
+  el.insertAdjacentHTML("beforeend",uvMarker(el.getAttribute("data-uv")));
+});
 setUV(false);
 $("recipeHelp").classList.remove("open");
 $("notesBlock").hidden=true;
