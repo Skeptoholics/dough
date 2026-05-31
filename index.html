@@ -77,6 +77,17 @@
   .note.warn{background:rgba(178,58,38,.1);color:#852b1c;border:1px solid rgba(178,58,38,.3)}
   .notes-block{margin-top:22px;padding-top:18px;border-top:1px dashed var(--line)}
   .notes-block .nt{font-size:13px;line-height:1.55;color:var(--ink-soft);font-style:italic;margin-bottom:8px}
+
+  .guide-note{margin:14px 0 18px;padding:13px 15px;border:1px solid rgba(192,73,47,.18);border-left:4px solid var(--accent);border-radius:11px;background:rgba(232,201,191,.18);font-size:13.5px;line-height:1.55;color:var(--ink-soft)}
+  .guide-note b{color:var(--ink);font-weight:600}
+  .micro-note{font-family:'Spline Sans Mono',monospace;font-size:11px;color:var(--ink-soft);line-height:1.5;margin-top:8px}
+  .style-btn span{opacity:.82}
+  .panel{backdrop-filter:saturate(105%)}
+  .brand h1{position:relative}
+  .brand h1:after{content:"";position:absolute;left:0;bottom:-8px;width:46px;height:3px;background:linear-gradient(90deg,var(--accent),var(--gold));border-radius:20px}
+  .rsection-head{display:inline-flex;align-items:center;gap:8px;padding:3px 8px;border-radius:999px;background:rgba(192,73,47,.08)}
+  .pcttable{box-shadow:inset 0 1px 0 rgba(255,255,255,.55)}
+
   /* recipe sections + ingredient list */
   .rsection{margin-bottom:20px}
   .rsection-head{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
@@ -98,7 +109,7 @@
 </head>
 <body>
   <header>
-    <div class="brand"><h1>Dough<span class="dot"></span></h1><span class="tag">pizza dough for pizzaholics</span></div>
+    <div class="brand"><h1>Dough<span class="dot"></span></h1><span class="tag">pizza doughs for pizzaholics</span></div>
     <span class="tag mono" style="font-size:12px">v1</span>
   </header>
   <main>
@@ -128,18 +139,19 @@
               <div class="field">
                 <label>Dough method</label>
                 <div class="method-pick">
-                  <button class="style-btn active" data-method="easy" id="mEasy">Easy<br><span style="font-weight:400;font-size:11px">all-in-one dough</span></button>
-                  <button class="style-btn" data-method="trad" id="mTrad">Traditional<br><span style="font-weight:400;font-size:11px">preferment · more time</span></button>
+                  <button class="style-btn active" data-method="easy" id="mEasy">Simple<br><span style="font-weight:400;font-size:11px">direct dough</span></button>
+                  <button class="style-btn" data-method="trad" id="mTrad">Preferment<br><span style="font-weight:400;font-size:11px">poolish or biga</span></button>
                 </div>
               </div>
               <p class="desc" id="methodBlurb" style="border-bottom:none;margin-bottom:8px"></p>
+              <div class="guide-note"><b>Steered, not wide-open:</b> this calculator gives control over useful dough variables, while avoiding method-mixing that creates confusion without improving the dough.</div>
 
               <div class="subgroup" id="prefGroup" style="display:none">
                 <div class="subgroup-title">Preferment</div>
                 <div class="field"><label>Type</label><select class="ctrl" id="preferment">
                   <option value="poolish">Poolish — liquid, aromatic</option>
                   <option value="biga">Biga — stiff, strong, nutty</option>
-                </select></div>
+                </select><div class="micro-note" id="prefTypeNote"></div></div>
                 <div class="field" id="poolishStyleField"><label>Poolish finish</label><select class="ctrl" id="poolishStyle">
                   <option value="stiff">Chewier dough — add flour first</option>
                   <option value="wet">Softer dough — add water first</option>
@@ -147,7 +159,7 @@
                 <div class="field" id="poolishPctField"><label>Poolish amount (% of total flour)</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="poolishPct" min="10" max="100" step="5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="poolishPctRec"></b></span></div><div class="mono" style="font-size:11px;color:var(--ink-soft);margin-top:6px;line-height:1.5">This is a share of the <b>total</b> flour, not the flour added later. At 30%, the poolish holds 30% of all the flour and the rest goes in when completing the dough.</div></div>
                 <div class="field"><label>Preferment hydration</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="prefHydration" min="40" max="120" step="1" /><span class="suffix">%</span></div><span class="rec">recommended <b id="prefHydrationRec"></b></span></div></div>
                 <div class="field"><label>Preferment time</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sPreferment" min="1" step="1" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sPrefermentRec"></b></span></div></div>
-                <div class="field" style="margin-bottom:0"><label>Preferment yeast</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="prefYeast" min="0" max="3" step="0.01" /><span class="suffix">%</span></div><span class="rec">auto <b id="prefYeastRec"></b></span></div></div>
+                <div class="field" style="margin-bottom:0"><label>Preferment yeast</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="prefYeast" min="0" max="3" step="0.01" /><span class="suffix">%</span></div><span class="rec">starting point <b id="prefYeastRec"></b></span></div></div>
               </div>
 
               <div class="subgroup">
@@ -155,6 +167,7 @@
                 <div class="field"><label>Bulk ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBulk" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sBulkRec"></b></span></div></div>
                 <div class="field" style="margin-bottom:0"><label>Ball ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBall" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sBallRec"></b></span></div></div>
                 <div class="calc-total" id="calcTotal"></div>
+                <div class="micro-note">Times are targets, not laws. Dough is ready when it has expanded, relaxed, and become easier to stretch. Cold rooms slow it down; hot rooms speed it up.</div>
               </div>
 
               <div class="subgroup">
@@ -164,7 +177,7 @@
                   <option value="instant">Instant dry</option><option value="active">Active dry</option><option value="fresh">Fresh</option>
                 </select></div>
                 <div class="field"><label>Hydration</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="hydration" min="40" max="100" step="0.5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="hydrationRec"></b></span></div></div>
-                <div class="field"><label id="mainYeastLabel">Yeast</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="mainYeast" min="0" max="5" step="0.01" /><span class="suffix">%</span></div><span class="rec">recommended <b id="mainYeastRec"></b></span></div></div>
+                <div class="field"><label id="mainYeastLabel">Yeast</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="mainYeast" min="0" max="5" step="0.01" /><span class="suffix">%</span></div><span class="rec">starting point <b id="mainYeastRec"></b></span></div></div>
                 <div class="field"><label>Salt</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="salt" min="0" max="6" step="0.1" /><span class="suffix">%</span></div><span class="rec">recommended <b id="saltRec"></b></span></div></div>
                 <div class="field"><label>Oil</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="oil" min="0" max="15" step="0.5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="oilRec"></b></span></div></div>
                 <div class="field" style="margin-bottom:0"><label>Sugar</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sugar" min="0" max="8" step="0.5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="sugarRec"></b></span></div></div>
@@ -204,7 +217,7 @@
       </div>
     </section>
   </main>
-  <footer>Recommendations are starting points — change anything and the recipe follows. Built for the cooks, by cooks, who like to tinker. tm MPM inc.</footer>
+  <footer>Recommendations are starting points — change anything and the recipe follows. Built for cooks who like to tinker. ™ MPM inc.</footer>
 
 <script>
 /* ============================================================
@@ -215,33 +228,33 @@
 
 /* ============================================================
    DOUGH ENGINE v4 — portable framework (pure logic, no UI)
-   Yeast is now a USER INPUT (recommended from time + type).
+   Yeast is now a USER INPUT (starting point from time + type).
    Two methods (Easy, Traditional). Room temperature only.
    ============================================================ */
 
 /* ============================================================
    DOUGH ENGINE v4 — portable framework (pure logic, no UI)
-   Yeast is now a USER INPUT (recommended from time + type).
+   Yeast is now a USER INPUT (starting point from time + type).
    Two methods (Easy, Traditional). Room temperature only.
    ============================================================ */
 
 const STYLES = {
   neapolitan:{name:"Neapolitan",shape:"round",density:2.39,defaultSize:12,hydration:58,salt:2.5,oil:0,sugar:0,
     bake:{min:375,max:450,idealMin:400},
-    shapeStep:"Stretch each ball by hand, starting from the middle and working outward. Take care not to flatten the rim — that's what gives the puffy, blistered crust.",
-    description:"Neapolitan pizza has a very thin, soft centre and a large, puffy, blistered border. It uses minimal toppings, usually just simple tomato, mozzarella, basil, and olive oil. The base is soft, lightly chewy, and often slightly wet in the centre. It is baked extremely hot and very fast, usually with visible charring."},
+    shapeStep:"Stretch each ball by hand from the centre outward. Do not flatten the rim; that rim becomes the puffy, blistered crust.",
+    description:"Neapolitan pizza is a small, very thin pizza with a soft centre and a large, puffy, blistered rim. It works best with minimal toppings: tomato, mozzarella, basil, and olive oil. The crust should be soft, lightly chewy, and sometimes slightly wet in the centre. It needs very high heat and a very fast bake."},
   ny:{name:"New York",shape:"round",density:3.2,defaultSize:16,hydration:62,salt:2.5,oil:2,sugar:1,
     bake:{min:375,max:450,idealMin:375},
-    shapeStep:"Stretch each ball by hand to an even, flat round. New York style is uniformly flat, so you can use a rolling pin if you prefer.",
-    description:"New York pizza is typically a large, flat, thin pizza with a narrow, low border, moderate sauce, moderate cheese, often having a large variety of minimal toppings. The sauce is often slightly sweeter than other styles. The base should be crisp, flexible, and chewy, with slices large enough to fold lengthways when eaten. It is baked hot and fast."},
+    shapeStep:"Stretch each ball into an even, flat round with a low border. A rolling pin can be used lightly if you want a flatter, more uniform base.",
+    description:"New York pizza is a large, thin pizza with a low, narrow border and slices big enough to fold. It usually has moderate sauce, moderate cheese, and restrained toppings. The base should be crisp underneath, flexible in the hand, and chewy through the bite. It bakes hot and fast, but is more forgiving than Neapolitan."},
   detroit:{name:"Detroit",shape:"rectangle",density:6.0,defaultLength:12,defaultWidth:8,hydration:65,salt:2.8,oil:2,sugar:0,
     bake:{min:250,max:350,idealMin:250},
-    shapeStep:"Press the dough into a well-oiled rectangular pan, pushing it to the edges and corners. Detroit style takes plenty of toppings and cheese to the edges.",
-    description:"Detroit pizza is typically a rectangular, thick pan pizza with a light, airy interior and a crisp, fried bottom and edges. Cheese is spread to the edges of the pan, creating a caramelised cheese crust. Sauce is often applied on top, sometimes in stripes, either before or after baking. It is more structured and bread-like than thin pizza styles and often has a generous amount of toppings."},
+    shapeStep:"Press the dough into a well-oiled rectangular pan, pushing it toward the edges and corners. Cheese can go right to the edge so it fries into the crust.",
+    description:"Detroit pizza is a thick rectangular pan pizza with a light, airy interior, a crisp fried base, and caramelised cheese edges. Cheese is pushed to the edge of the pan so it fries against the metal. Sauce is often added on top, either before or after baking. It handles heavier toppings better than thin styles, but still needs control so the crumb does not collapse."},
   focaccia:{name:"Focaccia",shape:"rectangle",density:6.0,defaultLength:13,defaultWidth:9,hydration:80,salt:3.0,oil:5,sugar:0,
     bake:{min:200,max:220,idealMin:200},
-    shapeStep:"Spread the dough into a well-oiled pan toward the edges, then dimple the whole surface deeply with your fingertips. Add toppings and bake.",
-    description:"Focaccia is typically a very thick and very airy, olive-oil-rich baked flatbread with a dimpled surface and an open, soft crumb. The exterior should be golden and lightly crisp, while the inside remains moist and tender. It is usually topped simply with salt, herbs, olive oil, or very minimal pizza-like toppings, sometimes before or after baking, and is really more bread-forward than pizza."}
+    shapeStep:"Spread the dough into a well-oiled pan, rest if it resists, then dimple deeply with your fingertips. Add simple toppings and bake.",
+    description:"Focaccia is a thick, oil-rich flatbread with a dimpled surface, open crumb, crisp golden exterior, and moist tender interior. It is bread-forward rather than pizza-forward. Keep toppings simple: salt, herbs, olive oil, or light pizza-style toppings."}
 };
 const STYLE_ORDER=["neapolitan","ny","detroit","focaccia"];
 
@@ -405,7 +418,7 @@ function calculate(opts){
   const totalTime = isTrad ? (stages.preferment.val+stages.bulk.val+stages.ball.val) : (stages.bulk.val+stages.ball.val);
 
   return {
-    styleKey,styleName:base.name,methodKey,methodName:isTrad?"Traditional":"Easy",
+    styleKey,styleName:base.name,methodKey,methodName:isTrad?"Preferment":"Simple",
     shape:base.shape,size:sz,quantity,percentages:p,
     yeastType,yeastTypeName:YEAST[yeastType].name,
     isTrad,preferment:prefermentObj,poolishStyle,
@@ -455,7 +468,7 @@ function buildMethod(ctx){
     s.push(`Add all ${I.flour}g flour and the ${seasoningStr()} to the water and mix into a rough dough.`+why("Salt, oil and sugar slow gluten development, so in a longer ferment some bakers add them at the end. At room temperature the difference is small, and salt added now also keeps the fermentation steadier — so for this dough, all-in is fine."));
     s.push(`Knead by hand or machine for about 5 minutes, until the dough becomes smooth.`+why("Kneading builds the gluten network that traps gas and gives structure. A spiral or stand mixer develops gluten faster than hands — if mixing by hand, knead a little longer to reach the same smoothness."));
     elapsedH+=stages.bulk.val;
-    s.push(`Cover and rest in a warm place for the bulk ferment — about ${fmtH(stages.bulk.val)}.`+(expanded?elapsed(elapsedH):"")+why("This is the first and longest stretch of fermentation. The whole mass ferments together, building flavour and gas. Too short and the dough is bland and dense; too long and the yeast starts to exhaust and the dough can over-soften."));
+    s.push(`Cover and rest somewhere comfortable, not cold, for the bulk ferment — about ${fmtH(stages.bulk.val)}.`+(expanded?elapsed(elapsedH):"")+why("This is the first and longest stretch of fermentation. The whole mass ferments together, building flavour and gas. Too short and the dough is bland and dense; too long and the yeast starts to exhaust and the dough can over-soften."));
     s.push(`Divide the dough into ${quantity} ${ballWord} and shape each into a tight ball. Weighing the ${ballWord} is recommended for even sizes.`+why("Tightening into balls pushes the gas out and resets the gluten, so the dough builds fresh structure for its final rise."));
     elapsedH+=stages.ball.val;
     s.push(`Cover the ${ballWord} and rest for the ball ferment — about ${fmtH(stages.ball.val)}.`+(expanded?elapsed(elapsedH):"")+why("The final proof relaxes the dough so it stretches without tearing and puffs in the oven. Under-proofed dough fights back and stays tight; over-proofed dough goes slack and won't hold its shape."));
@@ -484,7 +497,7 @@ function buildMethod(ctx){
   }
 
   elapsedH+=stages.bulk.val;
-  s.push(`Cover and rest in a warm place for the bulk ferment — about ${fmtH(stages.bulk.val)}.`+(expanded?elapsed(elapsedH):"")+why(" The preferment already did most of the fermenting, so the final dough needs only a short bulk to come together."));
+  s.push(`Cover and rest somewhere comfortable, not cold, for the bulk ferment — about ${fmtH(stages.bulk.val)}.`+(expanded?elapsed(elapsedH):"")+why(" The preferment already did most of the fermenting, so the final dough needs only a short bulk to come together."));
   s.push(`Divide into ${quantity} ${ballWord} and shape each into a tight ball. Weighing the ${ballWord} is recommended.`);
   elapsedH+=stages.ball.val;
   s.push(`Cover the ${ballWord} and rest for the ball ferment — about ${fmtH(stages.ball.val)}.`+(expanded?elapsed(elapsedH):"")+why(" A final short proof to relax the balls before shaping."));
@@ -512,8 +525,8 @@ let stageTouched={};       // stage time overrides
 let prefTouched={};        // preferment hydration/yeast overrides
 
 const METHOD_BLURB={
-  easy:"One-step dough — all ingredients mixed together. Simple and flexible; the time you give it does the rest.",
-  trad:"Uses a preferment (biga or poolish) made ahead, then mixed into the final dough. More steps, more developed flavour and structure."
+  easy:"Direct dough — everything mixed into one dough. Simple, flexible, and easiest to control. Good when you want reliable dough without a separate preferment.",
+  trad:"Uses a poolish or biga made ahead, then completed into the final dough. More planning, more flavour, and more structure."
 };
 
 const stylesEl=$("styles");
@@ -596,6 +609,11 @@ function syncMethodUI(){
   $("prefGroup").style.display=currentMethod==="trad"?"":"none";
   $("poolishStyleField").style.display=$("preferment").value==="poolish"?"":"none";
   if($("poolishPctField"))$("poolishPctField").style.display=$("preferment").value==="poolish"?"":"none";
+  if($("prefTypeNote")){
+    $("prefTypeNote").textContent = $("preferment").value==="biga"
+      ? "In this calculator, biga uses all the flour by design. The final mix hydrates, seasons, and develops the dough rather than adding fresh flour."
+      : "Poolish uses part of the total flour, then the dough is completed with the remaining flour. This keeps poolish and biga cleanly distinct.";
+  }
 }
 
 function buildOpts(){
