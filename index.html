@@ -165,7 +165,7 @@
 <body>
   <header>
     <div class="brand"><h1>Dough<span class="dot"></span></h1><span class="tag">pizza doughs for pizzaholics</span></div>
-    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><span class="tag mono" style="font-size:12px">v1.2</span></div>
+    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><span class="tag mono" style="font-size:12px">v1.3</span></div>
   </header>
   <main>
     <section class="col">
@@ -220,7 +220,7 @@
               <div class="subgroup">
                 <div class="subgroup-title">Fermentation times</div>
                 <div class="field"><label>Bulk ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBulk" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sBulkRec"></b></span></div></div>
-                <div class="field" style="margin-bottom:0"><label>Ball ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBall" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sBallRec"></b></span></div></div>
+                <div class="field" style="margin-bottom:0"><label id="finalProofLabel">Ball ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBall" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sBallRec"></b></span></div></div>
                 <div class="calc-total" id="calcTotal"></div>
                 <div class="micro-note">Times are targets, not laws. Dough is ready when it has expanded, relaxed, and become easier to stretch. Cold rooms slow it down; hot rooms speed it up.</div>
               </div>
@@ -509,6 +509,12 @@ function buildMethod(ctx){
   const {base,isTrad,p,prefermentObj,poolishStyle,yeastType,stages,quantity,styleKey,expanded,ingredients,stageAmounts,ovenTemp,cookTimeStr}=ctx;
   const s=[];const hasOil=p.oil>0,hasSugar=p.sugar>0;
   const ballWord=quantity===1?"ball":"balls";
+  const panWord=quantity===1?"pan":"pans";
+  const portionWord=quantity===1?"portion":"portions";
+  const isPanStyle = styleKey==="detroit" || styleKey==="focaccia";
+  const isDetroit = styleKey==="detroit";
+  const isFocaccia = styleKey==="focaccia";
+
   // final baking step (always last)
   function bakeStep(){
     const t=ovenTemp;
@@ -530,6 +536,36 @@ function buildMethod(ctx){
     return parts.slice(0,-1).join(", ")+" and "+parts[parts.length-1];
   }
 
+  function finalProofSteps(elapsedH){
+    if(!isPanStyle){
+      s.push(`Divide the dough into ${quantity} ${ballWord} and shape each into a tight ball. Weighing the ${ballWord} is recommended for even sizes.`+why("Tight balls give round pizzas an even final rise and make stretching more predictable."));
+      elapsedH+=stages.ball.val;
+      s.push(`Cover the ${ballWord} and rest for the ball ferment — about ${fmtH(stages.ball.val)}.`+(expanded?elapsed(elapsedH):"")+why("The final proof relaxes the dough so it stretches without tearing and puffs in the oven. Under-proofed dough fights back and stays tight; over-proofed dough goes slack and won't hold its shape."));
+      s.push(base.shapeStep);
+      return elapsedH;
+    }
+
+    // Pan styles: the final proof should happen in the pan, not as loose dough balls.
+    s.push(`Oil the ${panWord} well. Divide the dough into ${quantity} ${portionWord} if needed, then transfer the dough into the ${panWord}.`+why("For pan styles, the pan is part of the method. The dough should relax and proof where it will bake."));
+
+    if(isDetroit){
+      s.push(`Gently press the dough partway toward the edges and corners. If it resists, stop — it will spread more easily after the pan proof.`+why("Forcing tight dough tears gluten and knocks out too much gas. Rest does the work."));
+      elapsedH+=stages.ball.val;
+      s.push(`Cover and pan proof for about ${fmtH(stages.ball.val)}, until puffy, relaxed, and easier to press.`+(expanded?elapsed(elapsedH):"")+why("Detroit needs a panned final proof so the dough can rise into the pan structure and fry against the metal during baking."));
+      s.push(`Press the dough gently to the corners if needed. Add cheese right to the edges, then add sauce and toppings as preferred.`+why("Cheese at the edge fries against the pan and creates the caramelised Detroit crust."));
+      return elapsedH;
+    }
+
+    if(isFocaccia){
+      s.push(`Gently spread the dough partway toward the edges. If it resists, stop — do not force it.`+why("High-hydration focaccia dough stretches best in stages. Rest prevents tearing and keeps gas in the dough."));
+      elapsedH+=stages.ball.val;
+      s.push(`Cover and pan proof for about ${fmtH(stages.ball.val)}, until puffy, relaxed, and visibly gassy.`+(expanded?elapsed(elapsedH):"")+why("Focaccia's final rise belongs in the pan. This gives the bread its open crumb and lets the dough fill the pan without being forced."));
+      s.push(`Drizzle with oil, dimple deeply with oiled fingertips, add simple toppings, and bake.`+why("Dimples trap oil and toppings while preserving the gas that gives focaccia its light interior."));
+      return elapsedH;
+    }
+    return elapsedH;
+  }
+
   if(!isTrad){
     let elapsedH=0;
     s.push(`Dissolve all ${I.yeast}g yeast into all ${I.water}g water and leave 10 minutes.`+why("Yeast wakes up in water, not in dry flour — flour competes with it for moisture and slows it down. Ten minutes gets it active before it meets the flour."));
@@ -537,10 +573,7 @@ function buildMethod(ctx){
     s.push(`Knead by hand or machine for about 5 minutes, until the dough becomes smooth.`+why("Kneading builds the gluten network that traps gas and gives structure. A spiral or stand mixer develops gluten faster than hands — if mixing by hand, knead a little longer to reach the same smoothness."));
     elapsedH+=stages.bulk.val;
     s.push(`Cover and rest somewhere comfortable, not cold, for the bulk ferment — about ${fmtH(stages.bulk.val)}.`+(expanded?elapsed(elapsedH):"")+why("This is the first and longest stretch of fermentation. The whole mass ferments together, building flavour and gas. Too short and the dough is bland and dense; too long and the yeast starts to exhaust and the dough can over-soften."));
-    s.push(`Divide the dough into ${quantity} ${ballWord} and shape each into a tight ball. Weighing the ${ballWord} is recommended for even sizes.`+why("Tightening into balls pushes the gas out and resets the gluten, so the dough builds fresh structure for its final rise."));
-    elapsedH+=stages.ball.val;
-    s.push(`Cover the ${ballWord} and rest for the ball ferment — about ${fmtH(stages.ball.val)}.`+(expanded?elapsed(elapsedH):"")+why("The final proof relaxes the dough so it stretches without tearing and puffs in the oven. Under-proofed dough fights back and stays tight; over-proofed dough goes slack and won't hold its shape."));
-    s.push(base.shapeStep);
+    finalProofSteps(elapsedH);
     s.push(bakeStep());
     return s;
   }
@@ -566,10 +599,7 @@ function buildMethod(ctx){
 
   elapsedH+=stages.bulk.val;
   s.push(`Cover and rest somewhere comfortable, not cold, for the bulk ferment — about ${fmtH(stages.bulk.val)}.`+(expanded?elapsed(elapsedH):"")+why(" The preferment already did most of the fermenting, so the final dough needs only a short bulk to come together."));
-  s.push(`Divide into ${quantity} ${ballWord} and shape each into a tight ball. Weighing the ${ballWord} is recommended.`);
-  elapsedH+=stages.ball.val;
-  s.push(`Cover the ${ballWord} and rest for the ball ferment — about ${fmtH(stages.ball.val)}.`+(expanded?elapsed(elapsedH):"")+why(" A final short proof to relax the balls before shaping."));
-  s.push(base.shapeStep);
+  finalProofSteps(elapsedH);
   s.push(bakeStep());
   return s;
 }
@@ -619,7 +649,7 @@ const STYLE_GUIDANCE={
 const TROUBLESHOOTING=[
   ["Dough too sticky","Reduce hydration next time, or handle with lightly oiled hands."],
   ["Dough tears","Rest it longer before stretching so the gluten can relax."],
-  ["Dough won't stretch","Give the balls more final rest time."],
+  ["Dough won't stretch","Give the dough more final rest time before stretching or pressing."],
   ["Dough collapsed","Use less yeast, shorten the ferment, or use stronger flour."],
   ["Base pale or soft","Increase bottom heat. Use a stone, steel, or hotter pan."],
   ["Top burns before base cooks","Lower the rack, reduce toppings, or increase bottom heat." ]
@@ -927,6 +957,7 @@ function render(){
   $("tTime").textContent=fmtHShort(r.totalTime);
   $("tBall").textContent=r.totals.ballWeight+"g";
   $("tBallK").textContent=s.shape==="round"?"per ball":"per pan";
+  if($("finalProofLabel"))$("finalProofLabel").textContent=(current==="detroit"||current==="focaccia")?"Pan proof":"Ball ferment";
 
   $("methodTag").textContent=r.methodName+" · "+r.quantity+" × "+(s.shape==="round"?(r.size.diameter+'" ball'):(r.size.length+"×"+r.size.width+'" pan'))+(r.isTrad?" · "+r.preferment.name:"");
 
