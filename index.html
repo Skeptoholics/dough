@@ -104,6 +104,33 @@
   .pcttable .pt-title{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft);font-weight:600;margin-bottom:8px}
   .pcttable .pt-row{display:flex;justify-content:space-between;font-family:'Spline Sans Mono',monospace;font-size:12.5px;padding:3px 0;color:var(--ink)}
   .pcttable .pt-row .pv{color:var(--ink-soft)}
+
+  .export-row{display:flex;justify-content:flex-end;margin:-4px 0 18px}
+  .print-btn{font-family:'Spline Sans Mono',monospace;font-size:12px;border:1px solid var(--accent-soft);background:#fff;color:var(--accent);border-radius:9px;padding:8px 12px;cursor:pointer;box-shadow:0 1px 2px rgba(42,36,29,.03)}
+  .print-btn:hover{background:rgba(232,201,191,.22);border-color:var(--accent)}
+  .guide-card{margin-top:18px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.62);overflow:hidden}
+  .guide-card h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-weight:600;padding:13px 15px 10px;border-bottom:1px solid var(--line);background:rgba(224,215,199,.12)}
+  .guide-card .guide-body{padding:13px 15px;font-size:13.5px;line-height:1.55;color:var(--ink-soft)}
+  .guide-card ul{padding-left:18px}.guide-card li{margin:5px 0}
+  .trouble{width:100%;border-collapse:collapse;font-size:13.2px;color:var(--ink)}
+  .trouble td{padding:7px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  .trouble tr:last-child td{border-bottom:none}.trouble td:first-child{font-weight:600;padding-right:12px;width:38%}
+  #printRecipe{display:none}
+  @media print{
+    body{background:#fff!important;color:#111!important;font-family:Georgia,serif!important}
+    header,main,footer{display:none!important}
+    #printRecipe{display:block!important;padding:24px 30px;max-width:760px;margin:0 auto}
+    #printRecipe h1{font-size:28px;margin-bottom:4px}
+    #printRecipe .meta{font-size:13px;color:#555;margin-bottom:18px}
+    #printRecipe h2{font-size:15px;text-transform:uppercase;letter-spacing:.08em;margin:20px 0 8px;border-bottom:1px solid #ddd;padding-bottom:5px}
+    #printRecipe h3{font-size:14px;margin:12px 0 4px}
+    #printRecipe table{width:100%;border-collapse:collapse;margin:6px 0 12px}
+    #printRecipe td{border-bottom:1px solid #ddd;padding:6px 0;font-size:14px}
+    #printRecipe td:last-child{text-align:right;font-family:monospace}
+    #printRecipe ol{padding-left:22px;font-size:14px;line-height:1.45}
+    #printRecipe li{margin-bottom:7px}
+    #printRecipe .small{font-size:12px;color:#555;line-height:1.45}
+  }
   footer{text-align:center;padding:0 40px 40px;color:var(--ink-soft);font-size:12.5px;font-style:italic}
 </style>
 </head>
@@ -200,6 +227,7 @@
             <div class="total-cell"><div class="v" id="tBall">—</div><div class="k" id="tBallK">per ball</div></div>
           </div>
           <div class="method-tag" id="methodTag"></div>
+          <div class="export-row"><button class="print-btn" id="printRecipeBtn">Print clean recipe</button></div>
 
           <div id="recipeSections"></div>
 
@@ -217,6 +245,7 @@
       </div>
     </section>
   </main>
+  <div id="printRecipe" aria-hidden="true"></div>
   <footer>Recommendations are starting points — change anything and the recipe follows. Built for cooks who like to tinker. ™ MPM inc.</footer>
 
 <script>
@@ -525,9 +554,24 @@ let stageTouched={};       // stage time overrides
 let prefTouched={};        // preferment hydration/yeast overrides
 
 const METHOD_BLURB={
-  easy:"Direct dough — everything mixed into one dough. Simple, flexible, and easiest to control. Good when you want reliable dough without a separate preferment.",
-  trad:"Uses a poolish or biga made ahead, then completed into the final dough. More planning, more flavour, and more structure."
+  easy:"Direct dough — everything mixed into one dough. Simple, flexible, and easiest to control. Good when reliability matters.",
+  trad:"Uses a poolish or biga made ahead, then completed into the final dough. Best when you are planning ahead for more flavour and structure."
 };
+
+const STYLE_GUIDANCE={
+  neapolitan:{best:"Best for very hot ovens, minimal toppings, a soft centre, and a puffy blistered rim.",topping:"Keep toppings minimal. Too much sauce, cheese, or wet topping overloads the thin base before the crust can bake properly."},
+  ny:{best:"Best for foldable slices, home-oven adaptation, moderate toppings, and a crisp but flexible base.",topping:"Use moderate sauce and cheese. Keep toppings restrained enough that the slice still folds without collapsing."},
+  detroit:{best:"Best for pan baking, crisp cheese edges, a fried base, and a thicker structure that can carry more topping.",topping:"It tolerates heavier topping than thin pizza, but wet toppings still need control or the crumb can collapse."},
+  focaccia:{best:"Best when the bread is the point: oil-rich crumb, deep dimples, simple toppings, and a moist interior.",topping:"Keep it bread-forward. Toppings should support the focaccia, not bury it."}
+};
+const TROUBLESHOOTING=[
+  ["Dough too sticky","Reduce hydration next time, or handle with lightly oiled hands."],
+  ["Dough tears","Rest it longer before stretching so the gluten can relax."],
+  ["Dough won't stretch","Give the balls more final rest time."],
+  ["Dough collapsed","Use less yeast, shorten the ferment, or use stronger flour."],
+  ["Base pale or soft","Increase bottom heat. Use a stone, steel, or hotter pan."],
+  ["Top burns before base cooks","Lower the rack, reduce toppings, or increase bottom heat." ]
+];
 
 const stylesEl=$("styles");
 STYLE_ORDER.forEach(k=>{const b=document.createElement("button");b.className="style-btn"+(k===current?" active":"");b.textContent=STYLES[k].name;b.onclick=()=>selectStyle(k);stylesEl.appendChild(b);});
@@ -652,6 +696,7 @@ $("accToggle").onclick=()=>$("accordion").classList.toggle("open");
 $("reset").onclick=()=>{const o=$("accordion").classList.contains("open");selectStyle(current);if(o)$("accordion").classList.add("open");};
 $("briefBtn").onclick=()=>{mode="brief";$("briefBtn").classList.add("on");$("expandBtn").classList.remove("on");render();};
 $("expandBtn").onclick=()=>{mode="expanded";$("expandBtn").classList.add("on");$("briefBtn").classList.remove("on");render();};
+$("printRecipeBtn").onclick=()=>{render();window.print();};
 
 let prevIng={};
 function ingList(container, items){
@@ -665,6 +710,41 @@ function ingList(container, items){
     ul.appendChild(li);prevIng[key]=val;
   });
   container.appendChild(ul);
+}
+
+
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));}
+function renderGuidance(styleKey){
+  const g=STYLE_GUIDANCE[styleKey];
+  let troubleRows=TROUBLESHOOTING.map(([p,c])=>`<tr><td>${esc(p)}</td><td>${esc(c)}</td></tr>`).join("");
+  return `
+    <div class="guide-card"><h3>How to judge it</h3><div class="guide-body">Dough is biological, not mechanical. Use the numbers to get close, then judge the dough: expanded, relaxed, slightly gassy, and easier to stretch.</div></div>
+    <div class="guide-card"><h3>Best used for</h3><div class="guide-body"><ul><li>${esc(g.best)}</li><li>${esc(g.topping)}</li></ul></div></div>
+    <div class="guide-card"><h3>Flour warning</h3><div class="guide-body">Weak flour may struggle with long fermentation or high hydration. If the dough spreads, tears, or collapses, shorten the ferment or lower hydration.</div></div>
+    <div class="guide-card"><h3>Quick fixes</h3><div class="guide-body"><table class="trouble">${troubleRows}</table></div></div>`;
+}
+function updatePrintRecipe(r,steps){
+  const yt=r.yeastTypeName.toLowerCase();
+  let html=`<h1>${esc(r.styleName)} dough</h1><div class="meta">${esc(r.methodName)} · ${esc(r.quantity)} × ${r.shape==="round"?esc(r.size.diameter+' inch ball'):esc(r.size.length+'×'+r.size.width+' inch pan')} · total dough ${r.totals.doughWeight}g · total time ${fmtHShort(r.totalTime)}</div>`;
+  html+=`<h2>Ingredients</h2>`;
+  if(r.isTrad){
+    const pf=r.preferment;
+    html+=`<h3>Step 1 — ${esc(pf.name)}</h3><div class="small">Ferment ${esc(fmtH(pf.hours))} at room temperature · ${pf.hydration}% hydration</div><table><tr><td>Flour</td><td>${pf.flour}g</td></tr><tr><td>Water</td><td>${pf.water}g</td></tr><tr><td>Yeast (${esc(yt)})</td><td>${pf.yeast}g</td></tr></table>`;
+    html+=`<h3>Step 2 — Final dough</h3><div class="small">Add to the ${esc(pf.name.toLowerCase())}</div><table>`;
+    if(r.stageAmounts.flour.final>0)html+=`<tr><td>Flour</td><td>${r.stageAmounts.flour.final}g</td></tr>`;
+    html+=`<tr><td>Water</td><td>${r.stageAmounts.water.final}g</td></tr><tr><td>Salt</td><td>${r.ingredients.salt}g</td></tr><tr><td>Yeast (${esc(yt)})</td><td>${r.stageAmounts.finalYeast}g</td></tr>`;
+    if(r.ingredients.oil!=null)html+=`<tr><td>Oil</td><td>${r.ingredients.oil}g</td></tr>`;
+    if(r.ingredients.sugar!=null)html+=`<tr><td>Sugar</td><td>${r.ingredients.sugar}g</td></tr>`;
+    html+=`</table>`;
+  }else{
+    html+=`<table><tr><td>Flour</td><td>${r.ingredients.flour}g</td></tr><tr><td>Water</td><td>${r.ingredients.water}g</td></tr><tr><td>Salt</td><td>${r.ingredients.salt}g</td></tr><tr><td>Yeast (${esc(yt)})</td><td>${r.ingredients.yeast}g</td></tr>`;
+    if(r.ingredients.oil!=null)html+=`<tr><td>Oil</td><td>${r.ingredients.oil}g</td></tr>`;
+    if(r.ingredients.sugar!=null)html+=`<tr><td>Sugar</td><td>${r.ingredients.sugar}g</td></tr>`;
+    html+=`</table>`;
+  }
+  html+=`<h2>Method</h2><ol>${steps.map(st=>`<li>${esc(st)}</li>`).join("")}</ol>`;
+  html+=`<h2>Notes</h2><div class="small">Dough is ready by condition, not just by clock: expanded, relaxed, slightly gassy, and easier to stretch. Use less topping on thin styles; use more bottom heat if the base is pale or soft.</div>`;
+  $("printRecipe").innerHTML=html;
 }
 
 function render(){
@@ -736,8 +816,10 @@ function render(){
   const fn=$("flagNotes");fn.innerHTML="";
   r.flags.forEach(f=>{const d=document.createElement("div");d.className="note warn";d.innerHTML=`<span class="icon">!</span><span>${f.msg}</span>`;fn.appendChild(d);});
 
-  // (baking guidance now lives in the final method step, so no duplicate note here)
-  const nb=$("notesBlock");nb.innerHTML="";
+  // practical guidance
+  const nb=$("notesBlock");
+  nb.innerHTML=renderGuidance(current);
+  updatePrintRecipe(r,steps);
 }
 function fmtHShort(h){if(h<1)return Math.round(h*60)+"m";if(h===Math.round(h))return h+"h";return h+"h";}
 
