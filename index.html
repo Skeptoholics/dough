@@ -143,6 +143,20 @@
   html[data-theme="dark"] .recipe-help-body{background:rgba(0,0,0,.12)}
   html[data-theme="dark"] select.ctrl{background-color:var(--field)}
 
+
+
+  /* UV searchlight — dark mode inline easter eggs */
+  .uv-toggle{display:none;min-width:142px;text-align:center}
+  html[data-theme="dark"] .uv-toggle{display:inline-block}
+  #uvLight{position:fixed;left:50%;top:50%;width:230px;height:230px;border-radius:50%;pointer-events:none;z-index:9998;opacity:0;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(118,245,255,.20) 0%,rgba(118,245,255,.12) 28%,rgba(126,74,255,.08) 48%,transparent 72%);border:1px solid rgba(138,245,255,.30);box-shadow:0 0 26px rgba(118,245,255,.18),inset 0 0 28px rgba(118,245,255,.08);mix-blend-mode:screen;transition:opacity .16s ease}
+  html[data-theme="dark"].uv-on #uvLight{opacity:1}
+  #uvReadout{display:none!important}
+  .uv-secret-line{display:none!important}
+  .uv-secret{display:none}
+  html[data-theme="dark"] .uv-secret{display:inline;color:transparent;-webkit-text-fill-color:transparent;background:none;-webkit-background-clip:text;background-clip:text;text-shadow:none;opacity:0;pointer-events:none;font-style:italic;font-weight:500;letter-spacing:.01em;transition:opacity .08s linear}
+  html[data-theme="dark"].uv-on .uv-secret.uv-revealed{opacity:1;background-image:radial-gradient(circle at var(--uv-x,50%) var(--uv-y,50%),rgba(205,255,255,.98) 0%,rgba(172,248,255,.92) 24%,rgba(131,244,255,.58) 45%,rgba(126,74,255,.18) 62%,transparent 74%);filter:drop-shadow(0 0 7px rgba(126,245,255,.72))}
+  @media print{#uvLight,#uvReadout,.uv-secret,.uv-toggle,.uv-secret-line{display:none!important}}
+
     #printRecipe{display:none}
   @media print{
     body{background:#fff!important;color:#111!important;font-family:Georgia,serif!important}
@@ -163,9 +177,11 @@
 </style>
 </head>
 <body>
+  <div id="uvLight" aria-hidden="true"></div>
+  <div id="uvReadout" aria-live="polite"></div>
   <header>
     <div class="brand"><h1>Dough<span class="dot"></span></h1><span class="tag">pizza doughs for pizzaholics</span></div>
-    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><span class="tag mono" style="font-size:12px">v1.4</span></div>
+    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v1.6.1</span></div>
   </header>
   <main>
     <section class="col">
@@ -255,6 +271,7 @@
             <div class="total-cell"><div class="v" id="tBall">—</div><div class="k" id="tBallK">per ball</div></div>
           </div>
           <div class="method-tag" id="methodTag"></div>
+          <div id="recipeSecret" class="uv-secret-line"></div>
           <div class="export-row">
             <button class="print-btn" id="copyRecipeBtn" type="button">Copy recipe</button>
             <button class="print-btn" id="saveRecipeBtn" type="button">Save text</button>
@@ -668,11 +685,12 @@ function setTheme(mode){
   try{localStorage.setItem("doughTheme",theme);}catch(e){}
   const btn=$("themeToggle");
   if(btn)btn.textContent = theme === "dark" ? "Light mode" : "Dark mode";
+  if(theme !== "dark") setUV(false);
 }
 function initTheme(){
   let saved=null;
   try{saved=localStorage.getItem("doughTheme");}catch(e){}
-  if(!saved && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)saved="dark";
+  // Light mode is the default. A saved user choice can still restore dark mode.
   setTheme(saved === "dark" ? "dark" : "light");
 }
 const advIds=["hydration","salt","oil","sugar"];
@@ -702,6 +720,40 @@ const TROUBLESHOOTING=[
   ["Top burns before base cooks","Lower the rack, reduce toppings, or increase bottom heat." ]
 ];
 
+const STYLE_UV_SECRETS={
+  neapolitan:"Cornicione checkpoint: open from the centre and herd the gas outward. If you crush the rim, the oven cannot resurrect it.",
+  ny:"Fold-test ghost note: the slice should bend without cracking and without dumping its toppings on your shirt.",
+  detroit:"Corner-piece law: whoever made the dough gets first claim on the crispy cheese corner.",
+  focaccia:"This focaccia recipe was stolen from the world famous Scottwah Brewstillery and Smokehouse"
+};
+const METHOD_UV_SECRETS={
+  easy:"Direct dough secret: the mixer starts the dough, but time finishes it. Do not rush the final rest.",
+  poolish:"Poolish clue: sweet, creamy, bubbly and alive is good; sharp, boozy and collapsed means it has gone too far.",
+  biga:"Biga clue: break it up properly when adding water. Dry clumps hide like little flour rocks inside the final dough."
+};
+const RECIPE_UV_SECRETS={
+  neapolitan:{
+    easy:"Neapolitan direct: the long ball ferment is not decoration — it is where the airy cornicione is loaded.",
+    poolish:"Neapolitan poolish: let the preferment bring aroma, then give the final balls enough time to rebuild gas.",
+    biga:"Neapolitan biga: the flour is mature already; the final ball proof wakes the dough back up."
+  },
+  ny:{
+    easy:"NY direct: keep the toppings moderate; foldability is a structural test, not just a serving style.",
+    poolish:"NY poolish: good for a softer chew and better aroma, but too much topping still turns the base lazy.",
+    biga:"NY biga: expect more strength and chew; do not roll it dead unless you want a cracker."
+  },
+  detroit:{
+    easy:"Detroit direct: the pan does half the cooking. Oil plus metal equals the fried base.",
+    poolish:"Detroit poolish: airy is good, but wet toppings are crumb thieves.",
+    biga:"Detroit biga: strong dough, crisp edges, serious corner politics."
+  },
+  focaccia:{
+    easy:"Focaccia direct: dimples are not decoration — they hold oil, salt and little pools of flavour.",
+    poolish:"Focaccia poolish: the softer crumb comes from patience; do not drown it with toppings.",
+    biga:"Focaccia biga: stronger and chewier, but still bread first, pizza second."
+  }
+};
+
 const stylesEl=$("styles");
 STYLE_ORDER.forEach(k=>{const b=document.createElement("button");b.className="style-btn"+(k===current?" active":"");b.textContent=STYLES[k].name;b.onclick=()=>selectStyle(k);stylesEl.appendChild(b);});
 
@@ -726,6 +778,26 @@ function recalcRecommendations(){
   return baseCalc;
 }
 
+function uvMarker(text){
+  return text ? ` <span class="uv-secret" aria-hidden="true">${esc(text)}</span>` : "";
+}
+function renderDescription(styleKey){
+  const el=$("desc");
+  el.innerHTML=esc(STYLES[styleKey].description)+uvMarker(STYLE_UV_SECRETS[styleKey]);
+}
+function renderMethodBlurb(){
+  const methodSecretKey=currentMethod==="trad" ? $("preferment").value : "easy";
+  $("methodBlurb").innerHTML=esc(METHOD_BLURB[currentMethod])+uvMarker(METHOD_UV_SECRETS[methodSecretKey]);
+}
+function getRecipeUVSecret(r){
+  const methodSecretKey=r.isTrad ? r.preferment.type : "easy";
+  return (RECIPE_UV_SECRETS[r.styleKey]&&RECIPE_UV_SECRETS[r.styleKey][methodSecretKey])||"";
+}
+function renderRecipeUVSecret(r){
+  const el=$("recipeSecret");
+  if(el)el.innerHTML="";
+}
+
 function selectStyle(k){
   current=k;touched={};stageTouched={};prefTouched={};yeastTouched={};
   [...stylesEl.children].forEach((b,i)=>b.classList.toggle("active",STYLE_ORDER[i]===k));
@@ -741,7 +813,7 @@ function selectStyle(k){
   $("salt").value=s.salt;$("saltRec").textContent=fmtPct(s.salt);
   $("oil").value=s.oil;$("oilRec").textContent=fmtPct(s.oil);
   $("sugar").value=s.sugar;$("sugarRec").textContent=fmtPct(s.sugar);
-  $("desc").textContent=s.description;
+  renderDescription(k);
   refreshStageDefaults();
   render();
 }
@@ -777,7 +849,7 @@ function syncMethodUI(){
   if($("mainYeastLabel"))$("mainYeastLabel").textContent=(currentMethod==="trad"?"Yeast (final mix)":"Yeast");
   $("mEasy").classList.toggle("active",currentMethod==="easy");
   $("mTrad").classList.toggle("active",currentMethod==="trad");
-  $("methodBlurb").textContent=METHOD_BLURB[currentMethod];
+  renderMethodBlurb();
   $("prefGroup").style.display=currentMethod==="trad"?"":"none";
   $("poolishStyleField").style.display=$("preferment").value==="poolish"?"":"none";
   if($("poolishPctField"))$("poolishPctField").style.display=$("preferment").value==="poolish"?"":"none";
@@ -913,6 +985,39 @@ function saveRecipeText(){
   setExportStatus("Saved");
 }
 
+
+function clearUVReveal(){
+  document.querySelectorAll(".uv-secret.uv-revealed").forEach(el=>{
+    el.classList.remove("uv-revealed");
+    el.style.removeProperty("--uv-x");
+    el.style.removeProperty("--uv-y");
+  });
+}
+function setUV(on){
+  const active=!!on && document.documentElement.dataset.theme==="dark";
+  document.documentElement.classList.toggle("uv-on",active);
+  const btn=$("uvToggle");
+  if(btn)btn.textContent=active?"UV Search Light: On":"UV Search Light";
+  if(!active)clearUVReveal();
+}
+function moveUV(e){
+  const light=$("uvLight");
+  if(light){light.style.left=e.clientX+"px"; light.style.top=e.clientY+"px";}
+  if(!document.documentElement.classList.contains("uv-on")||document.documentElement.dataset.theme!=="dark")return;
+  const radius=120;
+  document.querySelectorAll(".uv-secret").forEach(el=>{
+    const r=el.getBoundingClientRect();
+    const dx=Math.max(r.left-e.clientX,0,e.clientX-r.right);
+    const dy=Math.max(r.top-e.clientY,0,e.clientY-r.bottom);
+    const hit=Math.hypot(dx,dy)<radius;
+    if(hit){
+      el.style.setProperty("--uv-x",(e.clientX-r.left)+"px");
+      el.style.setProperty("--uv-y",(e.clientY-r.top)+"px");
+    }
+    el.classList.toggle("uv-revealed",hit);
+  });
+}
+
 // wiring
 ["qty","diameter","panL","panW","totalHours","oven","hydration","salt","oil","sugar","sBulk","sBall","sPreferment","mainYeast","prefYeast","prefHydration","poolishPct"].forEach(id=>{const el=$(id); if(el) el.addEventListener("change",()=>{protectInputs();refreshStageDefaults();render();});});
 ["qty","diameter","panL","panW","oven"].forEach(id=>$(id).addEventListener("input",()=>{refreshStageDefaults();render();}));
@@ -944,6 +1049,10 @@ $("copyRecipeBtn").onclick=copyRecipeText;
 $("saveRecipeBtn").onclick=saveRecipeText;
 $("printRecipeBtn").onclick=()=>{render();window.print();};
 $("themeToggle").onclick=()=>setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+$("uvToggle").onclick=()=>setUV(!document.documentElement.classList.contains("uv-on"));
+document.addEventListener("pointermove",moveUV);
+document.addEventListener("pointerleave",clearUVReveal);
+window.addEventListener("blur",clearUVReveal);
 
 let prevIng={};
 function ingList(container, items){
@@ -1014,6 +1123,7 @@ function render(){
   if($("finalProofLabel"))$("finalProofLabel").textContent=(current==="detroit"||current==="focaccia")?"Pan proof":"Ball ferment";
 
   $("methodTag").textContent=r.methodName+" · "+r.quantity+" × "+(s.shape==="round"?(r.size.diameter+'" ball'):(r.size.length+"×"+r.size.width+'" pan'))+(r.isTrad?" · "+r.preferment.name:"");
+  renderRecipeUVSecret(r);
 
   // ---- RECIPE SECTIONS ----
   const rs=$("recipeSections");rs.innerHTML="";
@@ -1062,7 +1172,8 @@ function render(){
   // method
   const steps=mode==="expanded"?r.methodExpanded:r.method;
   const me=$("method-steps");me.innerHTML="";
-  steps.forEach(st=>{const li=document.createElement("li");li.textContent=st;me.appendChild(li);});
+  const recipeSecret=getRecipeUVSecret(r);
+  steps.forEach((st,i)=>{const li=document.createElement("li");li.innerHTML=esc(st)+(i===0?uvMarker(recipeSecret):"");me.appendChild(li);});
 
   // bake note
   const chk=checkOven(current,$("oven").value);const bn=$("bakeNote");
@@ -1082,6 +1193,7 @@ function render(){
 function fmtHShort(h){if(h<1)return Math.round(h*60)+"m";if(h===Math.round(h))return h+"h";return h+"h";}
 
 initTheme();
+setUV(false);
 $("recipeHelp").classList.remove("open");
 $("notesBlock").hidden=true;
 $("recipeHelpToggle").setAttribute("aria-expanded","false");
