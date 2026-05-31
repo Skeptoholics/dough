@@ -165,7 +165,7 @@
 <body>
   <header>
     <div class="brand"><h1>Dough<span class="dot"></span></h1><span class="tag">pizza doughs for pizzaholics</span></div>
-    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><span class="tag mono" style="font-size:12px">v1.3</span></div>
+    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><span class="tag mono" style="font-size:12px">v1.4</span></div>
   </header>
   <main>
     <section class="col">
@@ -309,7 +309,7 @@
 const STYLES = {
   neapolitan:{name:"Neapolitan",shape:"round",density:2.39,defaultSize:12,hydration:58,salt:2.5,oil:0,sugar:0,
     bake:{min:375,max:450,idealMin:400},
-    shapeStep:"Stretch each ball by hand from the centre outward. Do not flatten the rim; that rim becomes the puffy, blistered crust.",
+    shapeStep:"Stretch each ball by hand from the centre outward, moving gas toward the rim instead of pressing it out. Do not flatten the rim; that rim becomes the puffy, blistered cornicione.",
     description:"Neapolitan pizza is a small, very thin pizza with a soft centre and a large, puffy, blistered rim. It works best with minimal toppings: tomato, mozzarella, basil, and olive oil. The crust should be soft, lightly chewy, and sometimes slightly wet in the centre. It needs very high heat and a very fast bake."},
   ny:{name:"New York",shape:"round",density:3.2,defaultSize:16,hydration:62,salt:2.5,oil:2,sugar:1,
     bake:{min:375,max:450,idealMin:375},
@@ -354,6 +354,30 @@ const TIME_LIMITS={
   poolish:{min:7,max:16},
   biga:{min:15,max:32}
 };
+/* Neapolitan is handled separately because the cornicione depends heavily on a mature, relaxed, gassy dough ball. */
+const NEAPOLITAN_TIME_PRESETS={
+  easy:{defaultTotal:10,range:{min:8,max:12},bulk:2,ball:8},
+  poolish:{defaultTotal:12,range:{min:10,max:14},preferment:7,bulk:1,ball:4},
+  biga:{defaultTotal:20,range:{min:18,max:22},preferment:16,bulk:1,ball:3}
+};
+function timePreset(styleKey,methodKey,prefermentKey){
+  if(styleKey==="neapolitan"){
+    const k=methodKey==="easy"?"easy":prefermentKey;
+    return NEAPOLITAN_TIME_PRESETS[k]||null;
+  }
+  return null;
+}
+function getDefaultTotalFor(styleKey,methodKey,prefermentKey){
+  const preset=timePreset(styleKey,methodKey,prefermentKey);
+  if(preset)return preset.defaultTotal;
+  if(methodKey==="easy")return DEFAULT_TOTAL.easy;
+  return PREFERMENT_DEFAULT_TOTAL[prefermentKey]||DEFAULT_TOTAL.trad;
+}
+function getRecommendedRange(styleKey,methodKey,prefermentKey){
+  const preset=timePreset(styleKey,methodKey,prefermentKey);
+  if(preset)return preset.range;
+  return TIME_LIMITS[methodKey==="easy"?"easy":prefermentKey];
+}
 
 function num(v,f){return v===undefined||v===null||v===""||isNaN(Number(v))?f:Number(v);}
 function r0(n){return Math.round(n);}function r1(n){return Math.round(n*10)/10;}function r2(n){return Math.round(n*100)/100;}
@@ -390,12 +414,13 @@ function calculate(opts){
   const p={hydration:num(overrides.hydration,base.hydration),salt:num(overrides.salt,base.salt),oil:num(overrides.oil,base.oil),sugar:num(overrides.sugar,base.sugar)};
   const sz=resolveSize(base,size);
   const a=area(base,sz),perBall=a*base.density,totalDough=perBall*quantity;
-  const total=num(totalHours,DEFAULT_TOTAL[isTrad?"trad":"easy"]);
+  const total=num(totalHours,getDefaultTotalFor(styleKey,methodKey,preferment));
 
   // --- TIME ALLOCATION (whole hours) ---
   let stages={},mainFermentHours;
   if(!isTrad){
-    const rec=easySplit(total);
+    const preset=timePreset(styleKey,methodKey,preferment);
+    const rec=preset ? {bulk:preset.bulk,ball:Math.max(1,Math.round(total-preset.bulk))} : easySplit(total);
     const recBulk=Math.round(rec.bulk), recBall=Math.max(1,Math.round(rec.ball));
     const bulk=Math.round(num(stageOverrides.bulk,recBulk)),ball=Math.round(num(stageOverrides.ball,recBall));
     stages={bulk:{rec:recBulk,val:bulk},ball:{rec:recBall,val:ball}};
@@ -403,18 +428,26 @@ function calculate(opts){
   } else {
     const pf=PREFERMENTS[preferment];
     const lim=TIME_LIMITS[preferment];
-    // preferment fills toward its cap as total grows
-    const recPre=stepPreferment(total, pf, lim);
-    // final dough gets the remainder; split so it grows from bulk1/ball2 (min) toward bulk4/ball4 (max)
-    let remainder=Math.max(2, Math.round(total-recPre));
-    // ball gets priority up to 4, bulk takes the rest, but bulk never exceeds ball until both hit 4
-    let recBall, recBulk;
-    if(remainder<=2){ recBall=remainder; recBulk=0; }
-    else if(remainder<=4){ recBall=2; recBulk=remainder-2; }      // 3->b1/ball2, 4->b2/ball2
-    else if(remainder<=8){ recBall=Math.min(4, remainder-2); recBulk=remainder-recBall; } // grow ball to 4
-    else { recBall=4; recBulk=remainder-4; }
-    // ensure bulk doesn't exceed ball below the 8 mark in the remainder (ball-priority)
-    if(recBulk>recBall && remainder<8){ const t=recBall; recBall=Math.max(recBall,Math.ceil(remainder/2)); recBulk=remainder-recBall; }
+    let recPre, recBulk, recBall;
+    const preset=timePreset(styleKey,methodKey,preferment);
+    if(preset){
+      const delta=Math.round(total-preset.defaultTotal);
+      recPre=Math.max(1, preset.preferment+delta);
+      recBulk=preset.bulk;
+      recBall=preset.ball;
+    } else {
+      // preferment fills toward its cap as total grows
+      recPre=stepPreferment(total, pf, lim);
+      // final dough gets the remainder; split so it grows from bulk1/ball2 (min) toward bulk4/ball4 (max)
+      let remainder=Math.max(2, Math.round(total-recPre));
+      // ball gets priority up to 4, bulk takes the rest, but bulk never exceeds ball until both hit 4
+      if(remainder<=2){ recBall=remainder; recBulk=0; }
+      else if(remainder<=4){ recBall=2; recBulk=remainder-2; }      // 3->b1/ball2, 4->b2/ball2
+      else if(remainder<=8){ recBall=Math.min(4, remainder-2); recBulk=remainder-recBall; } // grow ball to 4
+      else { recBall=4; recBulk=remainder-4; }
+      // ensure bulk doesn't exceed ball below the 8 mark in the remainder (ball-priority)
+      if(recBulk>recBall && remainder<8){ recBall=Math.max(recBall,Math.ceil(remainder/2)); recBulk=remainder-recBall; }
+    }
     const pre=Math.round(num(stageOverrides.preferment,recPre)),bulk=Math.round(num(stageOverrides.bulk,recBulk)),ball=Math.round(num(stageOverrides.ball,recBall));
     stages={preferment:{rec:recPre,val:pre},bulk:{rec:recBulk,val:bulk},ball:{rec:recBall,val:ball}};
     mainFermentHours=bulk+ball;
@@ -463,10 +496,20 @@ function calculate(opts){
   // --- RED FLAGS / GUARD RAILS ---
   const flags=[];
   const lim = TIME_LIMITS[isTrad?preferment:"easy"];
-  if(isTrad){
+  const recRange = getRecommendedRange(styleKey,methodKey,preferment);
+  if(styleKey==="neapolitan"){
+    if(total < recRange.min){
+      flags.push({level:"warn",msg:`${fmtH(total)} is below the recommended Neapolitan range of ${fmtH(recRange.min)}–${fmtH(recRange.max)}. The dough may not be mature enough for a light, open cornicione.`});
+    }
+    if(!isTrad && total > 24){
+      flags.push({level:"warn",msg:`${fmtH(total)} is beyond the practical room-temperature Neapolitan range. Use very low yeast or cold control if you need to push it this far.`});
+    } else if(isTrad && total > lim.max){
+      flags.push({level:"warn",msg:`${fmtH(total)} is longer than this preferment method should normally run at room temperature. Reduce yeast, shorten the schedule, or use cold control if you need to delay.`});
+    }
+  } else if(isTrad){
     // below the preferment minimum total → not worth the extra steps
     if(total < lim.min){
-      flags.push({level:"warn",msg:`At ${fmtH(total)} total, a ${preferment} can't get the time it needs to be worth the extra steps. Below about ${fmtH(lim.min)}, you're better off with the all-in-one (Easy) dough and giving it the whole time to ferment.`});
+      flags.push({level:"warn",msg:`At ${fmtH(total)} total, a ${preferment} can't get the time it needs to be worth the extra steps. Below about ${fmtH(lim.min)}, you're better off with the all-in-one (Simple) dough and giving it the whole time to ferment.`});
     }
     // over the preferment maximum total → fridge territory
     if(total > lim.max){
@@ -540,7 +583,11 @@ function buildMethod(ctx){
     if(!isPanStyle){
       s.push(`Divide the dough into ${quantity} ${ballWord} and shape each into a tight ball. Weighing the ${ballWord} is recommended for even sizes.`+why("Tight balls give round pizzas an even final rise and make stretching more predictable."));
       elapsedH+=stages.ball.val;
-      s.push(`Cover the ${ballWord} and rest for the ball ferment — about ${fmtH(stages.ball.val)}.`+(expanded?elapsed(elapsedH):"")+why("The final proof relaxes the dough so it stretches without tearing and puffs in the oven. Under-proofed dough fights back and stays tight; over-proofed dough goes slack and won't hold its shape."));
+      let proofWhy="The final proof relaxes the dough so it stretches without tearing and puffs in the oven. Under-proofed dough fights back and stays tight; over-proofed dough goes slack and won't hold its shape.";
+      if(styleKey==="neapolitan" && !isTrad)proofWhy="For direct Neapolitan dough, this long ball ferment is critical. It lets the dough ball become relaxed, gassy, and mature enough to inflate the cornicione without tearing.";
+      if(styleKey==="neapolitan" && isTrad && prefermentObj && prefermentObj.type==="poolish")proofWhy="The poolish has already built flavour and extensibility, but the final dough still needs this ball ferment to recover, relax, and build enough gas for an open cornicione.";
+      if(styleKey==="neapolitan" && isTrad && prefermentObj && prefermentObj.type==="biga")proofWhy="The biga has already matured the full flour load, so this shorter ball ferment is mainly for recovery, relaxation, and fresh gas before baking.";
+      s.push(`Cover the ${ballWord} and rest for the ball ferment — about ${fmtH(stages.ball.val)}, until relaxed, slightly puffy, and lightly gassy.`+(expanded?elapsed(elapsedH):"")+why(proofWhy));
       s.push(base.shapeStep);
       return elapsedH;
     }
@@ -641,7 +688,7 @@ const METHOD_BLURB={
 };
 
 const STYLE_GUIDANCE={
-  neapolitan:{best:"Best for very hot ovens, minimal toppings, a soft centre, and a puffy blistered rim.",topping:"Keep toppings minimal. Too much sauce, cheese, or wet topping overloads the thin base before the crust can bake properly."},
+  neapolitan:{best:"Best for very hot ovens, minimal toppings, a soft centre, and a puffy, open cornicione from a mature dough ball.",topping:"Keep toppings minimal. Too much sauce, cheese, or wet topping overloads the thin base before the crust can bake properly."},
   ny:{best:"Best for foldable slices, home-oven adaptation, moderate toppings, and a crisp but flexible base.",topping:"Use moderate sauce and cheese. Keep toppings restrained enough that the slice still folds without collapsing."},
   detroit:{best:"Best for pan baking, crisp cheese edges, a fried base, and a thicker structure that can carry more topping.",topping:"It tolerates heavier topping than thin pizza, but wet toppings still need control or the crumb can collapse."},
   focaccia:{best:"Best when the bread is the point: oil-rich crumb, deep dimples, simple toppings, and a moist interior.",topping:"Keep it bread-forward. Toppings should support the focaccia, not bury it."}
@@ -661,11 +708,10 @@ STYLE_ORDER.forEach(k=>{const b=document.createElement("button");b.className="st
 function fmtPct(v){return v+"%";}
 function currentLimitKey(){return currentMethod==="easy"?"easy":$("preferment").value;}
 function defaultTotalFor(){
-  if(currentMethod==="easy")return DEFAULT_TOTAL.easy;
-  return PREFERMENT_DEFAULT_TOTAL[$("preferment").value]||DEFAULT_TOTAL.trad;
+  return getDefaultTotalFor(current,currentMethod,$("preferment").value);
 }
 function updateTotalRec(){
-  const k=currentLimitKey();const L=TIME_LIMITS[k];
+  const L=getRecommendedRange(current,currentMethod,$("preferment").value);
   $("totalRec").textContent=L.min+"–"+L.max+" hrs";
 }
 function getSize(){const s=STYLES[current];return s.shape==="round"?{diameter:$("diameter").value}:{length:$("panL").value,width:$("panW").value};}
@@ -675,7 +721,7 @@ function recalcRecommendations(){
   const s=STYLES[current];
   const baseCalc=calculate({styleKey:current,methodKey:currentMethod,quantity:num($("qty").value,2),
     size:getSize(),overrides:{},yeastType:$("yeastType").value,preferment:$("preferment").value,
-    poolishStyle:$("poolishStyle").value,totalHours:num($("totalHours").value,DEFAULT_TOTAL[currentMethod]),
+    poolishStyle:$("poolishStyle").value,totalHours:num($("totalHours").value,defaultTotalFor()),
     ovenTemp:$("oven").value});
   return baseCalc;
 }
@@ -757,7 +803,7 @@ function buildOpts(){
   if(yeastTouched.preferment)yeastOverrides.preferment=$("prefYeast").value;
   return {styleKey:current,methodKey:currentMethod,quantity:num($("qty").value,2),size:getSize(),
     overrides,yeastType:$("yeastType").value,preferment:$("preferment").value,
-    poolishStyle:$("poolishStyle").value,totalHours:num($("totalHours").value,DEFAULT_TOTAL[currentMethod]),
+    poolishStyle:$("poolishStyle").value,totalHours:num($("totalHours").value,defaultTotalFor()),
     stageOverrides,yeastOverrides,ovenTemp:$("oven").value};
 }
 
@@ -918,9 +964,17 @@ function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","
 function renderGuidance(styleKey){
   const g=STYLE_GUIDANCE[styleKey];
   let troubleRows=TROUBLESHOOTING.map(([p,c])=>`<tr><td>${esc(p)}</td><td>${esc(c)}</td></tr>`).join("");
+  const cornicione = styleKey==="neapolitan" ? `
+    <div class="guide-card"><h3>Cornicione / alveoli fixes</h3><div class="guide-body"><table class="trouble">
+      <tr><td>Rim does not puff</td><td>Use the full ball ferment, reduce topping load, and avoid pressing the rim flat during opening.</td></tr>
+      <tr><td>No large alveoli</td><td>The dough is usually under-mature, over-degassed, or baked too cool. Let the ball become relaxed and lightly gassy, then open it gently from the centre outward.</td></tr>
+      <tr><td>Dense or bready rim</td><td>Increase ball fermentation time within the recommended range, make sure the oven is properly hot, and avoid over-kneading after the dough is already smooth.</td></tr>
+      <tr><td>Rim collapses or tears</td><td>The dough may be overproofed, too weak, or too wet for the flour. Use less yeast, shorten the final proof, or reduce hydration slightly.</td></tr>
+    </table></div></div>` : "";
   return `
     <div class="guide-card"><h3>How to judge it</h3><div class="guide-body">Dough is biological, not mechanical. Use the numbers to get close, then judge the dough: expanded, relaxed, slightly gassy, and easier to stretch.</div></div>
     <div class="guide-card"><h3>Best used for</h3><div class="guide-body"><ul><li>${esc(g.best)}</li><li>${esc(g.topping)}</li></ul></div></div>
+    ${cornicione}
     <div class="guide-card"><h3>Flour warning</h3><div class="guide-body">Weak flour may struggle with long fermentation or high hydration. If the dough spreads, tears, or collapses, shorten the ferment or lower hydration.</div></div>
     <div class="guide-card"><h3>Quick fixes</h3><div class="guide-body"><table class="trouble">${troubleRows}</table></div></div>`;
 }
