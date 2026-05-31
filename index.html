@@ -146,15 +146,15 @@
 
 
   /* UV searchlight — dark mode inline easter eggs */
-  .uv-toggle{display:none;min-width:142px;text-align:center}
+  .uv-toggle{display:none;min-width:166px;text-align:center}
   html[data-theme="dark"] .uv-toggle{display:inline-block}
-  #uvLight{position:fixed;left:50%;top:50%;width:230px;height:230px;border-radius:50%;pointer-events:none;z-index:9998;opacity:0;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(118,245,255,.20) 0%,rgba(118,245,255,.12) 28%,rgba(126,74,255,.08) 48%,transparent 72%);border:1px solid rgba(138,245,255,.30);box-shadow:0 0 26px rgba(118,245,255,.18),inset 0 0 28px rgba(118,245,255,.08);mix-blend-mode:screen;transition:opacity .16s ease}
+  #uvLight{position:fixed;left:50%;top:50%;width:230px;height:230px;border-radius:50%;pointer-events:none;z-index:9998;opacity:0;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(143,249,255,.18) 0%,rgba(105,245,255,.13) 34%,rgba(126,74,255,.08) 56%,transparent 74%);border:1px solid rgba(165,250,255,.34);box-shadow:0 0 24px rgba(105,245,255,.18),inset 0 0 32px rgba(105,245,255,.08);mix-blend-mode:screen;transition:opacity .16s ease}
   html[data-theme="dark"].uv-on #uvLight{opacity:1}
   #uvReadout{display:none!important}
   .uv-secret-line{display:none!important}
   .uv-secret{display:none}
-  html[data-theme="dark"] .uv-secret{display:inline;color:transparent;-webkit-text-fill-color:transparent;background:none;-webkit-background-clip:text;background-clip:text;text-shadow:none;opacity:0;pointer-events:none;font-style:italic;font-weight:500;letter-spacing:.01em;transition:opacity .08s linear}
-  html[data-theme="dark"].uv-on .uv-secret.uv-revealed{opacity:1;background-image:radial-gradient(circle at var(--uv-x,50%) var(--uv-y,50%),rgba(205,255,255,.98) 0%,rgba(172,248,255,.92) 24%,rgba(131,244,255,.58) 45%,rgba(126,74,255,.18) 62%,transparent 74%);filter:drop-shadow(0 0 7px rgba(126,245,255,.72))}
+  html[data-theme="dark"] .uv-secret{display:inline;color:transparent;-webkit-text-fill-color:transparent;background:none;text-shadow:none;opacity:1;pointer-events:none;font-style:italic;font-weight:600;letter-spacing:.01em;transition:color .12s ease,text-shadow .12s ease}
+  html[data-theme="dark"].uv-on .uv-secret.uv-revealed{color:#d9ffff;-webkit-text-fill-color:#d9ffff;text-shadow:0 0 4px rgba(217,255,255,.95),0 0 12px rgba(105,245,255,.7),0 0 22px rgba(154,108,255,.46)}
   @media print{#uvLight,#uvReadout,.uv-secret,.uv-toggle,.uv-secret-line{display:none!important}}
 
     #printRecipe{display:none}
@@ -181,7 +181,7 @@
   <div id="uvReadout" aria-live="polite"></div>
   <header>
     <div class="brand"><h1>Dough<span class="dot"></span></h1><span class="tag">pizza doughs for pizzaholics</span></div>
-    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v1.6.1</span></div>
+    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v1.6.3</span></div>
   </header>
   <main>
     <section class="col">
@@ -987,10 +987,8 @@ function saveRecipeText(){
 
 
 function clearUVReveal(){
-  document.querySelectorAll(".uv-secret.uv-revealed").forEach(el=>{
+  document.querySelectorAll(".uv-secret").forEach(el=>{
     el.classList.remove("uv-revealed");
-    el.style.removeProperty("--uv-x");
-    el.style.removeProperty("--uv-y");
   });
 }
 function setUV(on){
@@ -1010,10 +1008,6 @@ function moveUV(e){
     const dx=Math.max(r.left-e.clientX,0,e.clientX-r.right);
     const dy=Math.max(r.top-e.clientY,0,e.clientY-r.bottom);
     const hit=Math.hypot(dx,dy)<radius;
-    if(hit){
-      el.style.setProperty("--uv-x",(e.clientX-r.left)+"px");
-      el.style.setProperty("--uv-y",(e.clientY-r.top)+"px");
-    }
     el.classList.toggle("uv-revealed",hit);
   });
 }
