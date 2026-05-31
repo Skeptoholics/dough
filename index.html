@@ -5,7 +5,8 @@
 <title>Dough — pizza doughs for pizzaholics</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&family=Spline+Sans+Mono:wght@400;500&display=swap');
-  :root{--bg:#f4efe6;--panel:#fbf8f2;--ink:#2a241d;--ink-soft:#6b6155;--line:#e0d7c7;--accent:#c0492f;--accent-soft:#e8c9bf;--gold:#caa24a;--ok:#5a7d4f;--warn:#b5762a;--hot:#b23a26;--radius:14px;--shadow:0 1px 2px rgba(42,36,29,.04), 0 8px 28px rgba(42,36,29,.06);}
+  :root{--bg:#f4efe6;--panel:#fbf8f2;--ink:#2a241d;--ink-soft:#6b6155;--line:#e0d7c7;--accent:#c0492f;--accent-soft:#e8c9bf;--gold:#caa24a;--ok:#5a7d4f;--warn:#b5762a;--hot:#b23a26;--field:#fff;--field-soft:rgba(255,255,255,.72);--note-bg:rgba(232,201,191,.18);--panel-grad:rgba(224,215,199,.18);--radius:14px;--shadow:0 1px 2px rgba(42,36,29,.04), 0 8px 28px rgba(42,36,29,.06);color-scheme:light;}
+  html[data-theme="dark"]{--bg:#17130f;--panel:#211b15;--ink:#f3eadc;--ink-soft:#b8aa98;--line:#3d3328;--accent:#e16a4d;--accent-soft:#6d3b31;--gold:#d2aa52;--ok:#8faa7e;--warn:#d0974a;--hot:#e0654c;--field:#2b231b;--field-soft:rgba(43,35,27,.82);--note-bg:rgba(225,106,77,.12);--panel-grad:rgba(255,255,255,.04);--shadow:0 1px 2px rgba(0,0,0,.25),0 10px 32px rgba(0,0,0,.32);color-scheme:dark;}
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;-webkit-font-smoothing:antialiased}
   body{min-height:100vh;background-image:radial-gradient(circle at 12% 18%, rgba(202,162,74,.05), transparent 40%),radial-gradient(circle at 88% 82%, rgba(192,73,47,.05), transparent 42%);}
@@ -105,17 +106,44 @@
   .pcttable .pt-row{display:flex;justify-content:space-between;font-family:'Spline Sans Mono',monospace;font-size:12.5px;padding:3px 0;color:var(--ink)}
   .pcttable .pt-row .pv{color:var(--ink-soft)}
 
-  .export-row{display:flex;justify-content:flex-end;margin:-4px 0 18px}
+  .export-row{display:flex;justify-content:flex-end;align-items:center;gap:8px;flex-wrap:wrap;margin:-4px 0 18px}
   .print-btn{font-family:'Spline Sans Mono',monospace;font-size:12px;border:1px solid var(--accent-soft);background:#fff;color:var(--accent);border-radius:9px;padding:8px 12px;cursor:pointer;box-shadow:0 1px 2px rgba(42,36,29,.03)}
   .print-btn:hover{background:rgba(232,201,191,.22);border-color:var(--accent)}
-  .guide-card{margin-top:18px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.62);overflow:hidden}
+  .export-status{font-family:'Spline Sans Mono',monospace;font-size:11.5px;color:var(--ok);min-width:46px;text-align:left}
+  .recipe-help{margin-top:18px;border:none;border-radius:12px;background:transparent;overflow:visible}
+  .recipe-help:not(.open){display:block}
+  .recipe-help.open{border:1px solid var(--line);background:#fff;overflow:hidden}
+  .recipe-help-head{width:auto;display:inline-flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;border:1px solid var(--accent-soft);border-radius:9px;background:#fff;cursor:pointer;font-family:'Fraunces',serif;color:var(--ink);text-align:left;box-shadow:0 1px 2px rgba(42,36,29,.03)}
+  .recipe-help.open .recipe-help-head{width:100%;display:flex;border:none;border-radius:0;border-bottom:1px solid var(--line);padding:13px 15px;background:linear-gradient(0deg,rgba(224,215,199,.22),#fff);box-shadow:none}
+  .recipe-help-head .label{font-size:12.5px;text-transform:uppercase;letter-spacing:.11em;font-weight:600;color:var(--accent)}
+  .recipe-help-head .sub{display:none;margin-top:3px;font-size:12.5px;font-style:italic;letter-spacing:0;text-transform:none;font-weight:400;color:var(--ink-soft)}
+  .recipe-help.open .recipe-help-head .sub{display:block}
+  .recipe-help-head .chev{font-family:'Spline Sans Mono',monospace;color:var(--accent);font-size:13px;transition:transform .2s ease}
+  .recipe-help.open .recipe-help-head .chev{transform:rotate(180deg)}
+  .recipe-help-body{display:none;padding:0 14px 15px;border-top:none;background:rgba(255,255,255,.55)}
+  .recipe-help:not(.open) .recipe-help-body{display:none!important;height:0!important;max-height:0!important;overflow:hidden!important;padding:0!important;margin:0!important;border:0!important;visibility:hidden!important}
+  .recipe-help.open .recipe-help-body{display:block!important;height:auto!important;max-height:none!important;visibility:visible!important}
+  .guide-card{margin-top:14px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.72);overflow:hidden}
   .guide-card h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-weight:600;padding:13px 15px 10px;border-bottom:1px solid var(--line);background:rgba(224,215,199,.12)}
   .guide-card .guide-body{padding:13px 15px;font-size:13.5px;line-height:1.55;color:var(--ink-soft)}
   .guide-card ul{padding-left:18px}.guide-card li{margin:5px 0}
   .trouble{width:100%;border-collapse:collapse;font-size:13.2px;color:var(--ink)}
   .trouble td{padding:7px 0;border-bottom:1px solid var(--line);vertical-align:top}
   .trouble tr:last-child td{border-bottom:none}.trouble td:first-child{font-weight:600;padding-right:12px;width:38%}
-  #printRecipe{display:none}
+
+  .theme-wrap{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .theme-toggle{font-family:'Spline Sans Mono',monospace;font-size:12px;color:var(--ink-soft);background:var(--field);border:1px solid var(--line);border-radius:999px;padding:7px 11px;cursor:pointer;box-shadow:0 1px 2px rgba(42,36,29,.03)}
+  .theme-toggle:hover{border-color:var(--accent-soft);color:var(--accent)}
+  html[data-theme="dark"] body{background-image:radial-gradient(circle at 12% 18%, rgba(210,170,82,.08), transparent 40%),radial-gradient(circle at 88% 82%, rgba(225,106,77,.08), transparent 42%);}
+  html[data-theme="dark"] .style-btn,html[data-theme="dark"] .ctrl,html[data-theme="dark"] .accordion,html[data-theme="dark"] .accordion-head,html[data-theme="dark"] .totals,html[data-theme="dark"] .toggle button,html[data-theme="dark"] .print-btn,html[data-theme="dark"] .recipe-help-head{background:var(--field);color:var(--ink);}
+  html[data-theme="dark"] .subgroup,html[data-theme="dark"] .pcttable{background:rgba(255,255,255,.035)}
+  html[data-theme="dark"] .guide-note{background:var(--note-bg);border-color:var(--accent-soft)}
+  html[data-theme="dark"] .panel-head,html[data-theme="dark"] .accordion-head,html[data-theme="dark"] .recipe-help.open .recipe-help-head,html[data-theme="dark"] .guide-card h3{background:linear-gradient(0deg,var(--panel-grad),transparent)}
+  html[data-theme="dark"] .guide-card,html[data-theme="dark"] .recipe-help.open{background:var(--field-soft)}
+  html[data-theme="dark"] .recipe-help-body{background:rgba(0,0,0,.12)}
+  html[data-theme="dark"] select.ctrl{background-color:var(--field)}
+
+    #printRecipe{display:none}
   @media print{
     body{background:#fff!important;color:#111!important;font-family:Georgia,serif!important}
     header,main,footer{display:none!important}
@@ -137,7 +165,7 @@
 <body>
   <header>
     <div class="brand"><h1>Dough<span class="dot"></span></h1><span class="tag">pizza doughs for pizzaholics</span></div>
-    <span class="tag mono" style="font-size:12px">v1</span>
+    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><span class="tag mono" style="font-size:12px">v1.2</span></div>
   </header>
   <main>
     <section class="col">
@@ -227,7 +255,12 @@
             <div class="total-cell"><div class="v" id="tBall">—</div><div class="k" id="tBallK">per ball</div></div>
           </div>
           <div class="method-tag" id="methodTag"></div>
-          <div class="export-row"><button class="print-btn" id="printRecipeBtn">Print clean recipe</button></div>
+          <div class="export-row">
+            <button class="print-btn" id="copyRecipeBtn" type="button">Copy recipe</button>
+            <button class="print-btn" id="saveRecipeBtn" type="button">Save text</button>
+            <button class="print-btn" id="printRecipeBtn" type="button">Print clean recipe</button>
+            <span class="export-status" id="exportStatus" aria-live="polite"></span>
+          </div>
 
           <div id="recipeSections"></div>
 
@@ -240,7 +273,13 @@
 
           <div class="note" id="bakeNote"></div>
           <div id="flagNotes"></div>
-          <div class="notes-block" id="notesBlock"></div>
+          <div class="recipe-help" id="recipeHelp">
+            <button class="recipe-help-head" id="recipeHelpToggle" type="button" aria-expanded="false">
+              <span><span class="label">Help / quick fixes</span><span class="sub">Dough judgement, topping load, flour warning, and common corrections</span></span>
+              <span class="chev">▼</span>
+            </button>
+            <div class="recipe-help-body" id="notesBlock" hidden></div>
+          </div>
         </div>
       </div>
     </section>
@@ -546,6 +585,19 @@ function checkOven(styleKey,ovenTemp){
 
 /* ===== UI CONTROLLER ===== */
 const $=id=>document.getElementById(id);
+function setTheme(mode){
+  const theme = mode === "dark" ? "dark" : "light";
+  document.documentElement.dataset.theme = theme;
+  try{localStorage.setItem("doughTheme",theme);}catch(e){}
+  const btn=$("themeToggle");
+  if(btn)btn.textContent = theme === "dark" ? "Light mode" : "Dark mode";
+}
+function initTheme(){
+  let saved=null;
+  try{saved=localStorage.getItem("doughTheme");}catch(e){}
+  if(!saved && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)saved="dark";
+  setTheme(saved === "dark" ? "dark" : "light");
+}
 const advIds=["hydration","salt","oil","sugar"];
 let current="neapolitan", currentMethod="easy", mode="brief";
 let touched={};            // recipe % overrides
@@ -661,6 +713,7 @@ function syncMethodUI(){
 }
 
 function buildOpts(){
+  protectInputs();
   const overrides={};advIds.forEach(id=>{if(touched[id])overrides[id]=$(id).value;});
   if(prefTouched.hydration)overrides.prefHydration=$("prefHydration").value;
   if(prefTouched.poolishPct)overrides.poolishPct=$("poolishPct").value;
@@ -678,7 +731,114 @@ function buildOpts(){
     stageOverrides,yeastOverrides,ovenTemp:$("oven").value};
 }
 
+
+let lastRecipeText="";
+function clamp(v,min,max,fallback,integer=false){
+  let n=Number(v);
+  if(!Number.isFinite(n)) n=fallback;
+  if(Number.isFinite(min)) n=Math.max(min,n);
+  if(Number.isFinite(max)) n=Math.min(max,n);
+  return integer?Math.round(n):n;
+}
+function setClean(id,min,max,fallback,integer=false){
+  const el=$(id); if(!el) return fallback;
+  const n=clamp(el.value,min,max,fallback,integer);
+  el.value=integer?String(n):String(r2(n));
+  return n;
+}
+function protectInputs(){
+  const s=STYLES[current];
+  setClean("qty",1,999,2,true);
+  if(s.shape==="round") setClean("diameter",6,60,s.defaultSize,false);
+  else { setClean("panL",4,60,s.defaultLength,false); setClean("panW",4,60,s.defaultWidth,false); }
+  setClean("totalHours",1,72,defaultTotalFor(),false);
+  setClean("oven",150,550,s.bake.idealMin,true);
+  setClean("hydration",40,100,s.hydration,false);
+  setClean("salt",0,6,s.salt,false);
+  setClean("oil",0,15,s.oil,false);
+  setClean("sugar",0,8,s.sugar,false);
+  setClean("sBulk",0,72,0,false);
+  setClean("sBall",0,72,2,false);
+  setClean("mainYeast",0,5,0.1,false);
+  if(currentMethod==="trad"){
+    setClean("sPreferment",1,72,PREFERMENTS[$("preferment").value].minHours,false);
+    setClean("prefHydration",40,120,PREFERMENTS[$("preferment").value].hydration,false);
+    setClean("prefYeast",0,3,0.1,false);
+    if($("preferment").value==="poolish") setClean("poolishPct",10,100,PREFERMENTS.poolish.flourPct,false);
+  }
+}
+function recipeText(r,steps){
+  const yt=r.yeastTypeName.toLowerCase();
+  const sizeText=r.shape==="round" ? `${r.size.diameter} inch ball` : `${r.size.length}×${r.size.width} inch pan`;
+  const lines=[];
+  lines.push(`${r.styleName} dough — ${r.methodName}`);
+  lines.push(`${r.quantity} × ${sizeText} · total dough ${r.totals.doughWeight}g · total time ${fmtHShort(r.totalTime)}`);
+  lines.push("");
+  lines.push("INGREDIENTS");
+  if(r.isTrad){
+    const pf=r.preferment;
+    lines.push(`Step 1 — ${pf.name} (${fmtH(pf.hours)} room temperature · ${pf.hydration}% hydration)`);
+    lines.push(`Flour: ${pf.flour}g`);
+    lines.push(`Water: ${pf.water}g`);
+    lines.push(`Yeast (${yt}): ${pf.yeast}g`);
+    lines.push("");
+    lines.push(`Step 2 — Final dough, add to the ${pf.name.toLowerCase()}`);
+    if(r.stageAmounts.flour.final>0) lines.push(`Flour: ${r.stageAmounts.flour.final}g`);
+    lines.push(`Water: ${r.stageAmounts.water.final}g`);
+    lines.push(`Salt: ${r.ingredients.salt}g`);
+    lines.push(`Yeast (${yt}): ${r.stageAmounts.finalYeast}g`);
+    if(r.ingredients.oil!=null) lines.push(`Oil: ${r.ingredients.oil}g`);
+    if(r.ingredients.sugar!=null) lines.push(`Sugar: ${r.ingredients.sugar}g`);
+  }else{
+    lines.push(`Flour: ${r.ingredients.flour}g`);
+    lines.push(`Water: ${r.ingredients.water}g`);
+    lines.push(`Salt: ${r.ingredients.salt}g`);
+    lines.push(`Yeast (${yt}): ${r.ingredients.yeast}g`);
+    if(r.ingredients.oil!=null) lines.push(`Oil: ${r.ingredients.oil}g`);
+    if(r.ingredients.sugar!=null) lines.push(`Sugar: ${r.ingredients.sugar}g`);
+  }
+  lines.push("");
+  lines.push("METHOD");
+  steps.forEach((st,i)=>lines.push(`${i+1}. ${st}`));
+  lines.push("");
+  lines.push("NOTES");
+  lines.push("Dough is ready by condition, not just by clock: expanded, relaxed, slightly gassy, and easier to stretch.");
+  lines.push("Use less topping on thin styles; use more bottom heat if the base is pale or soft.");
+  return lines.join("\n");
+}
+function setExportStatus(msg){
+  const el=$("exportStatus"); if(!el) return;
+  el.textContent=msg;
+  clearTimeout(setExportStatus.t);
+  setExportStatus.t=setTimeout(()=>{el.textContent="";},2200);
+}
+async function copyRecipeText(){
+  render();
+  try{
+    if(navigator.clipboard && window.isSecureContext){
+      await navigator.clipboard.writeText(lastRecipeText);
+    }else{
+      const ta=document.createElement("textarea");
+      ta.value=lastRecipeText; ta.style.position="fixed"; ta.style.left="-9999px";
+      document.body.appendChild(ta); ta.focus(); ta.select(); document.execCommand("copy"); ta.remove();
+    }
+    setExportStatus("Copied");
+  }catch(e){
+    setExportStatus("Copy failed");
+  }
+}
+function saveRecipeText(){
+  render();
+  const name=(STYLES[current].name+"-"+currentMethod+"-dough-recipe.txt").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+  const blob=new Blob([lastRecipeText],{type:"text/plain;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},0);
+  setExportStatus("Saved");
+}
+
 // wiring
+["qty","diameter","panL","panW","totalHours","oven","hydration","salt","oil","sugar","sBulk","sBall","sPreferment","mainYeast","prefYeast","prefHydration","poolishPct"].forEach(id=>{const el=$(id); if(el) el.addEventListener("change",()=>{protectInputs();refreshStageDefaults();render();});});
 ["qty","diameter","panL","panW","oven"].forEach(id=>$(id).addEventListener("input",()=>{refreshStageDefaults();render();}));
 $("totalHours").addEventListener("input",()=>{stageTouched={};yeastTouched={};refreshStageDefaults();render();});
 advIds.forEach(id=>$(id).addEventListener("input",()=>{touched[id]=true;render();}));
@@ -693,10 +853,21 @@ $("prefYeast").addEventListener("input",()=>{prefTouched.yeast=true;render();});
 $("mEasy").onclick=()=>{currentMethod="easy";stageTouched={};prefTouched={};yeastTouched={};$("totalHours").value=defaultTotalFor();updateTotalRec();syncMethodUI();refreshStageDefaults();render();};
 $("mTrad").onclick=()=>{currentMethod="trad";stageTouched={};prefTouched={};yeastTouched={};$("totalHours").value=defaultTotalFor();updateTotalRec();syncMethodUI();refreshStageDefaults();render();};
 $("accToggle").onclick=()=>$("accordion").classList.toggle("open");
+$("recipeHelpToggle").onclick=()=>{
+  const box=$("recipeHelp");
+  const body=$("notesBlock");
+  const open=!box.classList.contains("open");
+  box.classList.toggle("open",open);
+  body.hidden=!open;
+  $("recipeHelpToggle").setAttribute("aria-expanded",open?"true":"false");
+};
 $("reset").onclick=()=>{const o=$("accordion").classList.contains("open");selectStyle(current);if(o)$("accordion").classList.add("open");};
 $("briefBtn").onclick=()=>{mode="brief";$("briefBtn").classList.add("on");$("expandBtn").classList.remove("on");render();};
 $("expandBtn").onclick=()=>{mode="expanded";$("expandBtn").classList.add("on");$("briefBtn").classList.remove("on");render();};
+$("copyRecipeBtn").onclick=copyRecipeText;
+$("saveRecipeBtn").onclick=saveRecipeText;
 $("printRecipeBtn").onclick=()=>{render();window.print();};
+$("themeToggle").onclick=()=>setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
 
 let prevIng={};
 function ingList(container, items){
@@ -819,10 +990,16 @@ function render(){
   // practical guidance
   const nb=$("notesBlock");
   nb.innerHTML=renderGuidance(current);
+  nb.hidden=!$("recipeHelp").classList.contains("open");
+  lastRecipeText=recipeText(r,steps);
   updatePrintRecipe(r,steps);
 }
 function fmtHShort(h){if(h<1)return Math.round(h*60)+"m";if(h===Math.round(h))return h+"h";return h+"h";}
 
+initTheme();
+$("recipeHelp").classList.remove("open");
+$("notesBlock").hidden=true;
+$("recipeHelpToggle").setAttribute("aria-expanded","false");
 syncMethodUI();
 selectStyle("neapolitan");
 
