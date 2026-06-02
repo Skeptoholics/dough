@@ -278,7 +278,7 @@
           <div class="style-expand" id="styleExpand"><img id="styleExpandImg" alt="" /></div>
           <p class="desc" id="desc"></p>
 
-          <div class="field"><label>How many pizzas</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="qty" min="1" step="1" /></div><span class="rec">recommended <b>2</b></span></div></div>
+          <div class="field"><label id="qtyLabel">How many pizzas</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="qty" min="1" step="1" /></div><span class="rec">recommended <b>2</b></span></div></div>
 
           <div class="field" id="roundSize"><label>Pizza size (diameter)</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="diameter" min="6" step="0.5" /><span class="suffix">in</span></div><span class="rec">recommended <b id="diameterRec"></b></span></div></div>
           <div class="field" id="rectSize" style="display:none"><div class="field-row">
@@ -287,7 +287,11 @@
           </div></div>
           <div class="field" id="depthField" style="display:none"><label>Pan depth (dough thickness)</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="panDepth" min="0.5" step="0.25" /><span class="suffix">in</span></div><span class="rec">recommended <b id="panDepthRec"></b></span></div><div class="mono" style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5">A deeper pan needs more dough for the same footprint. Aim for a thick, airy slab — go lower for a flatter, crisper focaccia.</div></div>
 
-          <div class="field"><label>Total time from start to finish</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="totalHours" min="2" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="totalRec"></b></span></div></div>
+          <div class="field"><label>How long I plan to take from start to finish</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="totalHours" min="2" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="totalRec"></b></span></div><div class="mono" style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5">All rest, pre-ferment and ferment times below are at room temperature.</div></div>
+
+          <div class="field"><label>Ambient room temperature</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="ambient" min="10" max="35" step="1" /><span class="suffix">°C</span></div><span class="rec">default <b>25°C</b></span></div><div class="mono" style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5">All rest, pre-ferment and ferment times (and their recommended ranges) adjust to suit this. Cooler rooms slow fermentation and stretch the times; warmer rooms speed it up.</div></div>
+
+          <div class="field"><label>Flour protein content</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="protein" min="8" max="16" step="0.5" /><span class="suffix">%</span></div><span class="rec">typical for this style <b id="proteinRec"></b></span></div><div class="mono" data-uv="Protein is the gluten budget — you can't spend strength you didn't buy." style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5">Read it off the flour's nutrition panel (protein per 100g). Stronger flour holds more water and tolerates longer ferments, so the recommended hydration and times shift to match it. Too low for the style and the dough won't hold structure.</div></div>
 
           <div class="field"><label>Your cooking temperature</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="oven" min="150" max="550" step="5" /><span class="suffix">°C</span></div><span class="rec">ideal <b id="ovenRec"></b></span></div><div class="mono" data-uv="No pizza steel? A heavy cast-iron pan flipped upside down and preheated hard is the poor cook's stone." style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5">Enter the temperature you can actually bake at. If your oven can't reach the ideal, enter its max. If it can exceed the ideal, that's fine for thin styles, but not recommended for thicker styles.</div></div>
 
@@ -296,7 +300,7 @@
               <button class="style-btn" data-mix="hand" id="mixHand">By hand<br><span style="font-weight:400;font-size:11px">shorter mix + folds</span></button>
               <button class="style-btn active" data-mix="machine" id="mixMachine">Machine<br><span style="font-weight:400;font-size:11px">stand or spiral mixer</span></button>
             </div>
-            <div class="mono" data-uv="Hand mixing: the dough teaches your hands more than any machine ever will." style="font-size:11px;color:var(--ink-soft);margin-top:8px;line-height:1.5">By hand uses a short mix plus stretch-and-folds during the bulk to build strength gently. A mixer does that work up front.</div>
+            <div class="mono" data-uv="Hand mixing: the dough teaches your hands more than any machine ever will." style="font-size:11px;color:var(--ink-soft);margin-top:8px;line-height:1.5">Mixing by hand effectively creates a shorter mixing time, to compensate for this, we'll include a few additional stretch-and-folds during the bulk to build strength gently. A mixer on the other hand, does that work up front.</div>
           </div>
 
           <div class="accordion" id="accordion">
@@ -311,7 +315,7 @@
                 </div>
               </div>
               <p class="desc" id="methodBlurb" style="border-bottom:none;margin-bottom:8px"></p>
-              <div class="guide-note" data-uv="Cold dough is just slow dough — the fridge buys you time, not flavour you didn't put in."><b>Steered, not wide-open:</b> this calculator gives control over useful dough variables, while avoiding method-mixing that creates confusion without improving the dough.</div>
+              <div class="guide-note" data-uv="Cold dough is just slow dough — the fridge buys you time, not flavour you didn't put in."><b>Preferment tip:</b> a poolish or biga is dough made ahead and left to ferment, then folded into the final mix. It adds flavour and strength that a same-day dough can't build in the time available.</div>
 
               <div class="subgroup" id="prefGroup" style="display:none">
                 <div class="subgroup-title">Preferment</div>
@@ -319,11 +323,11 @@
                   <option value="poolish">Poolish — liquid, aromatic</option>
                   <option value="biga">Biga — stiff, strong, nutty</option>
                 </select><div class="micro-note" id="prefTypeNote"></div></div>
-                <div class="field" id="poolishStyleField"><label>Poolish finish</label><select class="ctrl" id="poolishStyle">
+                <div class="field" id="poolishStyleField"><label id="poolishStyleLabel">Poolish finish</label><select class="ctrl" id="poolishStyle">
                   <option value="stiff">Chewier dough — add flour first</option>
                   <option value="wet">Softer dough — add water first</option>
                 </select></div>
-                <div class="field" id="poolishPctField"><label>Poolish amount (% of total flour)</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="poolishPct" min="10" max="100" step="5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="poolishPctRec"></b></span></div><div class="mono" style="font-size:11px;color:var(--ink-soft);margin-top:6px;line-height:1.5">This is a share of the <b>total</b> flour, not the flour added later. At 30%, the poolish holds 30% of all the flour and the rest goes in when completing the dough.</div></div>
+                <div class="field" id="poolishPctField"><label id="poolishPctLabel">Poolish amount (% of total flour)</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="poolishPct" min="10" max="100" step="5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="poolishPctRec"></b></span></div><div class="mono" id="poolishPctNote" style="font-size:11px;color:var(--ink-soft);margin-top:6px;line-height:1.5">This is a share of the <b>total</b> flour, not the flour added later. At 30%, the poolish holds 30% of all the flour and the rest goes in when completing the dough.</div></div>
                 <div class="field"><label>Preferment hydration</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="prefHydration" min="40" max="120" step="1" /><span class="suffix">%</span></div><span class="rec">recommended <b id="prefHydrationRec"></b></span></div></div>
                 <div class="field"><label>Preferment time</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sPreferment" min="1" step="1" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sPrefermentRec"></b></span></div></div>
                 <div class="field" style="margin-bottom:0"><label>Preferment yeast</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="prefYeast" min="0" max="3" step="0.01" /><span class="suffix">%</span></div><span class="rec">starting point <b id="prefYeastRec"></b></span></div></div>
@@ -479,16 +483,52 @@ function timePreset(styleKey,methodKey,prefermentKey){
   }
   return null;
 }
-function getDefaultTotalFor(styleKey,methodKey,prefermentKey){
-  const preset=timePreset(styleKey,methodKey,prefermentKey);
-  if(preset)return preset.defaultTotal;
-  if(methodKey==="easy")return DEFAULT_TOTAL.easy;
-  return PREFERMENT_DEFAULT_TOTAL[prefermentKey]||DEFAULT_TOTAL.trad;
+const AMBIENT_DEFAULT=25;
+/* Per-style flour protein the defaults are tuned for (% of flour weight).
+   Used as the baseline the user's flour is compared against. */
+const STYLE_PROTEIN_BASE={neapolitan:12.5, ny:13, detroit:13, focaccia:12};
+function styleProteinBase(styleKey){return STYLE_PROTEIN_BASE[styleKey]||12.5;}
+/* Stronger flour (more protein) builds more gluten: it tolerates and benefits
+   from a bit more time and carries more water; weaker flour breaks down sooner
+   and wants less. Both effects are modest and tightly clamped. */
+function proteinFactor(protein,styleKey){
+  const base=styleProteinBase(styleKey);
+  const p=num(protein,base);
+  const f=1+0.035*(p-base);          // ~3.5% time tolerance per protein point
+  return Math.min(1.22,Math.max(0.82,f));
 }
-function getRecommendedRange(styleKey,methodKey,prefermentKey){
+function proteinHydrationDelta(protein,styleKey){
+  const base=styleProteinBase(styleKey);
+  const p=num(protein,base);
+  const d=1.5*(p-base);              // ~1.5 hydration points per protein point
+  return Math.max(-8,Math.min(8,d));
+}
+/* Fermentation rate roughly follows a Q10≈2 rule: ~doubles per 10°C.
+   Factor relative to the 25°C baseline — cooler rooms => factor>1 (longer),
+   warmer rooms => factor<1 (shorter). Clamped to a sane range. */
+function tempFactor(ambient){
+  const a=num(ambient,AMBIENT_DEFAULT);
+  const f=Math.pow(2,(AMBIENT_DEFAULT-a)/10);
+  return Math.min(2.2,Math.max(0.45,f));
+}
+/* scale an hours value by the ambient (and optional protein) factor, keep it tidy */
+function scaleHours(h,ambient,pf){
+  const v=h*tempFactor(ambient)*(pf||1);
+  return v>=4 ? Math.round(v) : Math.round(v*2)/2;
+}
+function getDefaultTotalFor(styleKey,methodKey,prefermentKey,ambient,protein){
   const preset=timePreset(styleKey,methodKey,prefermentKey);
-  if(preset)return preset.range;
-  return TIME_LIMITS[methodKey==="easy"?"easy":prefermentKey];
+  let base;
+  if(preset)base=preset.defaultTotal;
+  else if(methodKey==="easy")base=DEFAULT_TOTAL.easy;
+  else base=PREFERMENT_DEFAULT_TOTAL[prefermentKey]||DEFAULT_TOTAL.trad;
+  return scaleHours(base,ambient,proteinFactor(protein,styleKey));
+}
+function getRecommendedRange(styleKey,methodKey,prefermentKey,ambient,protein){
+  const preset=timePreset(styleKey,methodKey,prefermentKey);
+  const r = preset ? preset.range : TIME_LIMITS[methodKey==="easy"?"easy":prefermentKey];
+  const pf=proteinFactor(protein,styleKey);
+  return {min:scaleHours(r.min,ambient,pf),max:scaleHours(r.max,ambient,pf)};
 }
 
 function num(v,f){return v===undefined||v===null||v===""||isNaN(Number(v))?f:Number(v);}
@@ -519,22 +559,25 @@ function stepPreferment(total, pf, lim){
 function calculate(opts){
   const { styleKey, methodKey="easy", quantity=2, size=null, overrides={},
           yeastType="instant", preferment="poolish", poolishStyle="stiff",
-          totalHours=null, stageOverrides={}, yeastOverrides={}, mixMode="machine" } = opts;
+          totalHours=null, stageOverrides={}, yeastOverrides={}, mixMode="machine", ambient=AMBIENT_DEFAULT, protein } = opts;
 
   const base=STYLES[styleKey];
   const isTrad=methodKey==="trad";
-  const p={hydration:num(overrides.hydration,base.hydration),salt:num(overrides.salt,base.salt),oil:num(overrides.oil,base.oil),sugar:num(overrides.sugar,base.sugar)};
+  const proteinPct=num(protein,styleProteinBase(styleKey));
+  const pFac=proteinFactor(proteinPct,styleKey);
+  const baseHyd=clamp(base.hydration+proteinHydrationDelta(proteinPct,styleKey),50,95,base.hydration);
+  const p={hydration:num(overrides.hydration,baseHyd),salt:num(overrides.salt,base.salt),oil:num(overrides.oil,base.oil),sugar:num(overrides.sugar,base.sugar)};
   const sz=resolveSize(base,size);
   const a=area(base,sz);
   const perBall = base.hasDepth ? a*(sz.depth||base.defaultDepth)*base.depthK : a*base.density;
   const totalDough=perBall*quantity;
-  const total=num(totalHours,getDefaultTotalFor(styleKey,methodKey,preferment));
+  const total=num(totalHours,getDefaultTotalFor(styleKey,methodKey,preferment,ambient,proteinPct));
 
   // --- TIME ALLOCATION (whole hours) ---
   let stages={},mainFermentHours;
   if(!isTrad){
     const preset=timePreset(styleKey,methodKey,preferment);
-    const rec=preset ? {bulk:preset.bulk,ball:Math.max(1,Math.round(total-preset.bulk))} : easySplit(total);
+    const rec=preset ? {bulk:scaleHours(preset.bulk,ambient,pFac),ball:Math.max(1,Math.round(total-scaleHours(preset.bulk,ambient,pFac)))} : easySplit(total);
     const recBulk=Math.round(rec.bulk), recBall=Math.max(1,Math.round(rec.ball));
     const bulk=Math.round(num(stageOverrides.bulk,recBulk)),ball=Math.round(num(stageOverrides.ball,recBall));
     stages={bulk:{rec:recBulk,val:bulk},ball:{rec:recBall,val:ball}};
@@ -545,10 +588,10 @@ function calculate(opts){
     let recPre, recBulk, recBall;
     const preset=timePreset(styleKey,methodKey,preferment);
     if(preset){
-      const delta=Math.round(total-preset.defaultTotal);
-      recPre=Math.max(1, preset.preferment+delta);
-      recBulk=preset.bulk;
-      recBall=preset.ball;
+      const delta=Math.round(total-scaleHours(preset.defaultTotal,ambient,pFac));
+      recPre=Math.max(1, scaleHours(preset.preferment,ambient,pFac)+delta);
+      recBulk=scaleHours(preset.bulk,ambient,pFac);
+      recBall=scaleHours(preset.ball,ambient,pFac);
     } else {
       // preferment fills toward its cap as total grows
       recPre=stepPreferment(total, pf, lim);
@@ -586,8 +629,8 @@ function calculate(opts){
   let prefermentObj=null,stageFlour={preferment:0,final:totalFlour},stageWater={preferment:0,final:totalWater};
   if(isTrad){
     const pf=PREFERMENTS[preferment];
-    // poolish flour % is user-definable; biga is locked at 100%
-    const pfFlourPct = preferment==="poolish" ? num(overrides.poolishPct, pf.flourPct) : pf.flourPct;
+    // both poolish and biga amounts are now user-definable (% of total flour)
+    const pfFlourPct = num(overrides.poolishPct, pf.flourPct);
     const pfHydration=num(overrides.prefHydration,pf.hydration);
     const pfFlour=totalFlour*(pfFlourPct/100);
     const pfWater=pfFlour*(pfHydration/100);
@@ -609,13 +652,15 @@ function calculate(opts){
 
   // --- RED FLAGS / GUARD RAILS ---
   const flags=[];
-  const lim = TIME_LIMITS[isTrad?preferment:"easy"];
-  const recRange = getRecommendedRange(styleKey,methodKey,preferment);
+  const limRaw = TIME_LIMITS[isTrad?preferment:"easy"];
+  const lim = {min:scaleHours(limRaw.min,ambient,pFac),max:scaleHours(limRaw.max,ambient,pFac)};
+  const recRange = getRecommendedRange(styleKey,methodKey,preferment,ambient,proteinPct);
+  const napCap = scaleHours(24,ambient,pFac);
   if(styleKey==="neapolitan"){
     if(total < recRange.min){
       flags.push({level:"warn",msg:`${fmtH(total)} is below the recommended Neapolitan range of ${fmtH(recRange.min)}–${fmtH(recRange.max)}. The dough may not be mature enough for a light, open cornicione.`});
     }
-    if(!isTrad && total > 24){
+    if(!isTrad && total > napCap){
       flags.push({level:"warn",msg:`${fmtH(total)} is beyond the practical room-temperature Neapolitan range. Use very low yeast or cold control if you need to push it this far.`});
     } else if(isTrad && total > lim.max){
       flags.push({level:"warn",msg:`${fmtH(total)} is longer than this preferment method should normally run at room temperature. Reduce yeast, shorten the schedule, or use cold control if you need to delay.`});
@@ -639,6 +684,16 @@ function calculate(opts){
   if(mainFermentHours>recMain*1.5&&recMain>0){
     flags.push({level:"warn",msg:`Fermenting the final dough ${fmtH(mainFermentHours)} is well over the recommended ${fmtH(recMain)} for this much yeast — it can exhaust and collapse. Lower the yeast or shorten the time.`});
   }
+  // flour protein vs style fit
+  if(proteinPct<9){
+    flags.push({level:"warn",msg:`At ${proteinPct}% protein this is plain/cake-flour territory. It won't build the gluten a pizza needs — expect a slack dough that tears and won't hold a rise. Use a bread or 00 flour around ${styleProteinBase(styleKey)}%.`});
+  } else if((styleKey==="ny"||styleKey==="detroit") && proteinPct<11.5){
+    flags.push({level:"warn",msg:`${proteinPct}% protein is on the low side for ${base.name}, which leans on strong flour for chew and structure. It'll work but expect a softer, less chewy result; keep the ferment toward the shorter end so the weaker gluten doesn't break down.`});
+  } else if(styleKey==="neapolitan" && proteinPct>14){
+    flags.push({level:"warn",msg:`${proteinPct}% protein is very strong for Neapolitan. The dough will be tight and springy and fight back when you stretch it thin — rest it well between stretches, or drop to ~12–12.5% flour for an easier, more extensible dough.`});
+  } else if(proteinPct>15){
+    flags.push({level:"warn",msg:`${proteinPct}% is a very high-protein flour. The dough will be stiff and elastic and need more kneading plus extra rest between shaping steps to relax.`});
+  }
 
   const totalTime = isTrad ? (stages.preferment.val+stages.bulk.val+stages.ball.val) : (stages.bulk.val+stages.ball.val);
 
@@ -654,8 +709,8 @@ function calculate(opts){
     ingredients,
     stageAmounts:{flour:{preferment:r0(stageFlour.preferment),final:r0(stageFlour.final)},water:{preferment:r0(stageWater.preferment),final:r0(stageWater.final)},finalYeast:mainYeastG},
     bake:base.bake,cookTime:cookTime(styleKey,opts.ovenTemp),flags,
-    method:buildMethod({base,isTrad,p,prefermentObj,poolishStyle,yeastType,stages,quantity,styleKey,expanded:false,ingredients,ovenTemp:opts.ovenTemp,cookTimeStr:cookTime(styleKey,opts.ovenTemp),mixMode,stageAmounts:{flour:{preferment:r0(stageFlour.preferment),final:r0(stageFlour.final)},water:{preferment:r0(stageWater.preferment),final:r0(stageWater.final)},finalYeast:mainYeastG}}),
-    methodExpanded:buildMethod({base,isTrad,p,prefermentObj,poolishStyle,yeastType,stages,quantity,styleKey,expanded:true,ingredients,ovenTemp:opts.ovenTemp,cookTimeStr:cookTime(styleKey,opts.ovenTemp),mixMode,stageAmounts:{flour:{preferment:r0(stageFlour.preferment),final:r0(stageFlour.final)},water:{preferment:r0(stageWater.preferment),final:r0(stageWater.final)},finalYeast:mainYeastG}})
+    method:buildMethod({base,isTrad,p,prefermentObj,poolishStyle,yeastType,stages,quantity,styleKey,proteinPct,expanded:false,ingredients,ovenTemp:opts.ovenTemp,cookTimeStr:cookTime(styleKey,opts.ovenTemp),mixMode,stageAmounts:{flour:{preferment:r0(stageFlour.preferment),final:r0(stageFlour.final)},water:{preferment:r0(stageWater.preferment),final:r0(stageWater.final)},finalYeast:mainYeastG}}),
+    methodExpanded:buildMethod({base,isTrad,p,prefermentObj,poolishStyle,yeastType,stages,quantity,styleKey,proteinPct,expanded:true,ingredients,ovenTemp:opts.ovenTemp,cookTimeStr:cookTime(styleKey,opts.ovenTemp),mixMode,stageAmounts:{flour:{preferment:r0(stageFlour.preferment),final:r0(stageFlour.final)},water:{preferment:r0(stageWater.preferment),final:r0(stageWater.final)},finalYeast:mainYeastG}})
   };
 }
 
@@ -663,17 +718,26 @@ function calculate(opts){
 function elapsed(h){ if(h<=0) return ""; return ` (≈${fmtH(h)} in)`; }
 
 function buildMethod(ctx){
-  const {base,isTrad,p,prefermentObj,poolishStyle,yeastType,stages,quantity,styleKey,expanded,ingredients,stageAmounts,ovenTemp,cookTimeStr,mixMode}=ctx;
+  const {base,isTrad,p,prefermentObj,poolishStyle,yeastType,stages,quantity,styleKey,proteinPct,expanded,ingredients,stageAmounts,ovenTemp,cookTimeStr,mixMode}=ctx;
   const s=[];const hasOil=p.oil>0,hasSugar=p.sugar>0;
   const byHand = mixMode==="hand";
-  // stretch-and-fold instruction sized to the bulk length
+  // flour strength relative to what this style is tuned for
+  const pBase=styleProteinBase(styleKey);
+  const protDelta=num(proteinPct,pBase)-pBase;
+  const strongFlour=protDelta>=1.5, weakFlour=protDelta<=-1.5;
+  // a short note on how the flour strength changes the feel/handling of the dough
+  const flourNote = strongFlour
+    ? ` This is a strong flour for the style — the dough will feel tight and elastic and want a little more working to come together, plus more rest between shaping steps to relax.`
+    : weakFlour
+    ? ` This is a softer flour for the style — go easy: develop it gently and don't over-ferment or over-knead, or the weaker gluten goes slack.`
+    : "";
+  // stretch-and-fold instruction: a fold every 30 minutes through the bulk
   function foldText(bulkH,light){
-    const sets = bulkH>=3?3:(bulkH>=1.5?2:1);
-    const setWord = sets===1?"set":"sets";
-    if(light){
-      return `Early in the bulk, give the dough ${sets} gentle ${setWord} of stretch-and-folds about 30 minutes apart, then leave it alone for the rest of the time.`;
-    }
-    return `In the first hour or so, give the dough ${sets} ${setWord} of stretch-and-folds about 30 minutes apart: with a wet hand, lift one side, stretch it up and fold it over the top, then turn the bowl a quarter-turn and repeat around (about 4 folds per set). Leave it undisturbed for the rest of the bulk.`;
+    // stronger flour can take an extra fold; weaker flour one less, so it isn't overworked
+    const adj = strongFlour ? 1 : weakFlour ? -1 : 0;
+    const folds = Math.max(2, Math.min(7, Math.round(num(bulkH,1)*2)+adj));
+    const gentle = light||weakFlour ? "gentle " : "";
+    return `During the bulk ferment, give the dough a ${gentle}stretch-and-fold every 30 minutes — roughly ${folds} folds in total: with a wet hand, lift one side, stretch it up and fold it over the top, then turn the bowl a quarter-turn and repeat around (about 4 folds per set). Each round builds strength gently; once the folds are done, leave the dough undisturbed for the rest of the bulk.`;
   }
   const ballWord=quantity===1?"ball":"balls";
   const panWord=quantity===1?"pan":"pans";
@@ -710,8 +774,8 @@ function buildMethod(ctx){
       let proofWhy="The final proof relaxes the dough so it stretches without tearing and puffs in the oven. Under-proofed dough fights back and stays tight; over-proofed dough goes slack and won't hold its shape.";
       if(styleKey==="neapolitan" && !isTrad)proofWhy="For direct Neapolitan dough, this long ball ferment is critical. It lets the dough ball become relaxed, gassy, and mature enough to inflate the cornicione without tearing.";
       if(styleKey==="neapolitan" && isTrad && prefermentObj && prefermentObj.type==="poolish")proofWhy="The poolish has already built flavour and extensibility, but the final dough still needs this ball ferment to recover, relax, and build enough gas for an open cornicione.";
-      if(styleKey==="neapolitan" && isTrad && prefermentObj && prefermentObj.type==="biga")proofWhy="The biga has already matured the full flour load, so this shorter ball ferment is mainly for recovery, relaxation, and fresh gas before baking.";
-      s.push(`Cover the ${ballWord} and rest for the ball ferment — about ${fmtH(stages.ball.val)}, until relaxed, slightly puffy, and lightly gassy.`+(expanded?elapsed(elapsedH):"")+why(proofWhy));
+      if(styleKey==="neapolitan" && isTrad && prefermentObj && prefermentObj.type==="biga")proofWhy=(prefermentObj.flourPct>=100?"The biga has already matured the full flour load, so this shorter ball ferment is mainly for recovery, relaxation, and fresh gas before baking.":"The biga has already matured a large share of the flour, so this shorter ball ferment mainly lets the freshly added flour catch up and builds fresh gas before baking.");
+      s.push(`Cover the ${ballWord} and rest for the ball ferment at room temperature — about ${fmtH(stages.ball.val)}, until relaxed, slightly puffy, and lightly gassy.`+(expanded?elapsed(elapsedH):"")+why(proofWhy));
       s.push(base.shapeStep);
       return elapsedH;
     }
@@ -722,7 +786,7 @@ function buildMethod(ctx){
     if(isDetroit){
       s.push(`Gently press the dough partway toward the edges and corners. If it resists, stop — it will spread more easily after the pan proof.`+why("Forcing tight dough tears gluten and knocks out too much gas. Rest does the work."));
       elapsedH+=stages.ball.val;
-      s.push(`Cover and pan proof for about ${fmtH(stages.ball.val)}, until puffy, relaxed, and easier to press.`+(expanded?elapsed(elapsedH):"")+why("Detroit needs a panned final proof so the dough can rise into the pan structure and fry against the metal during baking."));
+      s.push(`Cover and pan proof at room temperature for about ${fmtH(stages.ball.val)}, until puffy, relaxed, and easier to press.`+(expanded?elapsed(elapsedH):"")+why("Detroit needs a panned final proof so the dough can rise into the pan structure and fry against the metal during baking."));
       s.push(`Press the dough gently to the corners if needed. Add cheese right to the edges, then add sauce and toppings as preferred.`+why("Cheese at the edge fries against the pan and creates the caramelised Detroit crust."));
       return elapsedH;
     }
@@ -730,7 +794,7 @@ function buildMethod(ctx){
     if(isFocaccia){
       s.push(`Gently spread the dough partway toward the edges. If it resists, stop — do not force it.`+why("High-hydration focaccia dough stretches best in stages. Rest prevents tearing and keeps gas in the dough."));
       elapsedH+=stages.ball.val;
-      s.push(`Cover and pan proof for about ${fmtH(stages.ball.val)}, until puffy, relaxed, and visibly gassy.`+(expanded?elapsed(elapsedH):"")+why("Focaccia's final rise belongs in the pan. This gives the bread its open crumb and lets the dough fill the pan without being forced."));
+      s.push(`Cover and pan proof at room temperature for about ${fmtH(stages.ball.val)}, until puffy, relaxed, and visibly gassy.`+(expanded?elapsed(elapsedH):"")+why("Focaccia's final rise belongs in the pan. This gives the bread its open crumb and lets the dough fill the pan without being forced."));
       s.push(`Drizzle with oil, dimple deeply with oiled fingertips, add simple toppings, and bake.`+why("Dimples trap oil and toppings while preserving the gas that gives focaccia its light interior."));
       return elapsedH;
     }
@@ -742,15 +806,15 @@ function buildMethod(ctx){
     s.push(`Dissolve all ${I.yeast}g yeast into all ${I.water}g water and leave 10 minutes${yeastType==="instant"?" (instant yeast can also go straight into the flour — dissolving just guarantees an even start)":""}.`+why("Yeast wakes up in water, not in dry flour — flour competes with it for moisture and slows it down. Ten minutes gets it active before it meets the flour. Active dry and fresh yeast really do want this head start; instant dry is milled fine enough to skip it."));
     s.push(`Add all ${I.flour}g flour and the ${seasoningStr()} to the water and mix into a rough dough.`+why("Salt, oil and sugar slow gluten development, so in a longer ferment some bakers add them at the end. At room temperature the difference is small, and salt added now also keeps the fermentation steadier — so for this dough, all-in is fine."));
     if(byHand){
-      s.push(`Mix by hand until it comes together into a rough, shaggy dough with no dry flour left, about 2–3 minutes. It will not be smooth yet — that's fine.`+why("By hand you don't need to knead to smoothness now. The stretch-and-folds during the bulk build the gluten gradually, with far less effort and less risk of a tight, torn dough."));
+      s.push(`Mix by hand until it comes together into a rough, shaggy dough with no dry flour left, about 2–3 minutes. It will not be smooth yet — that's fine.${flourNote}`+why("By hand you don't need to knead to smoothness now. The stretch-and-folds during the bulk build the gluten gradually, with far less effort and less risk of a tight, torn dough."));
     } else {
-      s.push(`Knead by machine (or by hand) for about 5 minutes, until the dough becomes smooth and elastic.`+why("A spiral or stand mixer builds the gluten network quickly. Kneading now traps gas and gives structure, so the bulk can focus on fermentation rather than strength."));
+      s.push(`Knead by machine (or by hand) for about 5 minutes, until the dough becomes smooth and elastic.${flourNote}`+why("A spiral or stand mixer builds the gluten network quickly. Kneading now traps gas and gives structure, so the bulk can focus on fermentation rather than strength."));
     }
     elapsedH+=stages.bulk.val;
     if(byHand){
-      s.push(`Cover and begin the bulk ferment — about ${fmtH(stages.bulk.val)} somewhere comfortable, not cold. ${foldText(stages.bulk.val,false)}`+(expanded?elapsed(elapsedH):"")+why("Each fold builds tension and lines up the gluten without hard kneading — this is how hand bakers reach the strength a mixer gives, while the long bulk does the fermenting."));
+      s.push(`Cover and begin the bulk ferment at room temperature — about ${fmtH(stages.bulk.val)}. ${foldText(stages.bulk.val,false)}`+(expanded?elapsed(elapsedH):"")+why("Each fold builds tension and lines up the gluten without hard kneading — this is how hand bakers reach the strength a mixer gives, while the long bulk does the fermenting."));
     } else {
-      s.push(`Cover and rest somewhere comfortable, not cold, for the bulk ferment — about ${fmtH(stages.bulk.val)}.`+(expanded?elapsed(elapsedH):"")+why("This is the first and longest stretch of fermentation. The whole mass ferments together, building flavour and gas. Too short and the dough is bland and dense; too long and the yeast starts to exhaust and the dough can over-soften."));
+      s.push(`Cover and rest at room temperature for the bulk ferment — about ${fmtH(stages.bulk.val)}.`+(expanded?elapsed(elapsedH):"")+why("This is the first and longest stretch of fermentation. The whole mass ferments together, building flavour and gas. Too short and the dough is bland and dense; too long and the yeast starts to exhaust and the dough can over-soften."));
     }
     finalProofSteps(elapsedH);
     s.push(bakeStep());
@@ -762,15 +826,29 @@ function buildMethod(ctx){
   const remWater=stageAmounts?stageAmounts.water.final:0;
   const finalYeast=stageAmounts?stageAmounts.finalYeast:I.yeast;
   let elapsedH=0;
-  s.push(`Make the ${pf.name.toLowerCase()}: dissolve ${pf.yeast}g yeast in ${pf.water}g water, leave 10 minutes, then mix in ${pf.flour}g flour${isBiga?" to a stiff, shaggy dough":" to a smooth batter"}.`+why(isBiga?" A stiff biga uses all the flour at low hydration. It ferments slowly and evenly, building strength and a deep, nutty flavour.":" A loose poolish uses part of the flour at high hydration. It ferments fast and adds extensibility and an aromatic, slightly sweet note."));
+  s.push(`Make the ${pf.name.toLowerCase()}: dissolve ${pf.yeast}g yeast in ${pf.water}g water, leave 10 minutes, then mix in ${pf.flour}g flour${isBiga?" to a stiff, shaggy dough":" to a smooth batter"}.`+why(isBiga?" A stiff biga is mixed at low hydration. It ferments slowly and evenly, building strength and a deep, nutty flavour.":" A loose poolish uses part of the flour at high hydration. It ferments fast and adds extensibility and an aromatic, slightly sweet note."));
   elapsedH+=pf.hours;
   s.push(`Cover and leave the ${pf.name.toLowerCase()} about ${fmtH(pf.hours)} at room temperature, until risen, bubbly and smelling fermented.`+(expanded?elapsed(elapsedH):"")+why(` Below about ${fmtH(pf.minHours)} it hasn't fermented enough to be worth the extra step. The preferment is doing the slow flavour work here, which is why the final dough then needs much less time.`));
 
+  const hasRemFlour = remFlour>0;
+  // adding the remaining flour before the water makes a much stiffer, drier dough — warn for both mix modes
+  const stiffNote = byHand
+    ? " Note this makes a much stiffer, drier dough, and it is harder work to bring together by hand."
+    : " Note this makes a much stiffer, drier dough — go slower and keep an eye on the mixer, as some machines struggle with a stiff dough.";
+
   if(isBiga){
-    s.push(`Dissolve ${finalYeast}g yeast in the remaining ${remWater}g water, leave 10 minutes, then add it to the biga with the ${seasoningStr()} and mix to a cohesive dough. No more flour — it's all in the biga.`+why(" Everything was already in the biga, so finishing only means loosening it with the rest of the water and bringing in the seasonings."));
+    if(!hasRemFlour){
+      s.push(`Dissolve ${finalYeast}g yeast in the remaining ${remWater}g water and leave 10 minutes. ${byHand?"Tear or cut the biga into small pieces first so it takes up the water — mixing water into a dry mass by hand is slow otherwise. ":"Break the biga into a few pieces first. "}Then add the water with the ${seasoningStr()} and mix to a cohesive dough. No more flour — it's all in the biga.`+why(" Everything was already in the biga, so finishing only means loosening it with the rest of the water and bringing in the seasonings."));
+    } else if(poolishStyle==="stiff"){
+      s.push(`Break the biga into small pieces, then work the remaining ${remFlour}g flour into it to a firm, dry dough. ${byHand?"Work it a few minutes until it firms up, then rest 10 minutes — the folds in the bulk will finish building the strength.":"Knead until strong, then rest 10 minutes."}${stiffNote}`+why(" Adding the rest of the flour with as little water as possible first forces the gluten strands together hard, building a stronger, chewier network."));
+      s.push(`${byHand?"Tear or cut that stiff dough into small pieces first so it takes up the water — by hand this is slow otherwise — then add":"Add"} the remaining ${remWater}g water, ${finalYeast}g yeast (dissolved and rested 10 minutes), and the ${seasoningStr()}, and mix until smooth.`+why(" Adding the water only after the gluten is already strong keeps that chew."));
+    } else {
+      s.push(`Dissolve ${finalYeast}g yeast in the remaining ${remWater}g water and leave 10 minutes. ${byHand?"Tear or cut the biga into small pieces first so it takes up the water — mixing water into a dry mass by hand is slow otherwise. ":"Break the biga into small pieces first. "}Then add the water and mix until the biga has softened and taken up the water.`+why(" Bringing the water in first, before the rest of the flour, keeps the gluten looser and the final crumb softer and more delicate."));
+      s.push(`Then add the remaining ${remFlour}g flour and the ${seasoningStr()}, and mix to a dough.`);
+    }
   } else if(poolishStyle==="stiff"){
-    s.push(`Add the remaining ${remFlour}g flour to the poolish and work it into a firm, dry dough. ${byHand?"Work it a few minutes until it firms up, then rest 10 minutes — the folds in the bulk will finish building the strength.":"Knead until strong, then rest 10 minutes."}`+why(" Forming the dough with as little water as possible first forces the gluten strands together hard, building a stronger, chewier network. This trick comes from stiff-noodle doughs."));
-    s.push(`Now add the remaining ${remWater}g water, ${finalYeast}g yeast (dissolved and rested 10 minutes), and the ${seasoningStr()}, and mix until smooth.`+why(" Adding the water only after the gluten is already strong keeps that chew."));
+    s.push(`Add the remaining ${remFlour}g flour to the poolish and work it into a firm, dry dough. ${byHand?"Work it a few minutes until it firms up, then rest 10 minutes — the folds in the bulk will finish building the strength.":"Knead until strong, then rest 10 minutes."}${stiffNote}`+why(" Forming the dough with as little water as possible first forces the gluten strands together hard, building a stronger, chewier network. This trick comes from stiff-noodle doughs."));
+    s.push(`${byHand?"Tear or cut that stiff dough into small pieces first so it takes up the water — by hand this is slow otherwise — then add":"Add"} the remaining ${remWater}g water, ${finalYeast}g yeast (dissolved and rested 10 minutes), and the ${seasoningStr()}, and mix until smooth.`+why(" Adding the water only after the gluten is already strong keeps that chew."));
   } else {
     s.push(`Add the remaining ${remWater}g water and ${finalYeast}g yeast (dissolved and rested 10 minutes) to the poolish and mix well until all the water is incorporated.`+why(" Bringing all the water in first, before the bulk of the flour, keeps the gluten looser and the final crumb softer and more delicate."));
     s.push(`Then add the remaining ${remFlour}g flour and the ${seasoningStr()}, and mix to a dough.`);
@@ -778,9 +856,9 @@ function buildMethod(ctx){
 
   elapsedH+=stages.bulk.val;
   if(byHand){
-    s.push(`Cover and rest for the bulk ferment — about ${fmtH(stages.bulk.val)} somewhere comfortable, not cold. ${foldText(stages.bulk.val,true)}`+(expanded?elapsed(elapsedH):"")+why(" The preferment already did most of the fermenting, so the final dough needs only a short bulk. A fold or two early on tightens it up without a real knead."));
+    s.push(`Cover and rest at room temperature for the bulk ferment — about ${fmtH(stages.bulk.val)}. ${foldText(stages.bulk.val,true)}`+(expanded?elapsed(elapsedH):"")+why(" The preferment already did most of the fermenting, so the final dough needs only a short bulk. The folds early on tighten it up without a real knead.")+flourNote);
   } else {
-    s.push(`Cover and rest somewhere comfortable, not cold, for the bulk ferment — about ${fmtH(stages.bulk.val)}.`+(expanded?elapsed(elapsedH):"")+why(" The preferment already did most of the fermenting, so the final dough needs only a short bulk to come together."));
+    s.push(`Cover and rest at room temperature for the bulk ferment — about ${fmtH(stages.bulk.val)}.`+(expanded?elapsed(elapsedH):"")+why(" The preferment already did most of the fermenting, so the final dough needs only a short bulk to come together.")+flourNote);
   }
   finalProofSteps(elapsedH);
   s.push(bakeStep());
@@ -893,12 +971,14 @@ document.addEventListener("click",collapseStyle);
 $("styleExpand").addEventListener("click",e=>e.stopPropagation());
 
 function fmtPct(v){return v+"%";}
+function ambientVal(){return num($("ambient")?$("ambient").value:AMBIENT_DEFAULT,AMBIENT_DEFAULT);}
+function proteinVal(){return num($("protein")&&$("protein").value!==""?$("protein").value:styleProteinBase(current),styleProteinBase(current));}
 function currentLimitKey(){return currentMethod==="easy"?"easy":$("preferment").value;}
 function defaultTotalFor(){
-  return getDefaultTotalFor(current,currentMethod,$("preferment").value);
+  return getDefaultTotalFor(current,currentMethod,$("preferment").value,ambientVal(),proteinVal());
 }
 function updateTotalRec(){
-  const L=getRecommendedRange(current,currentMethod,$("preferment").value);
+  const L=getRecommendedRange(current,currentMethod,$("preferment").value,ambientVal(),proteinVal());
   $("totalRec").textContent=L.min+"–"+L.max+" hrs";
 }
 function getSize(){const s=STYLES[current];if(s.shape==="round")return{diameter:$("diameter").value};const o={length:$("panL").value,width:$("panW").value};if(s.hasDepth&&$("panDepth"))o.depth=$("panDepth").value;return o;}
@@ -909,7 +989,7 @@ function recalcRecommendations(){
   const baseCalc=calculate({styleKey:current,methodKey:currentMethod,quantity:num($("qty").value,2),
     size:getSize(),overrides:{},yeastType:$("yeastType").value,preferment:$("preferment").value,
     poolishStyle:$("poolishStyle").value,totalHours:num($("totalHours").value,defaultTotalFor()),
-    ovenTemp:$("oven").value});
+    ovenTemp:$("oven").value,ambient:ambientVal(),protein:proteinVal()});
   return baseCalc;
 }
 
@@ -944,12 +1024,14 @@ function selectStyle(k){
   $("rectSize").style.display=s.shape==="rectangle"?"":"none";
   $("depthField").style.display=s.hasDepth?"":"none";
   $("qty").value=2;
+  if($("qtyLabel"))$("qtyLabel").textContent="How many "+s.name+" pizzas";
+  if($("protein")){const pb=styleProteinBase(k);$("protein").value=pb;$("proteinRec").textContent=pb+"%";}
   if(s.shape==="round"){$("diameter").value=s.defaultSize;$("diameterRec").textContent=s.defaultSize+" in";}
   else{$("panL").value=s.defaultLength;$("panW").value=s.defaultWidth;}
   if(s.hasDepth){$("panDepth").value=s.defaultDepth;$("panDepthRec").textContent=s.depthMin+"–"+s.depthMax+" in";}
   $("totalHours").value=defaultTotalFor();updateTotalRec();
   $("oven").value=s.bake.idealMin;$("ovenRec").textContent=s.bake.idealMin+"–"+s.bake.max+"°C";
-  $("hydration").value=s.hydration;$("hydrationRec").textContent=fmtPct(s.hydration);
+  {const recHyd=clamp(s.hydration+proteinHydrationDelta(proteinVal(),k),50,95,s.hydration);$("hydration").value=r2(recHyd);$("hydrationRec").textContent=fmtPct(r2(recHyd));}
   $("salt").value=s.salt;$("saltRec").textContent=fmtPct(s.salt);
   $("oil").value=s.oil;$("oilRec").textContent=fmtPct(s.oil);
   $("sugar").value=s.sugar;$("sugarRec").textContent=fmtPct(s.sugar);
@@ -974,9 +1056,9 @@ function refreshStageDefaults(){
     if(!prefTouched.hydration){$("prefHydration").value=pf.hydration;}
     $("prefHydrationRec").textContent=pf.hydration+"%";
     if($("poolishPctField")){
-      const isPool=$("preferment").value==="poolish";
-      $("poolishPctField").style.display=isPool?"":"none";
-      if(isPool){ if(!prefTouched.poolishPct){$("poolishPct").value=pf.flourPct;} $("poolishPctRec").textContent=pf.flourPct+"%"; }
+      const usesPref=$("preferment").value==="poolish"||$("preferment").value==="biga";
+      $("poolishPctField").style.display=usesPref?"":"none";
+      if(usesPref){ if(!prefTouched.poolishPct){$("poolishPct").value=pf.flourPct;} $("poolishPctRec").textContent=pf.flourPct+"%"; }
     }
     if(rc.preferment){
       if(!yeastTouched.preferment){$("prefYeast").value=rc.preferment.yeastRec;}
@@ -991,12 +1073,23 @@ function syncMethodUI(){
   $("mTrad").classList.toggle("active",currentMethod==="trad");
   renderMethodBlurb();
   $("prefGroup").style.display=currentMethod==="trad"?"":"none";
-  $("poolishStyleField").style.display=$("preferment").value==="poolish"?"":"none";
-  if($("poolishPctField"))$("poolishPctField").style.display=$("preferment").value==="poolish"?"":"none";
+  const pref=$("preferment").value;
+  const usesPref = pref==="poolish" || pref==="biga";
+  $("poolishStyleField").style.display=usesPref?"":"none";
+  if($("poolishPctField"))$("poolishPctField").style.display=usesPref?"":"none";
+  const isBiga = pref==="biga";
+  const prefName = isBiga ? "Biga" : "Poolish";
+  if($("poolishStyleLabel"))$("poolishStyleLabel").textContent=prefName+" finish";
+  if($("poolishPctLabel"))$("poolishPctLabel").textContent=prefName+" amount (% of total flour)";
+  if($("poolishPctNote")){
+    $("poolishPctNote").innerHTML = isBiga
+      ? "This is a share of the <b>total</b> flour held in the stiff biga. Below 100%, the rest of the flour goes in when completing the dough; at 100% the biga holds all the flour and only water/salt are added later."
+      : "This is a share of the <b>total</b> flour, not the flour added later. At 30%, the poolish holds 30% of all the flour and the rest goes in when completing the dough.";
+  }
   if($("prefTypeNote")){
-    $("prefTypeNote").textContent = $("preferment").value==="biga"
-      ? "In this calculator, biga uses all the flour by design. The final mix hydrates, seasons, and develops the dough rather than adding fresh flour."
-      : "Poolish uses part of the total flour, then the dough is completed with the remaining flour. This keeps poolish and biga cleanly distinct.";
+    $("prefTypeNote").textContent = isBiga
+      ? "A biga is a stiff, low-hydration preferment. Set how much of the total flour it holds, then choose whether the remaining flour or the water goes in first when completing the dough."
+      : "A poolish is a wet, pourable preferment. Set how much of the total flour it holds, then choose whether the remaining flour or the water goes in first when completing the dough.";
   }
 }
 
@@ -1018,7 +1111,7 @@ function buildOpts(){
   return {styleKey:current,methodKey:currentMethod,quantity:num($("qty").value,2),size:getSize(),
     overrides,yeastType:$("yeastType").value,preferment:$("preferment").value,
     poolishStyle:$("poolishStyle").value,totalHours:num($("totalHours").value,defaultTotalFor()),
-    stageOverrides,yeastOverrides,ovenTemp:$("oven").value,mixMode};
+    stageOverrides,yeastOverrides,ovenTemp:$("oven").value,mixMode,ambient:ambientVal(),protein:proteinVal()};
 }
 
 
@@ -1199,6 +1292,23 @@ $("prefYeast").addEventListener("input",()=>{prefTouched.yeast=true;render();});
 ["preferment","poolishStyle","yeastType"].forEach(id=>$(id).addEventListener("change",()=>{if(id==="preferment"){prefTouched={};stageTouched={};yeastTouched={};$("totalHours").value=defaultTotalFor();updateTotalRec();}syncMethodUI();refreshStageDefaults();render();}));
 $("mEasy").onclick=()=>{currentMethod="easy";stageTouched={};prefTouched={};yeastTouched={};$("totalHours").value=defaultTotalFor();updateTotalRec();syncMethodUI();refreshStageDefaults();render();};
 $("mTrad").onclick=()=>{currentMethod="trad";stageTouched={};prefTouched={};yeastTouched={};$("totalHours").value=defaultTotalFor();updateTotalRec();syncMethodUI();refreshStageDefaults();render();};
+if($("ambient")){
+  const onAmbient=()=>{stageTouched={};yeastTouched={};$("totalHours").value=defaultTotalFor();updateTotalRec();refreshStageDefaults();render();};
+  $("ambient").addEventListener("input",onAmbient);
+  $("ambient").addEventListener("change",()=>{const el=$("ambient");el.value=String(clamp(el.value,10,35,AMBIENT_DEFAULT,true));onAmbient();});
+}
+if($("protein")){
+  const onProtein=()=>{
+    // protein shifts recommended hydration and the time tolerance
+    const s=STYLES[current];
+    const recHyd=clamp(s.hydration+proteinHydrationDelta(proteinVal(),current),50,95,s.hydration);
+    if($("hydration")){ if(!touched.hydration)$("hydration").value=r2(recHyd); $("hydrationRec").textContent=fmtPct(r2(recHyd)); }
+    stageTouched={};yeastTouched={};
+    $("totalHours").value=defaultTotalFor();updateTotalRec();refreshStageDefaults();render();
+  };
+  $("protein").addEventListener("input",onProtein);
+  $("protein").addEventListener("change",()=>{const el=$("protein");el.value=String(clamp(el.value,8,16,styleProteinBase(current),false));onProtein();});
+}
 function syncMixUI(){$("mixHand").classList.toggle("active",mixMode==="hand");$("mixMachine").classList.toggle("active",mixMode==="machine");}
 $("mixHand").onclick=()=>{mixMode="hand";syncMixUI();render();};
 $("mixMachine").onclick=()=>{mixMode="machine";syncMixUI();render();};
@@ -1368,6 +1478,7 @@ function render(){
 function fmtHShort(h){if(h<1)return Math.round(h*60)+"m";if(h===Math.round(h))return h+"h";return h+"h";}
 
 initTheme();
+if($("ambient")&&!$("ambient").value)$("ambient").value=AMBIENT_DEFAULT;
 // scatter static hidden UV tips into elements carrying a data-uv attribute
 document.querySelectorAll("[data-uv]").forEach(el=>{
   el.insertAdjacentHTML("beforeend",uvMarker(el.getAttribute("data-uv")));
