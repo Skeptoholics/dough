@@ -115,7 +115,7 @@
 <header>
   <div class="brand"><h1>Dough<span class="dot"></span></h1><span class="tag">stop guessing your dough</span></div>
   <div class="head-ctrl">
-    <div class="seg" id="unitMode"><button data-u="imperial" class="on">in / &deg;F</button><button data-u="metric">cm / &deg;C</button></div>
+    <div class="seg" id="unitMode"><button data-u="imperial">Imperial</button><button data-u="metric" class="on">Metric</button></div>
     <button class="pill" id="themeToggle" type="button">Dark</button>
   </div>
 </header>
@@ -171,12 +171,12 @@
             <button data-shape="pan">Pan / tray</button>
           </div>
           <div class="input-line" id="roundSize">
-            <div class="suffix-wrap"><input class="ctrl" type="number" id="diameter" min="6" step="0.5" value="12" /><span class="suffix" id="diaU">in</span></div>
+            <div class="suffix-wrap"><input class="ctrl" type="number" id="diameter" min="10" step="1" value="30" /><span class="suffix" id="diaU">cm</span></div>
             <span class="rec" id="sizeRec"></span>
           </div>
           <div class="input-line" id="panSize" style="display:none">
-            <div class="suffix-wrap" style="flex:0 0 92px;max-width:92px"><input class="ctrl" type="number" id="panL" min="4" step="0.5" value="10" /><span class="suffix">L</span></div>
-            <div class="suffix-wrap" style="flex:0 0 92px;max-width:92px"><input class="ctrl" type="number" id="panW" min="4" step="0.5" value="14" /><span class="suffix">W</span></div>
+            <div class="suffix-wrap" style="flex:0 0 92px;max-width:92px"><input class="ctrl" type="number" id="panL" min="10" step="1" value="25" /><span class="suffix">L</span></div>
+            <div class="suffix-wrap" style="flex:0 0 92px;max-width:92px"><input class="ctrl" type="number" id="panW" min="10" step="1" value="35" /><span class="suffix">W</span></div>
             <span class="rec" id="panRec"></span>
           </div>
           <p class="gag" id="gag" style="display:none"></p>
@@ -227,12 +227,12 @@
           <div class="reveal-body">
             <div class="field">
               <label>Room temperature <button class="infobtn" data-info="ambient" type="button">i</button></label>
-              <div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="ambient" step="1" value="77" /><span class="suffix" id="ambientU">&deg;F</span></div><span class="rec">warmer = faster</span></div>
+              <div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="ambient" step="1" value="25" /><span class="suffix" id="ambientU">&deg;C</span></div><span class="rec">warmer = faster</span></div>
               <p class="micro" id="ambientNote"></p>
             </div>
             <div class="field" id="fridgeField" style="display:none">
               <label>Fridge temperature <button class="infobtn" data-info="fridge" type="button">i</button></label>
-              <div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="fridge" step="1" value="39" /><span class="suffix" id="fridgeU">&deg;F</span></div><span class="rec">colder = slower</span></div>
+              <div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="fridge" step="1" value="4" /><span class="suffix" id="fridgeU">&deg;C</span></div><span class="rec">colder = slower</span></div>
             </div>
             <div class="field">
               <label>Baking on <button class="infobtn" data-info="equip" type="button">i</button></label>
@@ -245,7 +245,7 @@
             </div>
             <div class="field">
               <label>Oven temperature <button class="infobtn" data-info="oven" type="button">i</button></label>
-              <div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="oven" step="5" value="480" /><span class="suffix" id="ovenU">&deg;F</span></div><span class="rec" id="ovenRec"></span></div>
+              <div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="oven" step="5" value="250" /><span class="suffix" id="ovenU">&deg;C</span></div><span class="rec" id="ovenRec"></span></div>
             </div>
             <div class="field" style="margin-bottom:0">
               <div class="seg-label"><label style="margin-bottom:0">How I mix <button class="infobtn" data-info="mix" type="button">i</button></label></div>
@@ -359,7 +359,7 @@
     loss:'A little dough always sticks to the bowl. This makes a touch extra so you still hit your target weights.'
   };
 
-  let state = { qtyMode:'pizzas', sqinpp:0, appetiteG:150, timeMode:'start', clock:true, mixMode:'hand', style:'ny', vinOn:true, vinTouched:false, shape:'round', equip:'tray', why:false, yeastType:'instant', ferment:'sameday', units:'imperial', bulkTouched:false, proofTouched:false, ovenTouched:false };
+  let state = { qtyMode:'pizzas', sqinpp:0, appetiteG:150, timeMode:'start', clock:true, mixMode:'hand', style:'ny', vinOn:true, vinTouched:false, shape:'round', equip:'tray', why:false, yeastType:'instant', ferment:'sameday', units:'metric', bulkTouched:false, proofTouched:false, ovenTouched:false };
 
   // ---- unit conversion (display only; recipe maths is internal inches + Celsius) ----
   const c2f = c => c*9/5+32, f2c = f => (f-32)*5/9, in2cm = i => i*2.54, cm2in = c => c/2.54;
@@ -368,6 +368,8 @@
   function lenIn(v){ return state.units==='metric'? cm2in(+v) : +v; }          // field value -> inches
   function lenDisp(i){ return state.units==='metric'? +(in2cm(i)).toFixed(1) : +(+i).toFixed(1); }
   const Tu = ()=> state.units==='metric'?'\u00b0C':'\u00b0F';
+  function wPair(g){ if(state.units==='metric'){ return [(g<10?r1(g):r0(g)),'g']; } var oz=g/28.3495; return [(oz<1?Math.round(oz*100)/100:r1(oz)),'oz']; }
+  function wStr(g){ var p=wPair(g); return p[0]+p[1]; }
   const Lu = ()=> state.units==='metric'?'cm':'in';
 
   function recVin(p){ var v=12-p; if(v<=0) return 0; return Math.min(5, Math.ceil(v*2)/2); }
@@ -458,10 +460,10 @@
     const hyd=+$('hydration').value, salt=+$('salt').value, oil=+$('oil').value, sugar=+$('sugar').value, loss=+$('loss').value||0;
     const totalDough=pizzas*perPiece*(1+loss/100);
     const flour=totalDough/(1+(hyd+oil+salt+sugar+yeast)/100);
-    $('tDough').textContent=r0(totalDough)+'g'; $('tBall').textContent=r0(perPiece)+'g'; $('tFlour').textContent=r0(flour)+'g';
-    $('mDough').textContent=r0(totalDough)+'g';
+    $('tDough').textContent=wStr(totalDough); $('tBall').textContent=wStr(perPiece); $('tFlour').textContent=wStr(flour);
+    $('mDough').textContent=wStr(totalDough);
     $('tBallK').textContent = state.shape==='pan'?'per pan':'per ball';
-    if(state.shape==='round') $('sizeRec').innerHTML='a '+sizeLabel()+' ball is <b>~'+r0(perPiece)+'g</b>'; else $('panRec').innerHTML='that pan takes <b>~'+r0(perPiece)+'g</b>';
+    if(state.shape==='round') $('sizeRec').innerHTML='a '+sizeLabel()+' ball is <b>~'+wStr(perPiece)+'</b>'; else $('panRec').innerHTML='that pan takes <b>~'+wStr(perPiece)+'</b>';
     $('tag').textContent=st.name+' \u00b7 '+(state.ferment==='cold'?'cold ferment':'same-day');
     $('printTitle').textContent='Dough \u2014 '+st.name+' ('+sizeLabel()+')';
 
@@ -475,7 +477,7 @@
     if(oil>0) ing.push(['Olive oil',oil,flour*oil/100]);
     ing.push(['Salt',salt,flour*salt/100]);
     let rows='<li class="ilist-head"><span>ingredient</span><span class="pct">baker&rsquo;s %</span><span style="text-align:right">weight</span></li>';
-    ing.forEach(x=>{ rows+='<li><span class="n">'+x[0]+'</span><span class="pct">'+r1(x[1])+'%</span><span class="w">'+(x[2]<10?r1(x[2]):r0(x[2]))+'<span class="u">g</span></span></li>'; });
+    ing.forEach(x=>{ rows+='<li><span class="n">'+x[0]+'</span><span class="pct">'+r1(x[1])+'%</span><span class="w">'+wPair(x[2])[0]+'<span class="u">'+wPair(x[2])[1]+'</span></span></li>'; });
     $('ilist').innerHTML=rows;
 
     // oven temp (follows cap until touched) + bake time
@@ -520,8 +522,8 @@
     $('notes').innerHTML=n;
 
     // copy/save text
-    let txt='DOUGH \u2014 '+st.name+' ('+sizeLabel()+', '+(state.ferment==='cold'?'cold ferment':'same-day')+')\n'+'Makes '+pizzas+' \u00d7 ~'+r0(perPiece)+'g '+(state.shape==='pan'?'pans':'balls')+'  \u00b7  '+fmtDur(total)+' total\n\nINGREDIENTS\n';
-    ing.forEach(x=>{ txt+='- '+x[0]+': '+(x[2]<10?r1(x[2]):r0(x[2]))+'g ('+r1(x[1])+'%)\n'; });
+    let txt='DOUGH \u2014 '+st.name+' ('+sizeLabel()+', '+(state.ferment==='cold'?'cold ferment':'same-day')+')\n'+'Makes '+pizzas+' \u00d7 ~'+wStr(perPiece)+' '+(state.shape==='pan'?'pans':'balls')+'  \u00b7  '+fmtDur(total)+' total\n\nINGREDIENTS\n';
+    ing.forEach(x=>{ txt+='- '+x[0]+': '+wStr(x[2])+' ('+r1(x[1])+'%)\n'; });
     txt+='\nMETHOD\n'+plain.join('\n')+'\n\nMade with Dough \u2014 doughborough.com';
     state._txt=txt;
   }
