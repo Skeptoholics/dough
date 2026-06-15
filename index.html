@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dough</title>
+<title>Doughborough — your home for bespoke dough</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&family=Spline+Sans+Mono:wght@400;500&display=swap');
   :root{--bg:#f4efe6;--panel:#fbf8f2;--ink:#2a241d;--ink-soft:#6b6155;--line:#e0d7c7;--accent:#c0492f;--accent-soft:#e8c9bf;--gold:#caa24a;--ok:#5a7d4f;--field:#fff;--radius:14px;--shadow:0 1px 2px rgba(42,36,29,.04), 0 8px 28px rgba(42,36,29,.06);color-scheme:light;}
@@ -113,9 +113,8 @@
 </head>
 <body>
 <header>
-  <div class="brand"><h1>Dough<span class="dot"></span></h1><span class="tag">stop guessing your dough</span></div>
+  <div class="brand"><h1>Doughborough<span class="dot"></span></h1><span class="tag">your home for bespoke dough</span></div>
   <div class="head-ctrl">
-    <div class="seg" id="unitMode"><button data-u="imperial">Imperial</button><button data-u="metric" class="on">Metric</button></div>
     <button class="pill" id="themeToggle" type="button">Dark</button>
   </div>
 </header>
@@ -123,7 +122,7 @@
 <main>
   <section class="col">
     <div class="panel">
-      <div class="panel-head"><h2>Recipe design</h2></div>
+      <div class="panel-head" style="display:flex;align-items:center;justify-content:space-between;gap:10px"><h2>Recipe design</h2><div class="seg" id="sizeUnit"><button data-u="imperial">in&middot;&deg;F</button><button data-u="metric" class="on">cm&middot;&deg;C</button></div></div>
       <div class="panel-body">
 
         <div class="field">
@@ -186,6 +185,7 @@
           <div class="seg-label"><div class="seg" id="timeMode">
             <button data-mode="start" class="on">Start at</button>
             <button data-mode="eat">Use at</button>
+            <button data-mode="now">Start now</button>
           </div><button class="infobtn" data-info="timemode" type="button">i</button></div>
           <div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="time" id="clock" value="12:00" /></div></div>
           <div class="timeout" id="timeout"></div>
@@ -204,10 +204,10 @@
               <label>Don&rsquo;t know it? Pick your flour</label>
               <select class="ctrl" id="flourPreset">
                 <option value="">Enter protein % myself</option>
-                <option value="9" selected>Value / home brand (~9%)</option>
-                <option value="10.5">All-purpose (~10.5%)</option>
-                <option value="12">00 pizza flour (~12%)</option>
-                <option value="12.5">Bread flour (~12.5%)</option>
+                <option value="9" selected>Value / home brand (about 9%)</option>
+                <option value="10.5">All-purpose (about 10.5%)</option>
+                <option value="12">00 pizza flour (about 12%)</option>
+                <option value="12.5">Bread flour (about 12.5%)</option>
               </select>
             </div>
             <div class="field" style="margin-bottom:0">
@@ -287,20 +287,22 @@
 
   <section class="col col-out">
     <div class="panel">
-      <div class="panel-head"><h2>Your dough</h2></div>
+      <div class="panel-head" style="display:flex;align-items:center;justify-content:space-between;gap:10px"><h2>Your dough</h2><div class="seg" id="weightUnit"><button data-u="imperial">oz</button><button data-u="metric" class="on">g</button></div></div>
       <div class="panel-body">
         <div class="printonly" id="printTitle"></div>
         <div class="totals">
           <div class="total-cell"><div class="v" id="tDough">&mdash;</div><div class="k">total dough</div></div>
           <div class="total-cell"><div class="v" id="tBall">&mdash;</div><div class="k" id="tBallK">per ball</div></div>
-          <div class="total-cell"><div class="v" id="tFlour">&mdash;</div><div class="k">flour</div></div>
+          <div class="total-cell"><div class="v" id="tFlour">&mdash;</div><div class="k">total flour</div></div>
         </div>
         <span class="method-tag" id="tag"></span>
+        <div class="method-head" style="margin:20px 0 10px"><div class="method-title">Total ingredients</div><span class="micro" id="ingScope" style="margin-top:0"></span></div>
         <ul class="ilist" id="ilist"></ul>
         <div class="method-head">
           <div class="method-title">Method</div>
           <div class="seg" id="whyMode"><button data-why="0" class="on">Brief</button><button data-why="1">Show the why</button></div>
         </div>
+        <p class="micro" id="methodNote" style="margin:-2px 0 14px"></p>
         <ol class="method" id="method"></ol>
         <div id="notes"></div>
         <div class="actions">
@@ -343,41 +345,46 @@
 
   const INFO = {
     style:'Each style is a different dough \u2014 hydration, thickness and bake. The photo is what you\u2019re aiming for.',
-    ferment:'Same day: mix and bake in one session (~5h). Cold ferment: a long, slow rise in the fridge for deeper flavour \u2014 less yeast, more time.',
+    ferment:'Same day: mix and bake in one session (about 5h). Cold ferment: a long, slow rise in the fridge for deeper flavour \u2014 less yeast, more time.',
     qtymode:'Tell it how many pizzas you want, or how many people to feed \u2014 it works out the other.',
-    appetite:'How much dough one head eats, set by the occasion. ~150g is a normal meal; it scales the count.',
+    appetite:'How much dough one head eats, set by the occasion. about 150g is a normal meal; it scales the count.',
     shape:'Round for a classic pie, Pan for a rectangular tray. Any style in any shape \u2014 nobody\u2019s stopping you.',
     timemode:'Pick the end of the clock you know. \u201CStart at\u201D tells you when it\u2019s ready to shape; \u201CUse at\u201D works backwards to when you begin.',
-    flour:'Off the packet, per 100g. Cheap flour ~9%, bread/00 ~11\u201313%. Lower = weaker, which the strengthener props up.',
+    flour:'Off the packet, per 100g. Cheap flour about 9%, bread/00 about 11\u201313%. Lower = weaker, which the strengthener props up.',
     vinegar:'Acid firms weak gluten and nudges the yeast, so cheap flour behaves like strong flour. More for weaker flour; off for strong.',
     ambient:'Your kitchen temperature. Warm rooms ferment faster and shrink the timeline; cool rooms stretch it.',
     fridge:'Your fridge temperature. The colder it is, the slower the long ferment and the longer it can safely go.',
     equip:'What you\u2019re baking on. It suggests a realistic oven temperature \u2014 a tray can\u2019t hit pizza-oven heat.',
     oven:'The temperature you\u2019ll actually bake at. Hotter = shorter bake. We suggest a sensible figure for your setup; change it to match your oven.',
-    mix:'Machines add friction heat. The ceiling is your yeast \u2014 it starts dying ~40\u00b0C, well before the gluten\u2019s in danger. Warmer room = less mixing time.',
-    yeasttype:'Same dough, different yeast. Instant is baseline; active dried needs ~25% more by weight, fresh ~3\u00d7. Grams adjust to match.',
+    mix:'Machines add friction heat. The ceiling is your yeast \u2014 it starts dying about 40\u00b0C, well before the gluten\u2019s in danger. Warmer room = less mixing time.',
+    yeasttype:'Same dough, different yeast. Instant is baseline; active dried needs about 25% more by weight, fresh about 3\u00d7. Grams adjust to match.',
     loss:'A little dough always sticks to the bowl. This makes a touch extra so you still hit your target weights.'
   };
 
-  let state = { qtyMode:'pizzas', sqinpp:0, appetiteG:150, timeMode:'start', clock:true, mixMode:'hand', style:'ny', vinOn:true, vinTouched:false, shape:'round', equip:'tray', why:false, yeastType:'instant', ferment:'sameday', units:'metric', bulkTouched:false, proofTouched:false, ovenTouched:false };
+  let state = { qtyMode:'pizzas', sqinpp:0, appetiteG:150, timeMode:'start', clock:true, mixMode:'hand', style:'ny', vinOn:true, vinTouched:false, shape:'round', equip:'tray', why:false, yeastType:'instant', ferment:'sameday', unitsSize:'metric', unitsWeight:'metric', bulkTouched:false, proofTouched:false, ovenTouched:false };
 
   // ---- unit conversion (display only; recipe maths is internal inches + Celsius) ----
   const c2f = c => c*9/5+32, f2c = f => (f-32)*5/9, in2cm = i => i*2.54, cm2in = c => c/2.54;
-  function tempIn(v){ return state.units==='metric'? +v : f2c(+v); }          // field value -> Celsius
-  function tempDisp(c){ return state.units==='metric'? Math.round(c) : Math.round(c2f(c)); }
-  function lenIn(v){ return state.units==='metric'? cm2in(+v) : +v; }          // field value -> inches
-  function lenDisp(i){ return state.units==='metric'? +(in2cm(i)).toFixed(1) : +(+i).toFixed(1); }
-  const Tu = ()=> state.units==='metric'?'\u00b0C':'\u00b0F';
-  function wPair(g){ if(state.units==='metric'){ return [(g<10?r1(g):r0(g)),'g']; } var oz=g/28.3495; return [(oz<1?Math.round(oz*100)/100:r1(oz)),'oz']; }
+  function tempIn(v){ return state.unitsSize==='metric'? +v : f2c(+v); }
+  function tempDisp(c){ return state.unitsSize==='metric'? Math.round(c) : Math.round(c2f(c)); }
+  function lenIn(v){ return state.unitsSize==='metric'? cm2in(+v) : +v; }
+  function lenDisp(i){ return state.unitsSize==='metric'? +(in2cm(i)).toFixed(1) : +(+i).toFixed(1); }
+  const Tu = ()=> state.unitsSize==='metric'?'\u00b0C':'\u00b0F';
+  function wPair(g){ if(state.unitsWeight==='metric'){ return [(g<10?r1(g):r0(g)),'g']; } var oz=g/28.3495; return [(oz<1?Math.round(oz*100)/100:r1(oz)),'oz']; }
   function wStr(g){ var p=wPair(g); return p[0]+p[1]; }
-  const Lu = ()=> state.units==='metric'?'cm':'in';
+  const Lu = ()=> state.unitsSize==='metric'?'cm':'in';
 
   function recVin(p){ var v=12-p; if(v<=0) return 0; return Math.min(5, Math.ceil(v*2)/2); }
   function curArea(){ if(state.shape==='pan'){ return lenIn($('panL').value||10)*lenIn($('panW').value||14); } return Math.PI*Math.pow(lenIn($('diameter').value||12)/2,2); }
   function sizeLabel(){ if(state.shape==='pan'){ return r1(+$('panL').value||10)+'\u00d7'+r1(+$('panW').value||14)+Lu(); } return r1(+$('diameter').value||12)+Lu(); }
 
   // recommended ferment time (hours) from yeast % and temperature; anchor = 2h @ 1.13% & 25C
-  function recFerment(yeast, tempC){ return 2 * (1.13/Math.max(0.05,yeast)) * Math.pow(2,(25-tempC)/10); }
+  function fermentTime(yeast, tempC, hyd, salt, isProof){
+    var t = 2 * (1.13/Math.max(0.05,yeast)) * Math.pow(2,(25-tempC)/10);     // yeast + temperature
+    t *= Math.pow(65/Math.max(40,hyd), 0.5);                                  // higher hydration -> shorter
+    if(isProof) t *= Math.pow(Math.max(0.5,salt)/3.1, 0.4);                   // higher salt -> longer (proof)
+    return t;
+  }
   function roundHr(h){ return h<6 ? Math.round(h*2)/2 : Math.round(h); }
 
   function schedule(bulkH, proofH, fermentTemp){
@@ -387,7 +394,7 @@
         {t:'Bloom the yeast', m:15, cue:'in the vinegar water, until it bubbles and foams', why:'Proves the yeast is alive before you commit the flour.'},
         {t:'Mix flour + yeast water, knead 5\u201310 min', m:10, why:'Bring it together into a rough, shaggy dough.'},
         {t:'Rest to hydrate', m:30, cue:'no salt or oil yet', why:'Water wets the flour and the gluten starts building itself.'},
-        {t:'Add oil + salt, knead briefly', m:5, why:'In go the seasonings before the cold sleep, once the gluten\u2019s underway.'},
+        {t:'Add oil + salt, knead briefly', m:5, cue:'held back from the first mix so the gluten could start building first', why:'Salt and oil hinder gluten development if added at the start, so they go in once the gluten is underway, just before the long cold rise.'},
         {t:'Divide + ball', m:5, why:'Ball it now so it\u2019s ready to bake straight from cold.'},
         {t:'Cold ferment in the fridge', m:Math.round(bulkH*60), cue:'it rises slowly and develops deep, complex flavour', why:'Cold throttles the yeast so you get the flavour of long time without over-proofing.'},
         {t:'Pull out and warm up', m:Math.round(proofH*60), cue:'until no longer fridge-cold and slightly puffy', why:'Cold dough won\u2019t stretch or spring \u2014 let it come up before baking.'}
@@ -398,8 +405,8 @@
       {t:'Mix flour + yeast water, knead 5\u201310 min', m:10, why:'Bring it together into a rough, shaggy dough \u2014 no need to develop it yet.'},
       {t:'Rest to hydrate', m:30, cue:'no salt or oil yet \u2014 the gluten quietly builds here', why:'With nothing in the way, water wets the flour and its enzymes link gluten for you, so the next knead is easy.'},
       {t:'Knead again, briefly', m:5, why:'The gluten\u2019s organised; this tightens it into a smooth ball.'},
-      {t:'Bulk ferment', m:Math.round(bulkH*60), cue:'until risen ~50%, soft and domed', why:'The rise is where flavour and strength build \u2014 the yeast inflates the mass, the gluten learns to hold gas.'},
-      {t:'Add oil + salt, knead just to combine', m:5, why:'Salt tightens gluten, oil slows it \u2014 added now they season without fighting development.'},
+      {t:'Bulk ferment', m:Math.round(bulkH*60), cue:'until risen about 50%, soft and domed', why:'The rise is where flavour and strength build \u2014 the yeast inflates the mass, the gluten learns to hold gas.'},
+      {t:'Add oil + salt, knead just to combine', m:5, cue:'held back until now so the gluten could build with far less effort', why:'Salt tightens gluten and oil coats the flour to slow water uptake \u2014 added at the start they fight development, so we hold them back until the structure is built, then knead in just to season and enrich.'},
       {t:'Divide + ball', m:5, why:'Tight, smooth balls hold shape and trap gas evenly.'},
       {t:'Final proof', m:Math.round(proofH*60), cue:'puffy, springs back slowly when poked', why:'The balls relax so they stretch without tearing and spring in the heat.'}
     ];
@@ -421,7 +428,7 @@
     $('panSize').style.display = state.shape==='pan'?'flex':'none';
     document.querySelectorAll('#shapeMode button').forEach(b=>b.classList.toggle('on', b.dataset.shape===state.shape));
     const gag=$('gag');
-    if(state.shape==='pan' && (state.style==='neapolitan'||state.style==='ny')){ gag.style.display='block'; gag.textContent='\uD83C\uDF89 Congratulations \u2014 the world\u2019s first square '+st.name+' pizza calculator. Who are we to judge.'; }
+    if(state.shape==='pan' && (state.style==='neapolitan'||state.style==='ny')){ gag.style.display='block'; gag.textContent='\uD83C\uDF89 Congratulations \u2014 you\u2019ve just unlocked the world\u2019s first square '+st.name+' pizza calculator. Who are we to judge.'; }
     else if(state.shape==='round' && (state.style==='detroit'||state.style==='focaccia')){ gag.style.display='block'; gag.textContent='Round '+st.name+'? Bold. It\u2019ll work \u2014 use a round tin instead of a rectangular pan.'; }
     else gag.style.display='none';
 
@@ -440,10 +447,10 @@
     const fermentTemp = state.ferment==='cold'? fridgeC : ambientC;
 
     // recommended ferment times -> populate untouched fields
-    const yeast=+$('yeast').value;
+    const yeast=+$('yeast').value, hydV=+$('hydration').value, saltV=+$('salt').value;
     let recBulkH, recProofH;
-    if(state.ferment==='cold'){ recBulkH=roundHr(recFerment(yeast,fridgeC)); recProofH=1.5; }
-    else { recBulkH=roundHr(recFerment(yeast,ambientC)); recProofH=roundHr(recFerment(yeast,ambientC)); }
+    if(state.ferment==='cold'){ recBulkH=roundHr(fermentTime(yeast,fridgeC,hydV,saltV,false)); recProofH=1.5; }
+    else { recBulkH=roundHr(fermentTime(yeast,ambientC,hydV,saltV,false)); recProofH=roundHr(fermentTime(yeast,ambientC,hydV,saltV,true)); }
     if(!state.bulkTouched) $('bulk').value=recBulkH;
     if(!state.proofTouched) $('proof').value=recProofH;
     $('bulkRec').innerHTML='rec <b>'+recBulkH+'h</b>'; $('proofRec').innerHTML='rec <b>'+recProofH+'h</b>';
@@ -454,7 +461,7 @@
     const qty=Math.max(1,+$('qty').value||1), areaEach=curArea();
     const perPiece=st.anchor*(areaEach/REF_AREA), appG=state.appetiteG;
     let pizzas;
-    if(state.qtyMode==='pizzas'){ pizzas=qty; const fed=Math.max(0.1,(pizzas*perPiece)/appG); $('qtyUnit').textContent='pizzas'; $('qtyDerived').textContent='\u2192 feeds ~'+r1(fed); $('helper').innerHTML='<b>'+pizzas+'</b> &times; '+sizeLabel()+' '+st.name+' \u2014 feeds roughly <b>'+r1(fed)+'</b>.'; }
+    if(state.qtyMode==='pizzas'){ pizzas=qty; const fed=Math.max(0.1,(pizzas*perPiece)/appG); $('qtyUnit').textContent='pizzas'; $('qtyDerived').textContent='\u2192 feeds about '+r1(fed); $('helper').innerHTML='<b>'+pizzas+'</b> &times; '+sizeLabel()+' '+st.name+' \u2014 feeds roughly <b>'+r1(fed)+'</b>.'; }
     else { pizzas=Math.max(1,Math.ceil(qty*appG/perPiece)); $('qtyUnit').textContent='people'; $('qtyDerived').textContent='\u2192 '+pizzas+' '+(state.shape==='pan'?'pan':'pizza')+(pizzas>1?'s':''); $('helper').innerHTML='To feed <b>'+qty+'</b>, make <b>'+pizzas+'</b> &times; '+sizeLabel()+' '+st.name+'.'; }
 
     const hyd=+$('hydration').value, salt=+$('salt').value, oil=+$('oil').value, sugar=+$('sugar').value, loss=+$('loss').value||0;
@@ -463,7 +470,7 @@
     $('tDough').textContent=wStr(totalDough); $('tBall').textContent=wStr(perPiece); $('tFlour').textContent=wStr(flour);
     $('mDough').textContent=wStr(totalDough);
     $('tBallK').textContent = state.shape==='pan'?'per pan':'per ball';
-    if(state.shape==='round') $('sizeRec').innerHTML='a '+sizeLabel()+' ball is <b>~'+wStr(perPiece)+'</b>'; else $('panRec').innerHTML='that pan takes <b>~'+wStr(perPiece)+'</b>';
+    if(state.shape==='round') $('sizeRec').innerHTML='a '+sizeLabel()+' ball is about <b>'+wStr(perPiece)+'</b>'; else $('panRec').innerHTML='that pan takes about <b>'+wStr(perPiece)+'</b>';
     $('tag').textContent=st.name+' \u00b7 '+(state.ferment==='cold'?'cold ferment':'same-day');
     $('printTitle').textContent='Dough \u2014 '+st.name+' ('+sizeLabel()+')';
 
@@ -479,6 +486,7 @@
     let rows='<li class="ilist-head"><span>ingredient</span><span class="pct">baker&rsquo;s %</span><span style="text-align:right">weight</span></li>';
     ing.forEach(x=>{ rows+='<li><span class="n">'+x[0]+'</span><span class="pct">'+r1(x[1])+'%</span><span class="w">'+wPair(x[2])[0]+'<span class="u">'+wPair(x[2])[1]+'</span></span></li>'; });
     $('ilist').innerHTML=rows;
+    $('ingScope').textContent='for all '+pizzas+(state.shape==='pan'?' pans':' balls');
 
     // oven temp (follows cap until touched) + bake time
     const eq=EQUIP[state.equip], cap=Math.min(st.bake,eq.max);
@@ -486,7 +494,7 @@
     const ovenC=tempIn($('oven').value);
     const bakeMin = st.refBake * Math.pow(st.bake/Math.max(120,ovenC),1.4);
     const bakeTxt = bakeMin<2 ? Math.round(bakeMin*60)+' sec' : (bakeMin<10?r1(bakeMin):Math.round(bakeMin))+' min';
-    $('ovenRec').innerHTML = ovenC<st.bake-5 ? 'ideal ~'+tempDisp(st.bake)+Tu() : 'good for '+st.name;
+    $('ovenRec').innerHTML = ovenC<st.bake-5 ? 'ideal about '+tempDisp(st.bake)+Tu() : 'good for '+st.name;
 
     // schedule + clock
     const s=schedule(bulkH,proofH,fermentTemp), total=totalMins(s);
@@ -503,8 +511,9 @@
     if(state.style==='detroit'){ steps+='<li>Oil the pan well \u2014 base <b>and</b> sides \u2014 press the dough out, push cheese to the edges so it fries into a crisp rim.'+(state.why?'<span class="why">That oiled, cheese-lined wall is the signature lacy Detroit crust.</span>':'')+'</li>'; plain.push((plain.length+1)+'. Oil pan (base + sides), press out, cheese to the edges.'); }
     if(state.style==='focaccia'){ steps+='<li>Flood the top with oil, dimple deeply, scatter toppings and flaky salt.'+(state.why?'<span class="why">Dimples trap oil and stop the top doming flat \u2014 that\u2019s the focaccia texture.</span>':'')+'</li>'; plain.push((plain.length+1)+'. Flood with oil, dimple deeply, top and salt.'); }
     const capWarn = ovenC<st.bake-5 ? ' (ideal '+tempDisp(st.bake)+Tu()+')':'';
-    steps+='<li>Stretch, top, bake at ~'+tempDisp(ovenC)+Tu()+capWarn+' for ~'+bakeTxt+' <span class="clock">'+toHM(eatC)+'</span></li>'; plain.push((plain.length+1)+'. Stretch, top, bake ~'+tempDisp(ovenC)+Tu()+' for ~'+bakeTxt+' \u2014 ready '+toHM(eatC));
+    steps+='<li>Stretch, top, bake at about '+tempDisp(ovenC)+Tu()+capWarn+' for about '+bakeTxt+' <span class="clock">'+toHM(eatC)+'</span></li>'; plain.push((plain.length+1)+'. Stretch, top, bake about '+tempDisp(ovenC)+Tu()+' for about '+bakeTxt+' \u2014 ready '+toHM(eatC));
     $('method').innerHTML=steps;
+    $('methodNote').textContent='This recipe deliberately adds the salt and oil after the bulk rise \u2014 it lets the gluten develop with far less kneading.';
 
     // chips + preview
     $('styleDesc').textContent=st.desc; $('stylePreview').src=IMG[st.img]; $('stylePreview').alt=st.name+' pizza';
@@ -515,14 +524,14 @@
     // notes
     const friction=state.mixMode==='machine'?8:2, waterT=Math.round(3*24-2*ambientC-friction);
     $('ambientNote').textContent = ambientC>20 ? 'Over 20\u00b0C \u2014 mix with cold or iced water so the dough doesn\u2019t run away on you.' : '';
-    let n='<div class="note info"><span class="icon">&#9737;</span><div>Baking on '+eq.name+' at ~'+tempDisp(ovenC)+Tu()+' for ~'+bakeTxt+'. '+eq.note+'</div></div>';
-    if(ovenC<st.bake-15) n+='<div class="note warn"><span class="icon">!</span><div><b>'+st.name+' loves it hotter (~'+tempDisp(st.bake)+Tu()+').</b> At '+tempDisp(ovenC)+Tu()+' it\u2019ll bake slower and come out a touch paler and softer \u2014 still good, just not pizzeria-charred.</div></div>';
-    if(state.mixMode==='machine' && (ambientC>=28||waterT<5)) n+='<div class="note warn"><span class="icon">!</span><div><b>Hot room + machine.</b> Friction heat builds fast and the yeast suffers past ~40\u00b0C, long before the gluten would. Use water near <b>'+tempDisp(Math.max(1,waterT))+Tu()+'</b>, keep the mix under <b>3\u20134 min</b>, or by hand.</div></div>';
+    let n='<div class="note info"><span class="icon">&#9737;</span><div>Baking on '+eq.name+' at about '+tempDisp(ovenC)+Tu()+' for about '+bakeTxt+'. '+eq.note+'</div></div>';
+    if(ovenC<st.bake-15) n+='<div class="note warn"><span class="icon">!</span><div><b>'+st.name+' loves it hotter (about '+tempDisp(st.bake)+Tu()+').</b> At '+tempDisp(ovenC)+Tu()+' it\u2019ll bake slower and come out a touch paler and softer \u2014 still good, just not pizzeria-charred.</div></div>';
+    if(state.mixMode==='machine' && (ambientC>=28||waterT<5)) n+='<div class="note warn"><span class="icon">!</span><div><b>Hot room + machine.</b> Friction heat builds fast and the yeast suffers past about 40\u00b0C, long before the gluten would. Use water near <b>'+tempDisp(Math.max(1,waterT))+Tu()+'</b>, keep the mix under <b>3\u20134 min</b>, or by hand.</div></div>';
     else n+='<div class="note ok"><span class="icon">&#10003;</span><div>Mix with water around <b>'+tempDisp(waterT)+Tu()+'</b> to land the dough near 24\u00b0C. Trust the cues over the clock.</div></div>';
     $('notes').innerHTML=n;
 
     // copy/save text
-    let txt='DOUGH \u2014 '+st.name+' ('+sizeLabel()+', '+(state.ferment==='cold'?'cold ferment':'same-day')+')\n'+'Makes '+pizzas+' \u00d7 ~'+wStr(perPiece)+' '+(state.shape==='pan'?'pans':'balls')+'  \u00b7  '+fmtDur(total)+' total\n\nINGREDIENTS\n';
+    let txt='DOUGH \u2014 '+st.name+' ('+sizeLabel()+', '+(state.ferment==='cold'?'cold ferment':'same-day')+')\n'+'Makes '+pizzas+' \u00d7 about '+wStr(perPiece)+' '+(state.shape==='pan'?'pans':'balls')+'  \u00b7  '+fmtDur(total)+' total\n\nINGREDIENTS\n';
     ing.forEach(x=>{ txt+='- '+x[0]+': '+wStr(x[2])+' ('+r1(x[1])+'%)\n'; });
     txt+='\nMETHOD\n'+plain.join('\n')+'\n\nMade with Dough \u2014 doughborough.com';
     state._txt=txt;
@@ -533,13 +542,13 @@
     const rec = which==='bulk'? state._recBulk : state._recProof;
     const val = +$(which).value;
     if(!rec || !val) return;
-    const lo=rec*0.8, hi=rec*1.2;
+    const lo=rec*0.7, hi=rec*1.3;
     if(val<=hi && val>=lo){ $('tripPop').style.display='none'; return; }
     let msg;
     if(state.ferment==='sameday'){
-      msg = val>hi ? 'That\u2019s well past what this yeast holds at room temp \u2014 it\u2019ll over-proof. Drop the yeast, or switch to Cold ferment.' : 'Too quick for proper development \u2014 add yeast, or warm the room.';
+      msg = val>hi ? 'Heads-up \u2014 that\u2019s a fair bit longer than we\u2019d suggest for this yeast, temperature and flour. It may over-proof, so you could ease the yeast down or use a cooler spot (or try cold ferment). Dough varies though \u2014 trust your eye.' : 'A bit quicker than we\u2019d suggest \u2014 it might not build much flavour or structure. A touch more yeast or a warmer room would help, but go by feel.';
     } else {
-      msg = val<lo ? 'Short for a cold ferment \u2014 it won\u2019t develop much. If you want it quick, try Same day instead.' : 'Even cold, this risks over-fermenting \u2014 drop the yeast a touch.';
+      msg = val<lo ? 'Shorter than a cold ferment usually needs to do its thing. If you want it quick, Same day may suit better \u2014 but it\u2019s a guide, not a rule.' : 'Longer than we\u2019d suggest even cold \u2014 it could over-ferment. Easing the yeast down would help. As always, your dough has the final say.';
     }
     const el=$(which); const r=el.getBoundingClientRect(); const tp=$('tripPop');
     tp.textContent=msg; tp.style.display='block'; tp.style.top=(window.scrollY+r.bottom+8)+'px'; tp.style.left=(window.scrollX+Math.max(8,r.left))+'px';
@@ -555,17 +564,18 @@
   }
 
   function seg(id,cb){ document.querySelectorAll('#'+id+' button').forEach(b=>{ b.onclick=()=>{ document.querySelectorAll('#'+id+' button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); cb(b); render(); }; }); }
-  function setAppetiteEg(v){ var m={'100':'Pizza\u2019s one of several things \u2014 picnic, party with other food, kids grazing. ~100g each.','150':'Pizza is the meal \u2014 average adults, nothing else major on the table. ~150g each.','220':'Hungry adults, beers flowing, teenagers, after sport. ~220g each.'}; $('appetiteEg').textContent=m[v]||''; }
+  function setAppetiteEg(v){ var m={'100':'Pizza\u2019s one of several things \u2014 picnic, party with other food, kids grazing. about 100g each.','150':'Pizza is the meal \u2014 average adults, nothing else major on the table. about 150g each.','220':'Hungry adults, beers flowing, teenagers, after sport. about 220g each.'}; $('appetiteEg').textContent=m[v]||''; }
 
   seg('fermentMode', b=>{ state.ferment=b.dataset.f; state.bulkTouched=false; state.proofTouched=false; $('yeast').value=FERMENT[state.ferment].yeast; $('tripPop').style.display='none'; track('ferment',{mode:state.ferment}); });
   seg('qtyMode', b=>{ state.qtyMode=b.dataset.mode; $('appetiteWrap').style.display=state.qtyMode==='people'?'block':'none'; if(state.qtyMode==='people') setAppetiteEg(String(state.appetiteG)); });
   seg('appetite', b=>{ state.appetiteG=+b.dataset.g; setAppetiteEg(b.dataset.g); });
-  seg('timeMode', b=>{ state.timeMode=b.dataset.mode; });
+  document.querySelectorAll('#timeMode button').forEach(b=>{ b.onclick=()=>{ if(b.dataset.mode==='now'){ var d=new Date(); $('clock').value=pad(d.getHours())+':'+pad(d.getMinutes()); state.timeMode='start'; document.querySelectorAll('#timeMode button').forEach(x=>x.classList.toggle('on', x.dataset.mode==='start')); } else { state.timeMode=b.dataset.mode; document.querySelectorAll('#timeMode button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); } render(); }; });
   seg('mixMode', b=>{ state.mixMode=b.dataset.mix; });
   seg('vinMode', b=>{ state.vinOn=b.dataset.on==='1'; });
   seg('shapeMode', b=>{ state.shape=b.dataset.shape; });
   seg('whyMode', b=>{ state.why=b.dataset.why==='1'; track('show_why',{on:state.why}); });
-  seg('unitMode', b=>{ var prev=state.units; if(b.dataset.u===prev) return; state.units=b.dataset.u; applyUnits(prev); track('units',{u:state.units}); });
+  seg('sizeUnit', b=>{ var prev=state.unitsSize; if(b.dataset.u===prev) return; state.unitsSize=b.dataset.u; applyUnits(prev); track('units_size',{u:state.unitsSize}); });
+  seg('weightUnit', b=>{ if(b.dataset.u===state.unitsWeight) return; state.unitsWeight=b.dataset.u; track('units_weight',{u:state.unitsWeight}); });
 
   document.querySelectorAll('#styleRow .style-btn').forEach(b=>{ b.onclick=()=>{ state.style=b.dataset.style; var s=STYLE[state.style]; state.shape=s.shape; state.ovenTouched=false; $('hydration').value=s.hyd; $('salt').value=s.salt; $('oil').value=s.oil; $('sugar').value=s.sugar; track('style',{style:state.style}); render(); }; });
   document.querySelectorAll('[data-reveal]').forEach(b=>{ b.onclick=()=>{ var t=$(b.dataset.reveal); t.classList.toggle('open'); if(t.classList.contains('open')) track('open_section',{s:b.dataset.reveal}); }; });
