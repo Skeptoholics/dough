@@ -542,7 +542,8 @@
     const rec = which==='bulk'? state._recBulk : state._recProof;
     const val = +$(which).value;
     if(!rec || !val) return;
-    const lo=rec*0.7, hi=rec*1.3;
+    const loF = state.ferment==='sameday'?0.5:0.7, hiF = state.ferment==='sameday'?2.0:1.3;
+    const lo=rec*loF, hi=rec*hiF;
     if(val<=hi && val>=lo){ $('tripPop').style.display='none'; return; }
     let msg;
     if(state.ferment==='sameday'){
