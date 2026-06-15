@@ -17,7 +17,7 @@
   .brand h1:after{content:"";position:absolute;left:0;bottom:-8px;width:46px;height:3px;background:linear-gradient(90deg,var(--accent),var(--gold));border-radius:20px}
   .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);display:inline-block;transform:translateY(-3px)}
   .tag{font-size:14px;color:var(--ink-soft);font-style:italic}
-  main{max-width:1180px;margin:0 auto;padding:26px 40px 80px;display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start;}
+  main{max-width:1180px;margin:0 auto;padding:26px 40px 30px;display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start;}
   @media(max-width:880px){ main{grid-template-columns:1fr;gap:22px} .col-out{position:static!important} }
   .col{min-width:0}.col-out{position:sticky;top:20px}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
@@ -54,7 +54,6 @@
   .style-btn{font-family:'Fraunces',serif;font-size:13px;font-weight:600;padding:0 0 8px;border:1px solid var(--line);background:var(--field);border-radius:10px;cursor:pointer;color:var(--ink);transition:all .18s ease;text-align:center;overflow:hidden;}
   .style-btn img{width:100%;height:50px;object-fit:cover;display:block;margin-bottom:7px;border-bottom:1px solid var(--line)}
   .style-btn.active{border-color:var(--accent);box-shadow:0 4px 14px rgba(192,73,47,.22);color:var(--accent)}
-  .style-btn.active img{filter:saturate(1.05)}
   .preview{width:100%;border-radius:11px;margin-top:13px;display:block;border:1px solid var(--line)}
   .reveal{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--field);margin-top:12px}
   .reveal-head{width:100%;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:linear-gradient(0deg,rgba(224,215,199,.22),var(--field));border:none;cursor:pointer;font-family:'Fraunces',serif;font-size:14.5px;font-weight:600;color:var(--ink);}
@@ -82,20 +81,37 @@
   .ilist .ilist-head .pct{color:var(--ink-soft)}
   .ilist .w{font-family:'Spline Sans Mono',monospace;font-size:15.5px;font-weight:500;text-align:right;min-width:62px}
   .ilist .w .u{font-size:11px;color:var(--ink-soft);margin-left:2px}
-  .method-title{font-size:12.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);font-weight:600;margin:26px 0 12px}
+  .method-head{display:flex;align-items:center;justify-content:space-between;margin:26px 0 12px}
+  .method-title{font-size:12.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);font-weight:600}
   ol.method{list-style:none;counter-reset:step}
   ol.method li{counter-increment:step;position:relative;padding:0 0 16px 38px;font-size:14.5px;line-height:1.55;color:var(--ink);}
   ol.method li:before{content:counter(step);position:absolute;left:0;top:-1px;width:25px;height:25px;border-radius:50%;background:var(--accent);color:#fff;font-family:'Spline Sans Mono',monospace;font-size:12.5px;display:flex;align-items:center;justify-content:center;font-weight:500;}
   ol.method li:last-child{padding-bottom:0}
   ol.method li .clock{font-family:'Spline Sans Mono',monospace;font-size:11.5px;color:var(--accent);margin-left:8px}
+  ol.method li .why{display:block;margin-top:5px;font-size:13px;font-style:italic;color:var(--ink-soft);line-height:1.5}
   .note{margin-top:12px;padding:13px 16px;border-radius:11px;font-size:13.5px;line-height:1.55;display:flex;gap:11px;align-items:flex-start;}
   .note .icon{flex-shrink:0;font-family:'Spline Sans Mono',monospace;font-weight:700;width:18px;text-align:center}
   .note.ok{background:rgba(90,125,79,.1);color:#3f5837;border:1px solid rgba(90,125,79,.25)}
   .note.warn{background:rgba(178,58,38,.1);color:#852b1c;border:1px solid rgba(178,58,38,.3)}
   .note.info{background:rgba(202,162,74,.12);color:#7a5e1f;border:1px solid rgba(202,162,74,.3)}
   html[data-theme="dark"] .note.ok{color:var(--ok)} html[data-theme="dark"] .note.warn{color:var(--accent)} html[data-theme="dark"] .note.info{color:var(--gold)}
+  .actions{display:flex;gap:8px;margin-top:24px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:18px}
+  .actions button{font-family:'Spline Sans Mono',monospace;font-size:12px;padding:9px 15px;border:1px solid var(--line);background:var(--field);color:var(--ink);border-radius:9px;cursor:pointer}
+  .actions button:hover{border-color:var(--accent);color:var(--accent)}
+  .footer{max-width:1180px;margin:0 auto;padding:8px 40px 50px;font-size:13px;color:var(--ink-soft);font-style:italic;text-align:center}
+  .footer a{color:var(--accent);font-style:normal}
   .theme-toggle{font-family:'Spline Sans Mono',monospace;font-size:12px;color:var(--ink-soft);background:var(--field);border:1px solid var(--line);border-radius:999px;padding:7px 11px;cursor:pointer}
   .theme-toggle:hover{border-color:var(--accent-soft);color:var(--accent)}
+  .printonly{display:none}
+  @media print{
+    body{background:#fff!important}
+    header,.col,.actions,.theme-toggle,#infopop,.footer,.method-head .seg{display:none!important}
+    .col-out{display:block!important;position:static!important;width:100%}
+    main{display:block!important;padding:0!important;max-width:none!important}
+    .panel,.panel-head{border:none!important;box-shadow:none!important;background:#fff!important}
+    .printonly{display:block;font-family:'Fraunces',serif;font-size:24px;font-weight:600;margin-bottom:4px}
+    ol.method li .why{display:block!important}
+  }
 </style>
 </head>
 <body>
@@ -110,7 +126,6 @@
       <div class="panel-head"><h2>Recipe design</h2></div>
       <div class="panel-body">
 
-        <!-- STYLE: four styles with photos -->
         <div class="field">
           <div class="seg-label"><label style="margin-bottom:0">Style <button class="infobtn" data-info="style" type="button">i</button></label></div>
           <div class="style-row" id="styleRow">
@@ -123,7 +138,6 @@
           <p class="micro" id="styleDesc"></p>
         </div>
 
-        <!-- ROW 1: people OR pizzas -->
         <div class="field">
           <div class="seg-label"><div class="seg" id="qtyMode">
             <button data-mode="pizzas" class="on">Make pizzas</button>
@@ -136,15 +150,14 @@
           </div>
           <div id="appetiteWrap" style="display:none;margin-top:11px">
             <div class="seg-label"><div class="seg" id="appetite">
-              <button data-sqin="35">Grazing</button>
-              <button data-sqin="55" class="on">A meal</button>
-              <button data-sqin="80">Big appetites</button>
+              <button data-g="100">Grazing</button>
+              <button data-g="150" class="on">A meal</button>
+              <button data-g="220">Big appetites</button>
             </div><button class="infobtn" data-info="appetite" type="button">i</button></div>
             <p class="micro" id="appetiteEg"></p>
           </div>
         </div>
 
-        <!-- ROW 2: shape + size -->
         <div class="field">
           <div class="seg-label"><label style="margin-bottom:0">Shape &amp; size <button class="infobtn" data-info="shape" type="button">i</button></label></div>
           <div class="seg" id="shapeMode" style="margin-bottom:9px">
@@ -163,7 +176,6 @@
           <p class="gag" id="gag" style="display:none"></p>
         </div>
 
-        <!-- ROW 3: eat-at OR start-at -->
         <div class="field">
           <div class="seg-label"><div class="seg" id="timeMode">
             <button data-mode="start" class="on">Start at</button>
@@ -175,12 +187,15 @@
 
         <p class="helper" id="helper"></p>
 
-        <!-- MY FLOUR -->
         <div class="reveal" id="rFlour">
           <button class="reveal-head" data-reveal="rFlour"><span>My flour<span class="sub">protein &amp; strengthening</span><span class="chip" id="flourChip"></span></span><span class="chev">&#9660;</span></button>
           <div class="reveal-body">
             <div class="field">
-              <label>Flour <button class="infobtn" data-info="flour" type="button">i</button></label>
+              <label>Protein content <button class="infobtn" data-info="flour" type="button">i</button></label>
+              <div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="protein" min="7" max="16" step="0.1" value="9" /><span class="suffix">%</span></div><span class="rec" id="proteinRec"></span></div>
+            </div>
+            <div class="field">
+              <label>Don&rsquo;t know it? Pick your flour</label>
               <select class="ctrl" id="flourPreset">
                 <option value="">Enter protein % myself</option>
                 <option value="9" selected>Value / home brand (~9%)</option>
@@ -189,17 +204,10 @@
                 <option value="12.5">Bread flour (~12.5%)</option>
               </select>
             </div>
-            <div class="field">
-              <label>Protein content</label>
-              <div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="protein" min="7" max="16" step="0.1" value="9" /><span class="suffix">%</span></div><span class="rec" id="proteinRec"></span></div>
-            </div>
             <div class="field" style="margin-bottom:0">
               <div class="seg-label"><label style="margin-bottom:0">Strengthen weak flour <button class="infobtn" data-info="vinegar" type="button">i</button></label></div>
               <div class="input-line" style="margin-top:7px">
-                <div class="seg" id="vinMode">
-                  <button data-on="1" class="on">On</button>
-                  <button data-on="0">Off</button>
-                </div>
+                <div class="seg" id="vinMode"><button data-on="1" class="on">On</button><button data-on="0">Off</button></div>
                 <div class="suffix-wrap" style="flex:0 0 100px;max-width:100px"><input class="ctrl" type="number" id="vinegar" min="0" max="6" step="0.1" value="3" /><span class="suffix">%</span></div>
                 <span class="rec" id="vinRec"></span>
               </div>
@@ -208,13 +216,13 @@
           </div>
         </div>
 
-        <!-- MY KITCHEN -->
         <div class="reveal" id="rKitchen">
           <button class="reveal-head" data-reveal="rKitchen"><span>My kitchen<span class="sub">temp, mixing, oven</span><span class="chip" id="kitchenChip"></span></span><span class="chev">&#9660;</span></button>
           <div class="reveal-body">
             <div class="field">
               <label>Room temperature <button class="infobtn" data-info="ambient" type="button">i</button></label>
               <div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="ambient" min="10" max="38" step="1" value="25" /><span class="suffix">&deg;C</span></div><span class="rec">warmer = faster</span></div>
+              <p class="micro" id="ambientNote"></p>
             </div>
             <div class="field">
               <label>Baking on <button class="infobtn" data-info="equip" type="button">i</button></label>
@@ -227,15 +235,11 @@
             </div>
             <div class="field" style="margin-bottom:0">
               <div class="seg-label"><label style="margin-bottom:0">How I mix <button class="infobtn" data-info="mix" type="button">i</button></label></div>
-              <div class="seg" id="mixMode" style="margin-top:7px">
-                <button data-mix="hand" class="on">By hand</button>
-                <button data-mix="machine">Machine</button>
-              </div>
+              <div class="seg" id="mixMode" style="margin-top:7px"><button data-mix="hand" class="on">By hand</button><button data-mix="machine">Machine</button></div>
             </div>
           </div>
         </div>
 
-        <!-- FULL RECIPE CONTROL -->
         <div class="reveal" id="rFull">
           <button class="reveal-head" data-reveal="rFull"><span>Full recipe control<span class="sub">every variable</span></span><span class="chev">&#9660;</span></button>
           <div class="reveal-body">
@@ -248,12 +252,16 @@
               <div class="field"><label>Sugar</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sugar" step="0.1" value="0.32" /><span class="suffix">%</span></div></div></div>
             </div>
             <div class="field-row">
-              <div class="field"><label>Yeast (instant)</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="yeast" step="0.01" value="1.13" /><span class="suffix">%</span></div></div></div>
-              <div class="field"></div>
+              <div class="field"><label>Yeast %</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="yeast" step="0.01" value="1.13" /><span class="suffix">%</span></div></div></div>
+              <div class="field"><label>Yeast type <button class="infobtn" data-info="yeasttype" type="button">i</button></label><select class="ctrl" id="yeastType"><option value="instant" selected>Instant dried</option><option value="active">Active dried</option><option value="fresh">Fresh</option></select></div>
             </div>
-            <div class="field-row" style="margin-bottom:0">
+            <div class="field-row">
               <div class="field" style="margin-bottom:0"><label>Bulk ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="bulk" step="0.5" value="2" /><span class="suffix">hr</span></div></div></div>
               <div class="field" style="margin-bottom:0"><label>Final proof</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="proof" step="0.5" value="2" /><span class="suffix">hr</span></div></div></div>
+            </div>
+            <div class="field" style="margin-top:16px;margin-bottom:0">
+              <label>Dough loss allowance <button class="infobtn" data-info="loss" type="button">i</button></label>
+              <div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="loss" min="0" max="10" step="0.5" value="2" /><span class="suffix">%</span></div><span class="rec">makes a little extra for the bowl</span></div>
             </div>
             <p class="micro">Yeast is a starting point, not a law &mdash; room temp and time do the real work, and the dough&rsquo;s ready when it&rsquo;s ready.</p>
           </div>
@@ -267,6 +275,7 @@
     <div class="panel">
       <div class="panel-head"><h2>Your dough</h2></div>
       <div class="panel-body">
+        <div class="printonly" id="printTitle"></div>
         <div class="totals">
           <div class="total-cell"><div class="v" id="tDough">&mdash;</div><div class="k">total dough</div></div>
           <div class="total-cell"><div class="v" id="tBall">&mdash;</div><div class="k" id="tBallK">per ball</div></div>
@@ -274,13 +283,22 @@
         </div>
         <span class="method-tag" id="tag"></span>
         <ul class="ilist" id="ilist"></ul>
-        <div class="method-title">Method</div>
+        <div class="method-head">
+          <div class="method-title">Method</div>
+          <div class="seg" id="whyMode"><button data-why="0" class="on">Brief</button><button data-why="1">Show the why</button></div>
+        </div>
         <ol class="method" id="method"></ol>
         <div id="notes"></div>
+        <div class="actions">
+          <button id="btnCopy" type="button">Copy recipe</button>
+          <button id="btnSave" type="button">Save .txt</button>
+          <button id="btnPrint" type="button">Print</button>
+        </div>
       </div>
     </div>
   </section>
 </main>
+<div class="footer">Got a suggestion or found a bug? <a id="feedbackLink" href="mailto:hello@doughborough.com?subject=Dough%20feedback">Email the developer</a>.</div>
 
 <script>
 (function(){
@@ -289,17 +307,19 @@
   const r0 = n => Math.round(n), r1 = n => Math.round(n*10)/10, pad = n => String(n).padStart(2,'0');
 
   const STYLE = {
-    neapolitan:{name:'Neapolitan', hyd:62, salt:2.8, oil:0,   sugar:0,    loading:2.1, bake:430, shape:'round', img:'neapolitan', desc:'Thin base, blistered puffy rim. Wants the hottest oven you can give it.'},
-    ny:        {name:'New York',   hyd:65, salt:3.1, oil:1.6, sugar:0.32, loading:2.39,bake:300, shape:'round', img:'ny',        desc:'Round, foldable, all-purpose \u2014 your everyday dough.'},
-    detroit:   {name:'Detroit',    hyd:70, salt:2.5, oil:2.5, sugar:0.3,  loading:4.5, bake:250, shape:'pan',   img:'detroit',   desc:'Thick, airy, with a fried crispy cheese edge. Baked in an oiled pan.'},
-    focaccia:  {name:'Focaccia',   hyd:78, salt:2.5, oil:4,   sugar:0.3,  loading:5.5, bake:220, shape:'pan',   img:'focaccia',  desc:'Wet, open, dimpled and drenched in oil. Forgiving and hard to wreck.'}
+    neapolitan:{name:'Neapolitan', hyd:62, salt:2.8, oil:0,   sugar:0,    anchor:270, bake:430, shape:'round', img:'neapolitan', desc:'Thin base, blistered puffy rim. Wants the hottest oven you can give it.'},
+    ny:        {name:'New York',   hyd:65, salt:3.1, oil:1.6, sugar:0.32, anchor:270, bake:300, shape:'round', img:'ny',        desc:'Round, foldable, all-purpose \u2014 your everyday dough.'},
+    detroit:   {name:'Detroit',    hyd:70, salt:2.5, oil:2.5, sugar:0.3,  anchor:550, bake:250, shape:'pan',   img:'detroit',   desc:'Thick, airy, with a fried crispy cheese edge. Baked in an oiled pan.'},
+    focaccia:  {name:'Focaccia',   hyd:78, salt:2.5, oil:4,   sugar:0.3,  anchor:750, bake:220, shape:'pan',   img:'focaccia',  desc:'Wet, open, dimpled and drenched in oil. Forgiving and hard to wreck.'}
   };
+  const REF_AREA = Math.PI*36; // 12-inch round = 113.1 sq in: the anchor footprint
   const EQUIP = {
     tray: {name:'a tray',          max:250, note:'Preheat the oven fully. A bare tray gives the least-crisp base \u2014 fine, just not pizzeria-crisp.'},
     steel:{name:'stone / steel',   max:285, note:'Preheat the stone or steel 45+ min. Biggest single upgrade for a crisp base.'},
     oven: {name:'a pizza oven',    max:450, note:'Blazing hot \u2014 bakes in 60\u201390 seconds. Turn it often so it cooks evenly.'},
     pan:  {name:'a pan / skillet', max:240, note:'Set the base on the stovetop first, then finish it under the grill / broiler.'}
   };
+  const YEAST = { instant:{f:1,label:'Instant dried'}, active:{f:1.25,label:'Active dried'}, fresh:{f:3,label:'Fresh'} };
 
   const INFO = {
     style:'Each style is a different dough \u2014 hydration, thickness and bake. All four are same-day. The photo is what you\u2019re aiming for.',
@@ -311,11 +331,13 @@
     vinegar:'A splash of acid firms weak gluten and nudges the yeast, so cheap flour behaves like strong flour. The weaker the flour, the more it helps; off for strong flour.',
     ambient:'Your kitchen temperature. Warm rooms ferment faster and shrink the timeline; cool rooms stretch it.',
     equip:'What you\u2019re baking on. It caps the realistic temperature and changes the notes \u2014 a tray can\u2019t hit pizza-oven heat.',
-    mix:'Machines add friction heat. In a hot kitchen that can cook the gluten before it ferments, so it warns you and chills the water.'
+    mix:'Machines add friction heat. The ceiling is your yeast \u2014 it starts dying around 40\u00b0C, well before the gluten\u2019s in any danger. The warmer the room, the less mixing time before the dough overheats.',
+    yeasttype:'Same dough, different yeast. Instant is the baseline; active dried needs ~25% more by weight, fresh about 3\u00d7. The grams adjust to match.',
+    loss:'A little dough always sticks to the bowl and your hands. This makes a touch extra so you still hit your target ball weights.'
   };
 
-  let state = { qtyMode:'pizzas', qty:2, sqinpp:55, timeMode:'start', clock:null, mixMode:'hand', style:'ny', vinOn:true, vinTouched:false, shape:'round', equip:'tray' };
-  let loading = STYLE.ny.loading;
+  let state = { qtyMode:'pizzas', qty:2, appetiteG:150, timeMode:'start', clock:null, mixMode:'hand', style:'ny', vinOn:true, vinTouched:false, shape:'round', equip:'tray', why:false, yeastType:'instant' };
+  let LAST = {};
 
   function recVin(p){ var v=12-p; if(v<=0) return 0; return Math.min(5, Math.ceil(v*2)/2); }
   function curArea(){ if(state.shape==='pan'){ return (+$('panL').value||10)*(+$('panW').value||14); } var d=+$('diameter').value||12; return Math.PI*(d/2)*(d/2); }
@@ -325,14 +347,14 @@
     const ambient=+$('ambient').value||25, bulk=(+$('bulk').value||2)*60, proof=(+$('proof').value||2)*60;
     const f=Math.pow(2,(25-ambient)/10);
     return [
-      {t:'Bloom the yeast', m:15, cue:'in the vinegar water, until it bubbles and foams'},
-      {t:'Mix flour + yeast water, knead 5\u201310 min', m:10},
-      {t:'Rest to hydrate', m:30, cue:'no salt or oil yet \u2014 the gluten quietly builds here'},
-      {t:'Knead again, briefly', m:5},
-      {t:'Bulk ferment', m:Math.round(bulk*f), cue:'until risen ~50%, soft and domed'},
-      {t:'Add oil + salt, knead just to combine', m:5},
-      {t:'Divide + ball', m:5},
-      {t:'Final proof', m:Math.round(proof*f), cue:'puffy, springs back slowly when poked'}
+      {t:'Bloom the yeast', m:15, cue:'in the vinegar water, until it bubbles and foams', why:'Proving the yeast in warm water before the flour confirms it\u2019s alive \u2014 no foam means dead yeast, and a batch saved.'},
+      {t:'Mix flour + yeast water, knead 5\u201310 min', m:10, why:'Just bring it together into a rough, shaggy dough \u2014 no need to develop it properly yet.'},
+      {t:'Rest to hydrate', m:30, cue:'no salt or oil yet \u2014 the gluten quietly builds here', why:'With nothing in the way, water fully wets the flour and its own enzymes start linking gluten for you, so the next knead takes a fraction of the effort.'},
+      {t:'Knead again, briefly', m:5, why:'The gluten\u2019s already organised; this just tightens it into a smooth, elastic ball.'},
+      {t:'Bulk ferment', m:Math.round(bulk*f), cue:'until risen ~50%, soft and domed', why:'The long rise is where flavour and strength build \u2014 the yeast inflates the whole mass and the gluten learns to hold gas.'},
+      {t:'Add oil + salt, knead just to combine', m:5, why:'Salt tightens gluten and oil coats the flour to slow it \u2014 added now, after the structure\u2019s built, they season and enrich without fighting it.'},
+      {t:'Divide + ball', m:5, why:'Tight, smooth balls hold their shape and trap gas evenly for an even rise.'},
+      {t:'Final proof', m:Math.round(proof*f), cue:'puffy, springs back slowly when poked', why:'The balls relax so they stretch without tearing, and puff so they spring in the heat.'}
     ];
   }
   const totalMins = s => s.reduce((a,x)=>a+x.m,0);
@@ -341,130 +363,114 @@
 
   function render(){
     const st = STYLE[state.style];
-
-    // shape UI
     $('roundSize').style.display = state.shape==='round'?'flex':'none';
     $('panSize').style.display = state.shape==='pan'?'flex':'none';
     document.querySelectorAll('#shapeMode button').forEach(b=>b.classList.toggle('on', b.dataset.shape===state.shape));
-    // square-style gag
     const gag=$('gag');
-    if(state.shape==='pan' && (state.style==='neapolitan'||state.style==='ny')){
-      gag.style.display='block'; gag.textContent='\uD83C\uDF89 Congratulations \u2014 you\u2019ve just unlocked the world\u2019s first square '+st.name+' pizza calculator. Who are we to judge.';
-    } else if(state.shape==='round' && (state.style==='detroit'||state.style==='focaccia')){
-      gag.style.display='block'; gag.textContent='Round '+st.name+'? Bold. It\u2019ll work \u2014 just bake it in a round tin instead of a rectangular pan.';
-    } else gag.style.display='none';
+    if(state.shape==='pan' && (state.style==='neapolitan'||state.style==='ny')){ gag.style.display='block'; gag.textContent='\uD83C\uDF89 Congratulations \u2014 you\u2019ve just unlocked the world\u2019s first square '+st.name+' pizza calculator. Who are we to judge.'; }
+    else if(state.shape==='round' && (state.style==='detroit'||state.style==='focaccia')){ gag.style.display='block'; gag.textContent='Round '+st.name+'? Bold. It\u2019ll work \u2014 just bake it in a round tin instead of a rectangular pan.'; }
+    else gag.style.display='none';
 
-    // flour + strengthener (vinegar follows protein, displaces water)
     const protein=+$('protein').value, rec=recVin(protein);
     if(state.vinOn && !state.vinTouched) $('vinegar').value=r1(rec);
     $('vinegar').disabled=!state.vinOn;
     const vin=state.vinOn?(+$('vinegar').value||0):0;
     $('proteinRec').textContent = protein<=9?'weak \u2014 strengthener helps':(protein>=12?'strong \u2014 not needed':'medium');
     $('vinRec').innerHTML = state.vinOn?('rec <b>'+r1(rec)+'%</b> @ '+r1(protein)+'%'):'off';
-    $('flourNote').textContent = state.vinOn
-      ? 'At '+r1(protein)+'% the gluten is weak; the vinegar firms it, and it comes out of the water so your hydration stays put. Recommendation rises as protein falls.'
-      : 'Strengthener off. Good for strong flour; on weak flour expect a slacker, harder-to-handle dough.';
+    $('flourNote').textContent = state.vinOn ? 'At '+r1(protein)+'% the gluten is weak; the vinegar firms it, and it comes out of the water so your hydration stays put. Recommendation rises as protein falls.' : 'Strengthener off. Good for strong flour; on weak flour expect a slacker, harder-to-handle dough.';
 
-    // quantity (area per head, scales with size)
     const qty=Math.max(1,+$('qty').value||1), areaEach=curArea();
+    const perPiece=st.anchor*(areaEach/REF_AREA), appG=state.appetiteG;
     let pizzas;
-    if(state.qtyMode==='pizzas'){
-      pizzas=qty; const fed=Math.max(1,Math.round(pizzas*areaEach/state.sqinpp));
-      $('qtyUnit').textContent='pizzas'; $('qtyDerived').textContent='\u2192 feeds ~'+fed;
-      $('helper').innerHTML='<b>'+pizzas+'</b> &times; '+sizeLabel()+' '+st.name+' \u2014 feeds roughly <b>'+fed+'</b>.';
-    } else {
-      pizzas=Math.max(1,Math.ceil(qty*state.sqinpp/areaEach));
-      $('qtyUnit').textContent='people'; $('qtyDerived').textContent='\u2192 '+pizzas+' '+(state.shape==='pan'?'pan':'pizza')+(pizzas>1?'s':'');
-      $('helper').innerHTML='To feed <b>'+qty+'</b>, make <b>'+pizzas+'</b> &times; '+sizeLabel()+' '+st.name+'.';
-    }
+    if(state.qtyMode==='pizzas'){ pizzas=qty; const fed=Math.max(0.1,(pizzas*perPiece)/appG); $('qtyUnit').textContent='pizzas'; $('qtyDerived').textContent='\u2192 feeds ~'+r1(fed); $('helper').innerHTML='<b>'+pizzas+'</b> &times; '+sizeLabel()+' '+st.name+' \u2014 feeds roughly <b>'+r1(fed)+'</b>.'; }
+    else { pizzas=Math.max(1,Math.ceil(qty*appG/perPiece)); $('qtyUnit').textContent='people'; $('qtyDerived').textContent='\u2192 '+pizzas+' '+(state.shape==='pan'?'pan':'pizza')+(pizzas>1?'s':''); $('helper').innerHTML='To feed <b>'+qty+'</b>, make <b>'+pizzas+'</b> &times; '+sizeLabel()+' '+st.name+'.'; }
 
-    // weights (vinegar is inside hydration, so it displaces water)
-    const hyd=+$('hydration').value, salt=+$('salt').value, oil=+$('oil').value, sugar=+$('sugar').value, yeast=+$('yeast').value;
-    const perPiece=loading*areaEach, totalDough=pizzas*perPiece;
+    const hyd=+$('hydration').value, salt=+$('salt').value, oil=+$('oil').value, sugar=+$('sugar').value, yeast=+$('yeast').value, loss=+$('loss').value||0;
+    const totalDough=pizzas*perPiece*(1+loss/100);
     const flour=totalDough/(1+(hyd+oil+salt+sugar+yeast)/100);
     $('tDough').textContent=r0(totalDough)+'g'; $('tBall').textContent=r0(perPiece)+'g'; $('tFlour').textContent=r0(flour)+'g';
     $('tBallK').textContent = state.shape==='pan'?'per pan':'per ball';
-    if(state.shape==='round') $('sizeRec').innerHTML='a '+(+$('diameter').value)+'\u2033 ball is <b>~'+r0(perPiece)+'g</b>';
-    else $('panRec').innerHTML='that pan takes <b>~'+r0(perPiece)+'g</b>';
+    if(state.shape==='round') $('sizeRec').innerHTML='a '+(+$('diameter').value)+'\u2033 ball is <b>~'+r0(perPiece)+'g</b>'; else $('panRec').innerHTML='that pan takes <b>~'+r0(perPiece)+'g</b>';
     $('tag').textContent=st.name+' \u00b7 same-day \u00b7 room temperature';
+    $('printTitle').textContent='Dough \u2014 '+st.name+' ('+sizeLabel()+')';
 
-    // ingredients (water = hydration minus vinegar)
+    const yf=YEAST[state.yeastType].f, yLabel=YEAST[state.yeastType].label;
     const waterG=flour*hyd/100 - flour*vin/100;
     let ing=[['Flour',100,flour],['Water',r1(hyd-vin),waterG]];
     if(state.vinOn && vin>0) ing.push(['Apple cider vinegar',vin,flour*vin/100]);
     if(sugar>0) ing.push(['Sugar',sugar,flour*sugar/100]);
-    ing.push(['Instant yeast',yeast,flour*yeast/100]);
+    ing.push([yLabel+' yeast',yeast,flour*yeast/100*yf]);
     if(oil>0) ing.push(['Olive oil',oil,flour*oil/100]);
     ing.push(['Salt',salt,flour*salt/100]);
     let rows='<li class="ilist-head"><span>ingredient</span><span class="pct">baker&rsquo;s %</span><span style="text-align:right">weight</span></li>';
     ing.forEach(x=>{ rows+='<li><span class="n">'+x[0]+'</span><span class="pct">'+r1(x[1])+'%</span><span class="w">'+(x[2]<10?r1(x[2]):r0(x[2]))+'<span class="u">g</span></span></li>'; });
     $('ilist').innerHTML=rows;
 
-    // schedule + clock
     const s=schedule(), total=totalMins(s);
-    if(!state.clock){ const now=new Date(); now.setMinutes(now.getMinutes()+5); $('clock').value=pad(now.getHours())+':'+pad(now.getMinutes()); }
+    if(!$('clock').value) $('clock').value='12:00';
     const parts=($('clock').value||'12:00').split(':').map(Number), entered=parts[0]*60+parts[1];
     let startMins=state.timeMode==='start'?entered:entered-total;
     const startC=((startMins%1440)+1440)%1440, eatC=(startC+total)%1440;
-    $('timeout').innerHTML=state.timeMode==='start'
-      ? 'Dough ready to eat at <b>'+toHM(eatC)+'</b> \u00b7 '+fmtDur(total)+' start to finish'
-      : 'Start mixing at <b>'+toHM(startC)+'</b> \u00b7 needs '+fmtDur(total)+' total';
+    $('timeout').innerHTML=state.timeMode==='start' ? 'Dough ready to use at <b>'+toHM(eatC)+'</b> \u00b7 '+fmtDur(total)+' start to finish' : 'Start mixing at <b>'+toHM(startC)+'</b> \u00b7 needs '+fmtDur(total)+' total';
 
-    // method (+ style-specific steps, equipment-capped bake)
     const eq=EQUIP[state.equip], eff=Math.min(st.bake,eq.max);
-    let acc=startC, steps='';
-    s.forEach(st2=>{ const cue=st2.cue?' <span style="color:var(--ink-soft);font-style:italic">\u2014 '+st2.cue+'</span>':''; steps+='<li>'+st2.t+' <span class="clock">'+toHM(acc)+'</span>'+cue+'</li>'; acc+=st2.m; });
-    if(state.style==='detroit') steps+='<li>Oil the pan well \u2014 base <b>and</b> sides \u2014 then press the dough out and push cheese right to the edges so it fries into a crisp rim.</li>';
-    if(state.style==='focaccia') steps+='<li>Flood the top with olive oil, dimple deeply with your fingertips, scatter toppings and flaky salt.</li>';
-    const hot=st.bake>eq.max?' (your oven\u2019s ceiling \u2014 see below)':'';
-    steps+='<li>Stretch, top, bake at ~'+eff+'&deg;C'+hot+' <span class="clock">'+toHM(eatC)+'</span></li>';
+    let acc=startC, steps='', plain=[];
+    s.forEach((st2,i)=>{ const cue=st2.cue?' <span style="color:var(--ink-soft);font-style:italic">\u2014 '+st2.cue+'</span>':''; const why=state.why?'<span class="why">'+st2.why+'</span>':''; steps+='<li>'+st2.t+' <span class="clock">'+toHM(acc)+'</span>'+cue+why+'</li>'; plain.push((i+1)+'. '+st2.t+' ['+toHM(acc)+']'+(st2.cue?' \u2014 '+st2.cue:'')); acc+=st2.m; });
+    if(state.style==='detroit'){ steps+='<li>Oil the pan well \u2014 base <b>and</b> sides \u2014 then press the dough out and push cheese right to the edges so it fries into a crisp rim.'+(state.why?'<span class="why">That oiled, cheese-lined wall is what makes the signature lacy Detroit crust.</span>':'')+'</li>'; plain.push((plain.length+1)+'. Oil the pan well (base and sides), press dough out, push cheese to the edges.'); }
+    if(state.style==='focaccia'){ steps+='<li>Flood the top with olive oil, dimple deeply with your fingertips, scatter toppings and flaky salt.'+(state.why?'<span class="why">The dimples trap oil and stop the top doming flat \u2014 that\u2019s the focaccia texture.</span>':'')+'</li>'; plain.push((plain.length+1)+'. Flood with oil, dimple deeply, top and salt.'); }
+    const hot=st.bake>eq.max?' (your oven\u2019s ceiling \u2014 see notes)':'';
+    steps+='<li>Stretch, top, bake at ~'+eff+'&deg;C'+hot+' <span class="clock">'+toHM(eatC)+'</span></li>'; plain.push((plain.length+1)+'. Stretch, top, bake at ~'+eff+'C \u2014 ready '+toHM(eatC));
     $('method').innerHTML=steps;
 
-    // chips
-    $('styleDesc').textContent=st.desc;
-    $('stylePreview').src=IMG[st.img]; $('stylePreview').alt=st.name+' pizza';
+    $('styleDesc').textContent=st.desc; $('stylePreview').src=IMG[st.img]; $('stylePreview').alt=st.name+' pizza';
     document.querySelectorAll('#styleRow .style-btn').forEach(b=>b.classList.toggle('active', b.dataset.style===state.style));
     $('flourChip').textContent=(protein!=9||!state.vinOn)?(r1(protein)+'% \u00b7 '+(state.vinOn?'strengthen '+r1(vin)+'%':'plain')):'';
     $('kitchenChip').textContent=(+$('ambient').value!=25||state.equip!=='tray'||state.mixMode!=='hand')?(eq.name):'';
 
-    // notes
     const ambient=+$('ambient').value, friction=state.mixMode==='machine'?8:2, waterT=Math.round(3*24-2*ambient-friction);
+    $('ambientNote').textContent = ambient>20 ? 'Over 20\u00b0C \u2014 mix with cold or iced water so the dough doesn\u2019t run away on you.' : '';
     let n='<div class="note info"><span class="icon">&#9737;</span><div>Baking on '+eq.name+'. '+eq.note+'</div></div>';
-    if(st.bake>eq.max) n+='<div class="note warn"><span class="icon">!</span><div><b>'+st.name+' wants ~'+st.bake+'&deg;C.</b> '+eq.name.charAt(0).toUpperCase()+eq.name.slice(1)+' tops out near '+eq.max+'&deg;C, so bake a bit longer and expect a paler, softer crust. For real '+st.name+' you\u2019d want hotter.</div></div>';
-    if(state.mixMode==='machine' && (ambient>=28||waterT<5)) n+='<div class="note warn"><span class="icon">!</span><div><b>Hot room + machine = overheated dough.</b> At '+ambient+'&deg;C the friction has nowhere to go. Use water near <b>'+Math.max(1,waterT)+'&deg;C</b>, keep the mix under <b>3\u20134 min</b>, or do it by hand.</div></div>';
+    if(st.bake>eq.max) n+='<div class="note warn"><span class="icon">!</span><div><b>'+st.name+' wants ~'+st.bake+'&deg;C.</b> '+eq.name.charAt(0).toUpperCase()+eq.name.slice(1)+' tops out near '+eq.max+'&deg;C, so bake a bit longer and expect a paler, softer crust.</div></div>';
+    if(state.mixMode==='machine' && (ambient>=28||waterT<5)) n+='<div class="note warn"><span class="icon">!</span><div><b>Hot room + machine.</b> Friction heat builds fast and the yeast suffers past ~40&deg;C \u2014 long before the gluten would. Use water near <b>'+Math.max(1,waterT)+'&deg;C</b>, keep the mix under <b>3\u20134 min</b>, or by hand.</div></div>';
     else n+='<div class="note ok"><span class="icon">&#10003;</span><div>Mix with water around <b>'+waterT+'&deg;C</b> to land the dough near 24&deg;C. Trust the cues over the clock.</div></div>';
     $('notes').innerHTML=n;
+
+    // build plain-text recipe for copy/save
+    let txt='DOUGH \u2014 '+st.name+' ('+sizeLabel()+')\n'+'Makes '+pizzas+' \u00d7 ~'+r0(perPiece)+'g '+(state.shape==='pan'?'pans':'balls')+'  \u00b7  ready in '+fmtDur(total)+'\n\nINGREDIENTS\n';
+    ing.forEach(x=>{ txt+='- '+x[0]+': '+(x[2]<10?r1(x[2]):r0(x[2]))+'g ('+r1(x[1])+'%)\n'; });
+    txt+='\nMETHOD\n'+plain.join('\n')+'\n\nMade with Dough \u2014 doughborough.com';
+    LAST.txt=txt; LAST.name=st.name;
   }
 
-  // ---- wiring ----
   function seg(id,cb){ document.querySelectorAll('#'+id+' button').forEach(b=>{ b.onclick=()=>{ document.querySelectorAll('#'+id+' button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); cb(b); render(); }; }); }
-  function setAppetiteEg(v){ var m={'35':'Pizza\u2019s one of several things \u2014 picnic, party with other food, office spread, kids grazing. A snack, not the meal.','55':'Pizza is the meal \u2014 average adults at lunch or dinner, nothing else major on the table.','80':'Hungry adults, beers flowing, teenagers, after sport \u2014 pizza is the whole show.'}; $('appetiteEg').textContent=m[v]||''; }
+  function setAppetiteEg(v){ var m={'100':'Pizza\u2019s one of several things \u2014 picnic, party with other food, kids grazing. ~100g dough each.','150':'Pizza is the meal \u2014 average adults, nothing else major on the table. ~150g each.','220':'Hungry adults, beers flowing, teenagers, after sport. ~220g each.'}; $('appetiteEg').textContent=m[v]||''; }
 
-  seg('qtyMode', b=>{ state.qtyMode=b.dataset.mode; $('appetiteWrap').style.display=state.qtyMode==='people'?'block':'none'; if(state.qtyMode==='people') setAppetiteEg(String(state.sqinpp)); });
-  seg('appetite', b=>{ state.sqinpp=+b.dataset.sqin; setAppetiteEg(b.dataset.sqin); });
+  seg('qtyMode', b=>{ state.qtyMode=b.dataset.mode; $('appetiteWrap').style.display=state.qtyMode==='people'?'block':'none'; if(state.qtyMode==='people') setAppetiteEg(String(state.appetiteG)); });
+  seg('appetite', b=>{ state.appetiteG=+b.dataset.g; setAppetiteEg(b.dataset.g); });
   seg('timeMode', b=>{ state.timeMode=b.dataset.mode; });
   seg('mixMode', b=>{ state.mixMode=b.dataset.mix; });
   seg('vinMode', b=>{ state.vinOn=b.dataset.on==='1'; });
   seg('shapeMode', b=>{ state.shape=b.dataset.shape; });
+  seg('whyMode', b=>{ state.why=b.dataset.why==='1'; });
 
-  document.querySelectorAll('#styleRow .style-btn').forEach(b=>{ b.onclick=()=>{
-    state.style=b.dataset.style; var s=STYLE[state.style]; loading=s.loading; state.shape=s.shape;
-    $('hydration').value=s.hyd; $('salt').value=s.salt; $('oil').value=s.oil; $('sugar').value=s.sugar;
-    render();
-  }; });
+  document.querySelectorAll('#styleRow .style-btn').forEach(b=>{ b.onclick=()=>{ state.style=b.dataset.style; var s=STYLE[state.style]; state.shape=s.shape; $('hydration').value=s.hyd; $('salt').value=s.salt; $('oil').value=s.oil; $('sugar').value=s.sugar; render(); }; });
   document.querySelectorAll('[data-reveal]').forEach(b=>{ b.onclick=()=>$(b.dataset.reveal).classList.toggle('open'); });
   $('flourPreset').addEventListener('change',function(){ if(this.value){ $('protein').value=this.value; } render(); });
   $('protein').addEventListener('input',function(){ $('flourPreset').value=''; render(); });
-  ['qty','diameter','panL','panW','clock','ambient','equip','hydration','salt','oil','sugar','yeast','bulk','proof'].forEach(id=>{ $(id).addEventListener('input',()=>{ if(id==='clock') state.clock=true; render(); }); });
-  $('equip').addEventListener('change',render);
+  $('yeastType').addEventListener('change',function(){ state.yeastType=this.value; render(); });
+  ['qty','diameter','panL','panW','clock','ambient','hydration','salt','oil','sugar','yeast','bulk','proof','loss'].forEach(id=>{ $(id).addEventListener('input',()=>{ if(id==='clock') state.clock=true; render(); }); });
+  $('equip').addEventListener('change',function(){ state.equip=this.value; render(); });
   $('vinegar').addEventListener('input',()=>{ state.vinTouched=true; render(); });
+
+  function flash(btn,msg){ var o=btn.textContent; btn.textContent=msg; setTimeout(()=>btn.textContent=o,1400); }
+  $('btnCopy').onclick=function(){ var b=this; if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(LAST.txt).then(()=>flash(b,'Copied!')).catch(()=>flash(b,'Press Ctrl+C')); } else flash(b,'Copy unavailable here'); };
+  $('btnSave').onclick=function(){ try{ var blob=new Blob([LAST.txt],{type:'text/plain'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(LAST.name||'dough').replace(/\s+/g,'-').toLowerCase()+'-recipe.txt'; a.click(); URL.revokeObjectURL(a.href); flash(this,'Saved'); }catch(e){ flash(this,'Unavailable here'); } };
+  $('btnPrint').onclick=function(){ window.print(); };
 
   var pop=$('infopop');
   document.addEventListener('click',function(e){ var b=e.target.closest('.infobtn'); if(b){ e.stopPropagation(); pop.textContent=INFO[b.dataset.info]||''; pop.style.display='block'; var r=b.getBoundingClientRect(); pop.style.top=(window.scrollY+r.bottom+8)+'px'; pop.style.left=(window.scrollX+Math.max(8,r.left-12))+'px'; return; } if(pop.style.display==='block') pop.style.display='none'; });
-
   $('themeToggle').onclick=function(){ var d=document.documentElement.getAttribute('data-theme')==='dark'; document.documentElement.setAttribute('data-theme',d?'light':'dark'); $('themeToggle').textContent=d?'Dark mode':'Light mode'; };
 
-  // load thumbnails
   ['neapolitan','ny','detroit','focaccia'].forEach(k=>{ $('img-'+k).src=IMG[k]; });
   render();
 })();
