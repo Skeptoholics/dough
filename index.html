@@ -546,9 +546,9 @@
     if(val<=hi && val>=lo){ $('tripPop').style.display='none'; return; }
     let msg;
     if(state.ferment==='sameday'){
-      msg = val>hi ? 'Heads-up \u2014 that\u2019s a fair bit longer than we\u2019d suggest for this yeast, temperature and flour. It may over-proof, so you could ease the yeast down or use a cooler spot (or try cold ferment). Dough varies though \u2014 trust your eye.' : 'A bit quicker than we\u2019d suggest \u2014 it might not build much flavour or structure. A touch more yeast or a warmer room would help, but go by feel.';
+      msg = val>hi ? 'While we can\u2019t account for every variable, based on your inputs this is longer than we recommend at room temperature. To ferment this long, consider adjusting the recipe \u2014 less yeast, a cooler spot, or a cold ferment.' : 'While we can\u2019t account for every variable, based on your inputs this is shorter than we recommend. To ferment this quickly, consider adjusting the recipe \u2014 a little more yeast or a warmer spot.';
     } else {
-      msg = val<lo ? 'Shorter than a cold ferment usually needs to do its thing. If you want it quick, Same day may suit better \u2014 but it\u2019s a guide, not a rule.' : 'Longer than we\u2019d suggest even cold \u2014 it could over-ferment. Easing the yeast down would help. As always, your dough has the final say.';
+      msg = val<lo ? 'While we can\u2019t account for every variable, based on your inputs this is short for a cold ferment. To use a time this short, consider the same-day method, or adjusting the recipe.' : 'While we can\u2019t account for every variable, based on your inputs this is longer than we recommend even cold. To ferment this long, consider adjusting the recipe \u2014 a little less yeast.';
     }
     const el=$(which); const r=el.getBoundingClientRect(); const tp=$('tripPop');
     tp.textContent=msg; tp.style.display='block'; tp.style.top=(window.scrollY+r.bottom+8)+'px'; tp.style.left=(window.scrollX+Math.max(8,r.left))+'px';
