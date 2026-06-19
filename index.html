@@ -65,7 +65,8 @@
   .reveal.open .chev{transform:rotate(180deg)}
   .reveal-body{display:none;padding:16px;border-top:1px solid var(--line)}
   .reveal.open .reveal-body{display:block}
-  .chip{display:inline-block;font-family:'Spline Sans Mono',monospace;font-size:10.5px;color:var(--gold);margin-left:8px}
+  .chip{display:inline-block;font-family:'Spline Sans Mono',monospace;font-size:10px;color:var(--gold);margin-left:8px;background:rgba(202,162,74,.12);border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-style:normal;vertical-align:middle}
+  .reveal-head:hover .chip{border-color:var(--accent-soft)}
   .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   .micro{font-family:'Spline Sans Mono',monospace;font-size:11px;color:var(--ink-soft);line-height:1.5;margin-top:8px}
   .totals{display:flex;flex-wrap:wrap;border:1px solid var(--accent-soft);border-radius:11px;overflow:hidden;margin-bottom:18px;background:var(--field);}
@@ -101,6 +102,13 @@
   .actions{display:flex;gap:8px;margin-top:24px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:18px}
   .actions button{font-family:'Spline Sans Mono',monospace;font-size:12px;padding:9px 15px;border:1px solid var(--line);background:var(--field);color:var(--ink);border-radius:9px;cursor:pointer}
   .actions button:hover{border-color:var(--accent);color:var(--accent)}
+  .sharebar{margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:rgba(202,162,74,.1);border:1px solid var(--line);border-radius:11px;padding:12px 15px}
+  .sharebar-msg{display:flex;align-items:center;gap:10px;font-size:13.5px;font-style:italic;color:var(--ink)}
+  .sharebar-icon{font-style:normal;font-size:17px}
+  .sharebar-act{display:flex;gap:8px;flex-shrink:0}
+  .sharebar-act #btnShare{font-family:'Spline Sans Mono',monospace;font-size:12px;padding:8px 15px;border:none;background:var(--accent);color:#fff;border-radius:9px;cursor:pointer}
+  .sharebar-act #shareDismiss{font-family:'Spline Sans Mono',monospace;font-size:15px;line-height:1;padding:7px 11px;border:1px solid var(--line);background:var(--field);color:var(--ink-soft);border-radius:9px;cursor:pointer}
+  .sharebar-act #shareDismiss:hover{border-color:var(--accent);color:var(--accent)}
   .footer{max-width:1180px;margin:0 auto;padding:8px 40px 50px;font-size:13px;color:var(--ink-soft);font-style:italic;text-align:center}
   .footer a{color:var(--accent);font-style:normal}
   .pill{font-family:'Spline Sans Mono',monospace;font-size:12px;color:var(--ink-soft);background:var(--field);border:1px solid var(--line);border-radius:999px;padding:7px 11px;cursor:pointer}
@@ -108,7 +116,7 @@
   .mobilebar{display:none}
   @media(max-width:880px){ .mobilebar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;align-items:center;justify-content:space-around;gap:8px;background:var(--panel);border-top:1px solid var(--line);padding:9px 16px;box-shadow:0 -4px 18px rgba(0,0,0,.08);font-family:'Spline Sans Mono',monospace} .mobilebar div{text-align:center} .mobilebar .v{font-size:15px;font-weight:500;color:var(--accent)} .mobilebar .k{font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft)} }
   .printonly{display:none}
-  @media print{ body{background:#fff!important} header,.col,.actions,.pill,#infopop,#tripPop,.footer,.method-head .seg,.mobilebar{display:none!important} .col-out{display:block!important;position:static!important;width:100%} main{display:block!important;padding:0!important;max-width:none!important} .panel,.panel-head{border:none!important;box-shadow:none!important;background:#fff!important} .printonly{display:block;font-family:'Fraunces',serif;font-size:24px;font-weight:600;margin-bottom:4px} ol.method li .why{display:block!important} }
+  @media print{ body{background:#fff!important} header,.col,.actions,.sharebar,.pill,#infopop,#tripPop,.footer,.method-head .seg,.mobilebar{display:none!important} .col-out{display:block!important;position:static!important;width:100%} main{display:block!important;padding:0!important;max-width:none!important} .panel,.panel-head{border:none!important;box-shadow:none!important;background:#fff!important} .printonly{display:block;font-family:'Fraunces',serif;font-size:24px;font-weight:600;margin-bottom:4px} ol.method li .why{display:block!important} }
 </style>
 <!-- Microsoft Clarity analytics: replace x7n05pqcdu below with your Project ID from clarity.microsoft.com -->
 <script type="text/javascript">
@@ -119,6 +127,8 @@
 <header>
   <div class="brand"><h1>Doughborough<span class="dot"></span></h1><span class="tag">your home for bespoke dough</span></div>
   <div class="head-ctrl">
+    <a class="pill" href="faq.html">FAQ</a>
+    <button class="pill" id="shareTop" type="button">Share</button>
     <button class="pill" id="themeToggle" type="button">Dark</button>
   </div>
 </header>
@@ -259,7 +269,7 @@
         </div>
 
         <div class="reveal" id="rFull">
-          <button class="reveal-head" data-reveal="rFull"><span>Full recipe control<span class="sub">every variable</span></span><span class="chev">&#9660;</span></button>
+          <button class="reveal-head" data-reveal="rFull"><span>Full recipe control<span class="sub">every variable</span><span class="chip" id="fullChip"></span></span><span class="chev">&#9660;</span></button>
           <div class="reveal-body">
             <div class="field-row">
               <div class="field"><label>Hydration</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="hydration" step="0.5" value="65" /><span class="suffix">%</span></div></div></div>
@@ -314,12 +324,19 @@
           <button id="btnSave" type="button">Save .txt</button>
           <button id="btnPrint" type="button">Print</button>
         </div>
+        <div class="sharebar" id="shareBar">
+          <div class="sharebar-msg"><span class="sharebar-icon">&#127829;</span><span>Made a good pizza? Help someone else make one too.</span></div>
+          <div class="sharebar-act">
+            <button id="btnShare" type="button">Share</button>
+            <button id="shareDismiss" type="button" aria-label="Dismiss">&times;</button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 </main>
 <div class="mobilebar"><div><div class="v" id="mDough">&mdash;</div><div class="k">total dough</div></div><div><div class="v" id="mReady">&mdash;</div><div class="k" id="mReadyK">ready to use</div></div></div>
-<div class="footer">Got a suggestion or found a bug? <a id="feedbackLink" href="mailto:doughboroughhome@gmail.com?subject=Dough%20feedback">Email the developer</a>.</div>
+<div class="footer">New to dough? Read the <a href="faq.html">pizza dough FAQ</a>. Got a suggestion or found a bug? <a id="feedbackLink" href="mailto:doughboroughhome@gmail.com?subject=Dough%20feedback">Email the developer</a>.</div>
 
 <script>
 (function(){
@@ -376,6 +393,15 @@
   function lenIn(v){ return state.unitsSize==='metric'? cm2in(+v) : +v; }
   function lenDisp(i){ return state.unitsSize==='metric'? +(in2cm(i)).toFixed(1) : +(+i).toFixed(1); }
   const Tu = ()=> state.unitsSize==='metric'?'\u00b0C':'\u00b0F';
+  // honest feeds language: never let a rounded-up number imply more servings than there really are
+  function feedsPhrase(fed){
+    var whole = Math.floor(fed), frac = fed - whole;
+    if(fed < 1) return 'feeds about 1 \u2014 a small one';
+    if(frac < 0.15) return 'comfortably feeds ' + whole;           // clean fit, slight under
+    if(frac < 0.45) return 'feeds ' + whole + ', tight for ' + (whole+1); // not enough for the next
+    if(frac < 0.8)  return 'feeds ' + whole + '\u2013' + (whole+1);        // genuinely between
+    return 'comfortably feeds ' + (whole+1);                       // basically the next number
+  }
   function wPair(g){ if(state.unitsWeight==='metric'){ return [(g<10?r1(g):r0(g)),'g']; } var oz=g/28.3495; return [(oz<1?Math.round(oz*100)/100:r1(oz)),'oz']; }
   function wStr(g){ var p=wPair(g); return p[0]+p[1]; }
   const Lu = ()=> state.unitsSize==='metric'?'cm':'in';
@@ -467,7 +493,7 @@
     const qty=Math.max(1,+$('qty').value||1), areaEach=curArea();
     const perPiece=st.anchor*(areaEach/REF_AREA), appG=state.appetiteG;
     let pizzas;
-    if(state.qtyMode==='pizzas'){ pizzas=qty; const fed=Math.max(0.1,(pizzas*perPiece)/appG); $('qtyUnit').textContent='pizzas'; $('qtyDerived').textContent='\u2192 feeds about '+r1(fed); $('helper').innerHTML='<b>'+pizzas+'</b> &times; '+sizeLabel()+' '+st.name+' \u2014 feeds roughly <b>'+r1(fed)+'</b>.'; }
+    if(state.qtyMode==='pizzas'){ pizzas=qty; const fed=Math.max(0.1,(pizzas*perPiece)/appG); $('qtyUnit').textContent='pizzas'; $('qtyDerived').textContent='\u2192 '+feedsPhrase(fed); $('helper').innerHTML='<b>'+pizzas+'</b> &times; '+sizeLabel()+' '+st.name+' \u2014 '+feedsPhrase(fed)+'.'; }
     else { pizzas=Math.max(1,Math.ceil(qty*appG/perPiece)); $('qtyUnit').textContent='people'; $('qtyDerived').textContent='\u2192 '+pizzas+' '+(state.shape==='pan'?'pan':'pizza')+(pizzas>1?'s':''); $('helper').innerHTML='To feed <b>'+qty+'</b>, make <b>'+pizzas+'</b> &times; '+sizeLabel()+' '+st.name+'.'; }
 
     const hyd=+$('hydration').value, salt=+$('salt').value, oil=+$('oil').value, sugar=+$('sugar').value, loss=+$('loss').value||0;
@@ -524,8 +550,9 @@
     // chips + preview
     $('styleDesc').textContent=st.desc; $('stylePreview').src=IMG[st.img]; $('stylePreview').alt=st.name+' pizza';
     document.querySelectorAll('#styleRow .style-btn').forEach(b=>b.classList.toggle('active', b.dataset.style===state.style));
-    $('flourChip').textContent=(protein!=9||!state.vinOn)?(r1(protein)+'% \u00b7 '+(state.vinOn?'strengthen '+r1(vin)+'%':'plain')):'';
-    $('kitchenChip').textContent=(tempDisp(ambientC)!=tempDisp(f2c(77))||state.equip!=='tray'||state.mixMode!=='hand'||state.ferment==='cold')?(eq.name):'';
+    $('flourChip').textContent = r1(protein)+'% \u00b7 '+(state.vinOn?'strengthen '+r1(vin)+'%':'no strengthener');
+    $('kitchenChip').textContent = tempDisp(ambientC)+Tu()+' \u00b7 '+eq.name+' \u00b7 '+(state.mixMode==='hand'?'by hand':'machine');
+    $('fullChip').textContent = hyd+'% hydration \u00b7 '+r1(salt)+'% salt \u00b7 '+r1(yeast)+'% yeast';
 
     // notes
     const friction=state.mixMode==='machine'?8:2, waterT=Math.round(3*24-2*ambientC-friction);
@@ -604,6 +631,82 @@
   var pop=$('infopop');
   document.addEventListener('click',function(e){ var b=e.target.closest('.infobtn'); if(b){ e.stopPropagation(); pop.textContent=INFO[b.dataset.info]||''; pop.style.display='block'; var r=b.getBoundingClientRect(); pop.style.top=(window.scrollY+r.bottom+8)+'px'; pop.style.left=(window.scrollX+Math.max(8,r.left-12))+'px'; return; } if(pop.style.display==='block') pop.style.display='none'; if($('tripPop').style.display==='block' && !e.target.closest('#bulk') && !e.target.closest('#proof')) $('tripPop').style.display='none'; });
   $('themeToggle').onclick=function(){ var d=document.documentElement.getAttribute('data-theme')==='dark'; document.documentElement.setAttribute('data-theme',d?'light':'dark'); $('themeToggle').textContent=d?'Dark':'Light'; };
+
+  // ---- shareable URL: encode current recipe into query params ----
+  // map of url-key -> {input id} for plain inputs, plus segmented/state values handled explicitly
+  function serializeState(){
+    var p = new URLSearchParams();
+    p.set('s', state.style);
+    p.set('f', state.ferment);
+    p.set('qm', state.qtyMode);
+    p.set('q', $('qty').value);
+    if(state.qtyMode==='people') p.set('ap', state.appetiteG);
+    p.set('sh', state.shape);
+    if(state.shape==='pan'){ p.set('pl',$('panL').value); p.set('pw',$('panW').value); }
+    else p.set('d', $('diameter').value);
+    p.set('us', state.unitsSize); p.set('uw', state.unitsWeight);
+    p.set('pr', $('protein').value);
+    p.set('vn', state.vinOn?1:0);
+    if(state.vinOn) p.set('v', $('vinegar').value);
+    p.set('am', $('ambient').value);
+    if(state.ferment==='cold') p.set('fr', $('fridge').value);
+    p.set('eq', state.equip);
+    if(state.ovenTouched) p.set('ov', $('oven').value);
+    p.set('mx', state.mixMode);
+    // full control values only if user has touched them away from style defaults
+    p.set('hy',$('hydration').value); p.set('sa',$('salt').value);
+    p.set('oi',$('oil').value); p.set('su',$('sugar').value);
+    p.set('ye',$('yeast').value); p.set('yt',state.yeastType);
+    if(state.bulkTouched) p.set('bk',$('bulk').value);
+    if(state.proofTouched) p.set('pf',$('proof').value);
+    return p.toString();
+  }
+  function shareUrl(){ return location.origin + location.pathname + '?' + serializeState(); }
+
+  function restoreState(){
+    var p = new URLSearchParams(location.search);
+    if(![...p.keys()].length) return;
+    function segSet(id,val){ document.querySelectorAll('#'+id+' button').forEach(function(b){ b.classList.toggle('on', (b.dataset.f||b.dataset.mode||b.dataset.g||b.dataset.shape||b.dataset.u||b.dataset.on||b.dataset.mix||b.dataset.why)==val); }); }
+    if(p.has('s')){ state.style=p.get('s'); var st=STYLE[state.style]; $('hydration').value=st.hyd; $('salt').value=st.salt; $('oil').value=st.oil; $('sugar').value=st.sugar; document.querySelectorAll('#styleRow .style-btn').forEach(b=>b.classList.toggle('active',b.dataset.style===state.style)); }
+    if(p.has('us')){ state.unitsSize=p.get('us'); document.querySelectorAll('#sizeUnit button').forEach(b=>b.classList.toggle('on',b.dataset.u===state.unitsSize)); }
+    if(p.has('uw')){ state.unitsWeight=p.get('uw'); document.querySelectorAll('#weightUnit button').forEach(b=>b.classList.toggle('on',b.dataset.u===state.unitsWeight)); }
+    if(p.has('f')){ state.ferment=p.get('f'); $('yeast').value=FERMENT[state.ferment].yeast; }
+    if(p.has('qm')){ state.qtyMode=p.get('qm'); document.querySelectorAll('#qtyMode button').forEach(b=>b.classList.toggle('on',b.dataset.mode===state.qtyMode)); $('appetiteWrap').style.display=state.qtyMode==='people'?'block':'none'; }
+    if(p.has('q')) $('qty').value=p.get('q');
+    if(p.has('ap')){ state.appetiteG=+p.get('ap'); document.querySelectorAll('#appetite button').forEach(b=>b.classList.toggle('on',+b.dataset.g===state.appetiteG)); }
+    if(p.has('sh')){ state.shape=p.get('sh'); document.querySelectorAll('#shapeMode button').forEach(b=>b.classList.toggle('on',b.dataset.shape===state.shape)); }
+    if(p.has('d')) $('diameter').value=p.get('d');
+    if(p.has('pl')) $('panL').value=p.get('pl');
+    if(p.has('pw')) $('panW').value=p.get('pw');
+    if(p.has('pr')){ $('protein').value=p.get('pr'); $('flourPreset').value=''; }
+    if(p.has('vn')){ state.vinOn=p.get('vn')==='1'; document.querySelectorAll('#vinMode button').forEach(b=>b.classList.toggle('on',(b.dataset.on==='1')===state.vinOn)); }
+    if(p.has('v')){ $('vinegar').value=p.get('v'); state.vinTouched=true; }
+    if(p.has('am')) $('ambient').value=p.get('am');
+    if(p.has('fr')) $('fridge').value=p.get('fr');
+    if(p.has('eq')){ state.equip=p.get('eq'); $('equip').value=state.equip; }
+    if(p.has('ov')){ $('oven').value=p.get('ov'); state.ovenTouched=true; }
+    if(p.has('mx')){ state.mixMode=p.get('mx'); document.querySelectorAll('#mixMode button').forEach(b=>b.classList.toggle('on',b.dataset.mix===state.mixMode)); }
+    ['hy:hydration','sa:salt','oi:oil','su:sugar','ye:yeast'].forEach(function(pair){ var k=pair.split(':'); if(p.has(k[0])) $(k[1]).value=p.get(k[0]); });
+    if(p.has('yt')){ state.yeastType=p.get('yt'); $('yeastType').value=state.yeastType; }
+    if(p.has('bk')){ $('bulk').value=p.get('bk'); state.bulkTouched=true; }
+    if(p.has('pf')){ $('proof').value=p.get('pf'); state.proofTouched=true; }
+    $('fridgeField').style.display=state.ferment==='cold'?'block':'none';
+    document.querySelectorAll('#fermentMode button').forEach(b=>b.classList.toggle('on',b.dataset.f===state.ferment));
+  }
+
+  function doShare(btn){
+    track('share');
+    var url = shareUrl();
+    var text = 'My pizza dough recipe from Doughborough \u2014 ' + url;
+    if(navigator.share){ navigator.share({title:'Doughborough dough recipe',text:'My pizza dough recipe',url:url}).catch(function(){}); return; }
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(function(){ if(btn) flash(btn,'Link copied!'); }).catch(function(){ if(btn) flash(btn,'Press Ctrl+C'); }); }
+    else if(btn) flash(btn,'Copy unavailable');
+  }
+  $('btnShare').onclick=function(){ doShare(this); };
+  $('shareTop').onclick=function(){ doShare(this); };
+  $('shareDismiss').onclick=function(){ $('shareBar').style.display='none'; track('share_dismiss'); };
+
+  restoreState();
 
   ['neapolitan','ny','detroit','focaccia'].forEach(k=>{ $('img-'+k).src=IMG[k]; });
   render(); track('load',{});

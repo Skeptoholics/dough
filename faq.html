@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dough FAQ — common pizza dough questions answered | Doughborough</title>
+<meta name="description" content="Straight answers to the most common pizza dough problems — sticky dough, dough that won't rise, tearing, soggy bases, baking temperatures and more. Mechanism-first, no fluff." />
+<link rel="canonical" href="https://doughborough.com/faq.html" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&family=Spline+Sans+Mono:wght@400;500&display=swap');
+  :root{--bg:#f4efe6;--panel:#fbf8f2;--ink:#2a241d;--ink-soft:#6b6155;--line:#e0d7c7;--accent:#c0492f;--accent-soft:#e8c9bf;--gold:#caa24a;--ok:#5a7d4f;--field:#fff;--radius:14px;--shadow:0 1px 2px rgba(42,36,29,.04), 0 8px 28px rgba(42,36,29,.06);color-scheme:light;}
+  html[data-theme="dark"]{--bg:#17130f;--panel:#211b15;--ink:#f3eadc;--ink-soft:#b8aa98;--line:#3d3328;--accent:#e16a4d;--accent-soft:#6d3b31;--gold:#d2aa52;--ok:#8faa7e;--field:#2b231b;--shadow:0 1px 2px rgba(0,0,0,.25),0 10px 32px rgba(0,0,0,.32);color-scheme:dark;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:'Fraunces',Georgia,serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;background-image:radial-gradient(circle at 12% 18%, rgba(202,162,74,.05), transparent 40%),radial-gradient(circle at 88% 82%, rgba(192,73,47,.05), transparent 42%);}
+  header{padding:30px 40px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:baseline;gap:14px;text-decoration:none;color:inherit}
+  .brand h1{font-size:32px;font-weight:900;letter-spacing:-.02em;line-height:1;position:relative}
+  .brand h1:after{content:"";position:absolute;left:0;bottom:-8px;width:46px;height:3px;background:linear-gradient(90deg,var(--accent),var(--gold));border-radius:20px}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);display:inline-block;transform:translateY(-3px)}
+  .tag{font-size:14px;color:var(--ink-soft);font-style:italic}
+  .head-ctrl{display:flex;gap:8px;align-items:center}
+  .pill{font-family:'Spline Sans Mono',monospace;font-size:12px;color:var(--ink-soft);background:var(--field);border:1px solid var(--line);border-radius:999px;padding:7px 11px;cursor:pointer;text-decoration:none;display:inline-block}
+  .pill:hover{border-color:var(--accent-soft);color:var(--accent)}
+  main{max-width:780px;margin:0 auto;padding:30px 40px 40px;}
+  .intro{margin-bottom:30px}
+  .intro h2{font-size:25px;font-weight:600;letter-spacing:-.01em;margin-bottom:10px}
+  .intro p{font-size:15.5px;line-height:1.6;color:var(--ink-soft)}
+  .intro p a{color:var(--accent)}
+  .faq{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:14px;}
+  .faq-q{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 22px;background:linear-gradient(0deg,rgba(224,215,199,.18),transparent);border:none;cursor:pointer;font-family:'Fraunces',serif;font-size:17px;font-weight:600;color:var(--ink);text-align:left;line-height:1.35}
+  .faq-q .chev{color:var(--accent);font-size:13px;transition:transform .22s ease;flex-shrink:0}
+  .faq.open .chev{transform:rotate(180deg)}
+  .faq-a{display:none;padding:0 22px 20px;border-top:1px solid var(--line)}
+  .faq.open .faq-a{display:block}
+  .faq-a .short{font-size:15px;line-height:1.6;color:var(--ink);background:rgba(202,162,74,.1);border:1px solid var(--line);border-radius:9px;padding:12px 15px;margin:16px 0 14px;font-style:italic}
+  .faq-a .short b{font-style:normal;color:var(--accent);text-transform:uppercase;font-size:11px;letter-spacing:.08em;display:block;margin-bottom:4px}
+  .faq-a p{font-size:15px;line-height:1.65;color:var(--ink-soft);margin-bottom:12px}
+  .faq-a p:last-child{margin-bottom:0}
+  .faq-a strong{color:var(--ink);font-weight:600}
+  .cta{margin-top:30px;text-align:center;padding:26px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .cta p{font-size:16px;margin-bottom:14px;color:var(--ink)}
+  .cta a.btn{font-family:'Spline Sans Mono',monospace;font-size:13px;padding:11px 20px;background:var(--accent);color:#fff;border-radius:9px;text-decoration:none;display:inline-block}
+  .footer{max-width:780px;margin:0 auto;padding:8px 40px 50px;font-size:13px;color:var(--ink-soft);font-style:italic;text-align:center}
+  .footer a{color:var(--accent);font-style:normal}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="index.html"><h1>Doughborough<span class="dot"></span></h1><span class="tag">your home for bespoke dough</span></a>
+  <div class="head-ctrl">
+    <a class="pill" href="index.html">Calculator</a>
+    <button class="pill" id="themeToggle" type="button">Dark</button>
+  </div>
+</header>
+
+<main>
+  <div class="intro">
+    <h2>Pizza dough questions, answered straight</h2>
+    <p>The most common things that go wrong with pizza dough — and why. No filler, just the mechanism. When you're ready to build a recipe, the <a href="index.html">calculator</a> handles the maths.</p>
+  </div>
+
+  <div class="faq">
+    <button class="faq-q" type="button">Can I use plain flour instead of pizza flour?<span class="chev">&#9660;</span></button>
+    <div class="faq-a">
+      <div class="short"><b>Short answer</b>Yes — any plain flour works, as long as it's not self-raising or cake flour.</div>
+      <p>Different flours have different properties, and the one that matters most for bread and pizza is <strong>protein content</strong>, usually printed on the packet as a percentage. Most plain flours sit between about 9% and 11%; anything above 12% is considered a strong flour.</p>
+      <p>More protein means a stronger, chewier structure. Weaker flour gives a softer, more tender crumb. If your flour is on the weak side, you can firm up its gluten by adding a little vinegar — the calculator does this automatically when you tell it your protein percentage.</p>
+    </div>
+  </div>
+
+  <div class="faq">
+    <button class="faq-q" type="button">Why is my pizza dough sticky, and how do I fix it?<span class="chev">&#9660;</span></button>
+    <div class="faq-a">
+      <div class="short"><b>Short answer</b>Almost always too much water, or not enough kneading. Keep kneading to find out which.</div>
+      <p>Stickiness comes from a few factors working together, but if we set the flour's protein aside and just work with what you've got, the two main culprits are <strong>too much water</strong> and <strong>not enough kneading</strong>.</p>
+      <p>The only way to tell them apart is to keep kneading. If the dough is still sticky after about 20 minutes, it's likely too wet. From there you have two options. If you want to keep your hydration where it is, work a little oil into the dough. If you'd rather not add oil, add a little flour instead — but be aware this lowers your hydration.</p>
+    </div>
+  </div>
+
+  <div class="faq">
+    <button class="faq-q" type="button">How long should I prove pizza dough?<span class="chev">&#9660;</span></button>
+    <div class="faq-a">
+      <div class="short"><b>Short answer</b>There's no fixed time — judge by size. Let the dough roughly double during bulk ferment, and let the balls roughly double during the final proof.</div>
+      <p>Time isn't something you set; it's something that <strong>emerges</strong> once everything else is decided. Fermentation depends on ambient temperature, hydration, yeast quantity, salt, any added sugar, protein content and how long you kneaded. Only after all of that is baked into the dough does a time reveal itself.</p>
+      <p>The matrix, roughly: higher temperature means less time, higher hydration means less time, more yeast means less time, more salt means more time, more sugar means less time, higher protein means more time, and more kneading means less resting time.</p>
+      <p>Because of all that, the easiest approach is to treat the clock as a guide and watch the dough instead — let it at least double for both stages. When every factor favours speed, each stage can be done in under two hours. When the factors favour a long, slow rise, it can stretch to 48 hours or more.</p>
+    </div>
+  </div>
+
+  <div class="faq">
+    <button class="faq-q" type="button">Why didn't my pizza dough rise?<span class="chev">&#9660;</span></button>
+    <div class="faq-a">
+      <div class="short"><b>Short answer</b>There are several possible reasons, but the most practical move is usually to start again.</div>
+      <p>A dough that won't rise is a fault-finding exercise. Assuming your yeast is alive and able to activate, the usual culprit is that <strong>the dough got too hot and killed the yeast</strong> — most yeast strains start to die above 40&deg;C, and dough temperature climbs surprisingly fast from the friction of long kneading.</p>
+      <p>Other common causes: forgetting to add the yeast, not checking it was still alive first, temperatures too cold to get going, too much salt, or not enough water.</p>
+    </div>
+  </div>
+
+  <div class="faq">
+    <button class="faq-q" type="button">Can I make pizza dough without yeast?<span class="chev">&#9660;</span></button>
+    <div class="faq-a">
+      <div class="short"><b>Short answer</b>Yes and no — you can make something pizza-like, but nothing matches a classic yeasted dough.</div>
+      <p>There are workarounds, but none of them replace yeast, so the honest answer is: you can make something that <strong>resembles</strong> a pizza, but you can't make a classic-style pizza without yeast.</p>
+      <p>You can use self-raising flour, add eggs for extra protein, or reach for dough conditioners like xanthan or guar gum — but none of these do what yeast does. Yeast doesn't just make gas; it works the dough at a microscopic level, developing the gluten in a way nothing else can. If you don't believe it, try it side by side.</p>
+      <p>And if the real problem is that you simply can't get hold of yeast, then with a little patience you can make your own — see our yeast tips for more.</p>
+    </div>
+  </div>
+
+  <div class="faq">
+    <button class="faq-q" type="button">How do I stretch pizza dough without it tearing?<span class="chev">&#9660;</span></button>
+    <div class="faq-a">
+      <div class="short"><b>Short answer</b>Tearing comes from stretching too fast, dough that isn't ready, dough that's too cold, or low hydration and protein. Even perfect dough tears if you're rough with it.</div>
+      <p>Before you stretch, the dough has to be <strong>ready</strong> to stretch — and even then, being too rough will tear it. Setting that aside, the main cause of tearing is underdeveloped gluten, which usually comes down to too little hydration, too little kneading, or both. Cold dough tears too.</p>
+      <p>At the other extreme, dough can actually be <strong>over-kneaded</strong>. A dough should be fully kneaded in under 30 minutes of total kneading. If you're going longer than that, something in the recipe needs another look — it may be too wet, too dry or too salty. Past about 30 minutes you start shortening the long gluten strands instead of lengthening them, and by around 40 minutes the dough turns to mush. The sweet spot is roughly 10&ndash;15 minutes by machine, or 15&ndash;20 minutes by hand.</p>
+    </div>
+  </div>
+
+  <div class="faq">
+    <button class="faq-q" type="button">Can I freeze pizza dough?<span class="chev">&#9660;</span></button>
+    <div class="faq-a">
+      <div class="short"><b>Short answer</b>Yes.</div>
+      <p>Dough can be frozen at <strong>any stage</strong> of its development. When it thaws, it simply picks up where it left off and resumes developing.</p>
+    </div>
+  </div>
+
+  <div class="faq">
+    <button class="faq-q" type="button">What temperature should I bake pizza at home?<span class="chev">&#9660;</span></button>
+    <div class="faq-a">
+      <div class="short"><b>Short answer</b>It depends mainly on thickness. Thin and hot (around 400&deg;C); thick like Detroit, cooler (around 250&deg;C).</div>
+      <p><strong>Neapolitan</strong> wants the most heat to puff that cornicione — around 430&deg;C. <strong>New York</strong> likes it hot too, around 350&deg;C. These thinner pizzas do best cooked hot and fast, in roughly 90 to 180 seconds.</p>
+      <p>Thicker pizzas like <strong>Detroit</strong> and its cousin <strong>focaccia</strong> take longer to cook through, so they need less heat on the outside to stop the surface burning before the centre is done — around 250&deg;C and 220&deg;C respectively, taking anywhere from about 10 to 20 minutes.</p>
+    </div>
+  </div>
+
+  <div class="faq">
+    <button class="faq-q" type="button">Why is my pizza base soggy?<span class="chev">&#9660;</span></button>
+    <div class="faq-a">
+      <div class="short"><b>Short answer</b>Not cooked hot or long enough, too wet going in, moisture trapped under the base, sauce leaking through, or the pizza resting on a flat surface afterwards.</div>
+      <p>A soggy base is usually a <strong>combination</strong> of three things: not enough heat, not enough <strong>direct</strong> heat under the base, and nowhere for the moisture to escape during and after cooking. Baking on a tray traps steam underneath; baking on stone or steel lets it cook out. And once it's done, resting it flat on a board lets the trapped steam soften it again.</p>
+    </div>
+  </div>
+
+  <div class="faq">
+    <button class="faq-q" type="button">How do I get a crispy base without a pizza oven?<span class="chev">&#9660;</span></button>
+    <div class="faq-a">
+      <div class="short"><b>Short answer</b>A domestic oven with a thick pizza steel is the best option.</div>
+      <p>A home oven can absolutely produce a crispy base, but it needs help. The best option is a <strong>thick pizza steel</strong> — let it preheat fully, then drop the pizza straight onto it with no tray in between.</p>
+      <p>If you don't have a steel, there's one more option, though it's fiddly. Blind-bake the base first, flip it over and bake the empty base upside down for about 5 minutes, then top it and bake again. When it comes out, rest it on a <strong>wire rack</strong> so the bottom stays crisp.</p>
+    </div>
+  </div>
+
+  <div class="cta">
+    <p>Ready to build a recipe around your flour, your kitchen and your oven?</p>
+    <a class="btn" href="index.html">Open the calculator</a>
+  </div>
+</main>
+
+<div class="footer">Got a suggestion or found a bug? <a href="mailto:doughboroughhome@gmail.com?subject=Dough%20feedback">Email the developer</a>.</div>
+
+<script>
+  document.querySelectorAll('.faq-q').forEach(function(b){
+    b.onclick=function(){ b.parentElement.classList.toggle('open'); };
+  });
+  document.getElementById('themeToggle').onclick=function(){
+    var d=document.documentElement.getAttribute('data-theme')==='dark';
+    document.documentElement.setAttribute('data-theme',d?'light':'dark');
+    this.textContent=d?'Dark':'Light';
+  };
+</script>
+</body>
+</html>
