@@ -326,7 +326,7 @@
   <div id="uvReadout" aria-live="polite"></div>
   <header>
     <div class="brand"><h1>Doughborough<span class="dot"></span></h1><span class="tag">the home of bespoke doughs</span></div>
-    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v2.8.0</span></div>
+    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v2.9.0</span></div>
   </header>
   <main>
     <section class="col">
@@ -404,7 +404,8 @@
           <div class="field"><label>How will you mix?</label>
             <div class="method-pick">
               <button class="style-btn" data-mix="hand" id="mixHand">By hand<br><span style="font-weight:400;font-size:11px">shorter mix + folds</span></button>
-              <button class="style-btn active" data-mix="machine" id="mixMachine">Machine<br><span style="font-weight:400;font-size:11px">stand or spiral mixer</span></button>
+              <button class="style-btn active" data-mix="stand" id="mixStand">Stand mixer<br><span style="font-weight:400;font-size:11px">paddle or dough hook</span></button>
+              <button class="style-btn" data-mix="spiral" id="mixSpiral">Spiral<br><span style="font-weight:400;font-size:11px">runs the dough hottest</span></button>
             </div>
             <div class="mono" data-uv="Hand mixing: the dough teaches your hands more than any machine ever will." style="font-size:11px;color:var(--ink-soft);margin-top:8px;line-height:1.5">By hand uses a short mix plus stretch-and-folds during the bulk to build strength gently. A mixer does that work up front.</div>
           </div>
@@ -741,7 +742,7 @@ function num(v,f){return v===undefined||v===null||v===""||isNaN(Number(v))?f:Num
    Returns a multiplier on recommended times: >1 = cooler/slower (longer), <1 = warmer/faster (shorter). */
 const AMBIENT_BASELINE_C=22, AMBIENT_DOUBLING=10;
 /* mixing-water DDT guide: target dough temp and friction warmth by mix method (°C) */
-const DDT_TARGET=24, FRICTION_C={hand:2,machine:6};
+const DDT_TARGET=24, FRICTION_C={hand:2,stand:6,spiral:9}, FRICTION_REF_HYD=65;
 function ambientFactor(ambientC){
   const c=num(ambientC,AMBIENT_BASELINE_C);
   return Math.pow(2,(AMBIENT_BASELINE_C-c)/AMBIENT_DOUBLING);
@@ -783,7 +784,7 @@ function stepPreferment(total, pf, lim){
 function calculate(opts){
   const { styleKey, methodKey="easy", quantity=2, size=null, overrides={},
           yeastType="instant", preferment="poolish", poolishStyle="stiff",
-          totalHours=null, stageOverrides={}, yeastOverrides={}, mixMode="machine", shape=null, ballWeight=null,
+          totalHours=null, stageOverrides={}, yeastOverrides={}, mixMode="stand", shape=null, ballWeight=null,
           lossAllow=null, ambientC=null, flourProtein=null, vinegarOn=false, vinegar=null } = opts;
   const base=STYLES[styleKey];
   const shp = shape || base.shape;
@@ -809,12 +810,17 @@ function calculate(opts){
   // Flour temp ≈ room temp ≈ ambient; friction is small by hand, larger by machine.
   const ambW=num(ambientC,AMBIENT_BASELINE_C);
   // cap at a yeast-safe lukewarm max — never recommend hot water even in a cold kitchen
-  const waterTempC=Math.max(1,Math.min(35, Math.round(3*DDT_TARGET - 2*ambW - (FRICTION_C[mixMode]||4))));
+  // mechanical mixers convert dough stiffness into heat: stiffer (lower-hydration) dough = more friction.
+  // By hand, low hydration mostly tires you out rather than warming the dough, so the term is mechanical-only.
+  const isMech = (mixMode==="stand"||mixMode==="spiral");
+  const hydFriction = isMech ? Math.max(-2.5, Math.min(2.5, 0.1*(FRICTION_REF_HYD - p.hydration))) : 0;
+  const frictionC = (FRICTION_C[mixMode]||4) + hydFriction;
+  const waterTempC=Math.max(1,Math.min(35, Math.round(3*DDT_TARGET - 2*ambW - frictionC)));
   const waterCue = waterTempC<=4?"icy — swap a little of the water for ice":
                    waterTempC<=12?"cold, from the fridge":
                    waterTempC<=20?"cool tap water":
                    waterTempC<=28?"room-temperature water":"lukewarm — just warm to the touch, never hot or it stresses the yeast";
-  const hotMachine = (mixMode==="machine" && ambW>=27);
+  const hotMachine = ((mixMode==="stand" && ambW>=27) || (mixMode==="spiral" && ambW>=25));
 
   // --- TIME ALLOCATION (whole hours) ---
   let stages={},mainFermentHours;
@@ -1060,7 +1066,7 @@ function buildMethod(ctx){
     if(byHand){
       s.push(`Mix by hand until it comes together into a rough, shaggy dough with no dry flour left, about 2–3 minutes. It will not be smooth yet — that's fine.`+why("By hand you don't need to knead to smoothness now. The stretch-and-folds during the bulk build the gluten gradually, with far less effort and less risk of a tight, torn dough."));
     } else {
-      s.push(`Knead by machine (or by hand) for about 5 minutes, until the dough becomes smooth and elastic.`+why("A spiral or stand mixer builds the gluten network quickly. Kneading now traps gas and gives structure, so the bulk can focus on fermentation rather than strength."));
+      s.push(`Knead by ${mixMode==="spiral"?"spiral mixer for about 4–5 minutes":"stand mixer for about 6–8 minutes (or by hand)"}, until the dough becomes smooth and elastic.`+why("A spiral or stand mixer builds the gluten network quickly. Kneading now traps gas and gives structure, so the bulk can focus on fermentation rather than strength."+(mixMode==="spiral"?" A spiral works the dough harder and faster, so it both develops and warms sooner — watch the dough temperature in a warm kitchen.":"")));
     }
     elapsedH+=stages.bulk.val;
     if(byHand){
@@ -1130,7 +1136,7 @@ function initTheme(){
   setTheme("light");
 }
 const advIds=["hydration","salt","oil","sugar"];
-let current="neapolitan", currentMethod="easy", mode="brief", mixMode="machine";
+let current="neapolitan", currentMethod="easy", mode="brief", mixMode="stand";
 let currentTimeframe=null;  // guided "time to be taken" choice (null = custom/manual)
 let userShape="round";   // user-chosen shape, overrides the style default
 let touched={};            // recipe % overrides
@@ -1666,9 +1672,10 @@ $("prefYeast").addEventListener("input",()=>{prefTouched.yeast=true;render();});
 $("mEasy").onclick=()=>{clearTimeframe();currentMethod="easy";stageTouched={};prefTouched={};yeastTouched={};totalTouched=false;$("totalHours").value=defaultTotalFor();updateTotalRec();syncMethodUI();refreshStageDefaults();render();};
 $("mTrad").onclick=()=>{clearTimeframe();currentMethod="trad";stageTouched={};prefTouched={};yeastTouched={};totalTouched=false;$("totalHours").value=defaultTotalFor();updateTotalRec();syncMethodUI();refreshStageDefaults();render();};
 {const tfEl=$("timeframe"); if(tfEl) tfEl.addEventListener("change",()=>applyTimeframe(tfEl.value));}
-function syncMixUI(){$("mixHand").classList.toggle("active",mixMode==="hand");$("mixMachine").classList.toggle("active",mixMode==="machine");}
+function syncMixUI(){$("mixHand").classList.toggle("active",mixMode==="hand");$("mixStand").classList.toggle("active",mixMode==="stand");$("mixSpiral").classList.toggle("active",mixMode==="spiral");}
 $("mixHand").onclick=()=>{mixMode="hand";syncMixUI();refreshStageDefaults();render();};
-$("mixMachine").onclick=()=>{mixMode="machine";syncMixUI();refreshStageDefaults();render();};
+$("mixStand").onclick=()=>{mixMode="stand";syncMixUI();refreshStageDefaults();render();};
+$("mixSpiral").onclick=()=>{mixMode="spiral";syncMixUI();refreshStageDefaults();render();};
 $("recipeHelpToggle").onclick=()=>{
   const box=$("recipeHelp");
   const body=$("notesBlock");
