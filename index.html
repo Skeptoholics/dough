@@ -17,8 +17,8 @@
   .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);display:inline-block;transform:translateY(-3px)}
   .tag{font-size:14px;color:var(--ink-soft);font-style:italic}
   main{max-width:1180px;margin:0 auto;padding:26px 40px 80px;display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start;}
-  @media(max-width:880px){ main{grid-template-columns:1fr;gap:22px} .col-out{position:static!important} }
-  .col{min-width:0}.col-out{position:sticky;top:20px}
+  @media(max-width:880px){ main{grid-template-columns:1fr;gap:22px} .col-out{position:static!important;max-height:none!important;overflow:visible!important} }
+  .col{min-width:0}.col-out{position:sticky;top:20px;max-height:calc(100vh - 40px);overflow-y:auto;overflow-x:hidden}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
   .panel-head{padding:15px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(0deg,rgba(224,215,199,.18),transparent);}
   .panel-head h2{font-size:13px;text-transform:uppercase;letter-spacing:.14em;font-weight:600;color:var(--ink-soft)}
@@ -212,7 +212,7 @@
     #printRecipe .meta{font-size:13px;color:#555;margin-bottom:18px}
     #printRecipe h2{font-size:15px;text-transform:uppercase;letter-spacing:.08em;margin:20px 0 8px;border-bottom:1px solid #ddd;padding-bottom:5px}
     #printRecipe h3{font-size:14px;margin:12px 0 4px}
-    #printRecipe table{width:100%;border-collapse:collapse;margin:6px 0 12px}
+    #printRecipe table{width:100%;max-width:420px;border-collapse:collapse;margin:6px 0 12px}
     #printRecipe td{border-bottom:1px solid #ddd;padding:6px 0;font-size:14px}
     #printRecipe td:last-child{text-align:right;font-family:monospace}
     #printRecipe ol{padding-left:22px;font-size:14px;line-height:1.45}
@@ -297,6 +297,18 @@
   .section-box.collapsed .sec-label{margin-bottom:0}
   .section-box.collapsed > *:not(.sec-label){display:none !important}
   .section-box.collapsed .sec-toggle{transform:rotate(-90deg)}
+  /* ---- C2: recipe panel split into light collapsible folds ---- */
+  .col-out .section-box.recipe-fold{border:none;background:none!important;box-shadow:none!important;padding:0;margin:0 0 4px}
+  .col-out .recipe-fold > .sec-label{margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .col-out .recipe-fold.collapsed > .sec-label{margin-bottom:0;border-bottom:none}
+  .col-out .recipe-fold .sec-toggle{width:26px;height:26px;font-size:15px}
+  .method-tools{display:flex;justify-content:flex-end;margin:0 0 10px}
+  /* ---- C1: collapsible FAQ section ---- */
+  .faq .panel-head{cursor:pointer;user-select:none}
+  .faq .panel-head h2{margin-right:auto}
+  .faq-section-chev{font-family:'Spline Sans Mono',monospace;color:var(--accent);font-size:14px;transition:transform .2s ease}
+  .faq:not(.collapsed) .faq-section-chev{transform:rotate(180deg)}
+  .faq.collapsed .panel-body{display:none}
 
   /* ---- v2: unit + schedule segmented toggles ---- */
   .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
@@ -326,7 +338,7 @@
   <div id="uvReadout" aria-live="polite"></div>
   <header>
     <div class="brand"><h1>Doughborough<span class="dot"></span></h1><span class="tag">the home of bespoke doughs</span></div>
-    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v2.9.0</span></div>
+    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v2.12.1</span></div>
   </header>
   <main>
     <section class="col">
@@ -371,7 +383,7 @@
           <div class="section-box">
           <div class="sec-label" style="margin-top:0"><span class="sec-num">2</span><span class="sec-title">Flour and Method Selection</span></div>
 
-          <div class="field"><label>Flour protein</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="flourProtein" min="5" max="18" step="0.5" /><span class="suffix">%</span></div><span class="rec">on the pack's nutrition panel</span></div></div>
+          <div class="field"><label>Flour protein</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="flourProtein" min="7" max="18" step="0.5" /><span class="suffix">%</span></div><span class="rec">on the pack's nutrition panel</span></div></div>
 
           <div class="field"><label>Don't know it? Pick the closest flour</label><select class="ctrl" id="flourType">
             <option value="" selected>— choose to fill protein above —</option>
@@ -407,7 +419,7 @@
               <button class="style-btn active" data-mix="stand" id="mixStand">Stand mixer<br><span style="font-weight:400;font-size:11px">paddle or dough hook</span></button>
               <button class="style-btn" data-mix="spiral" id="mixSpiral">Spiral<br><span style="font-weight:400;font-size:11px">runs the dough hottest</span></button>
             </div>
-            <div class="mono" data-uv="Hand mixing: the dough teaches your hands more than any machine ever will." style="font-size:11px;color:var(--ink-soft);margin-top:8px;line-height:1.5">By hand uses a short mix plus stretch-and-folds during the bulk to build strength gently. A mixer does that work up front.</div>
+            <div class="mono" id="mixNote" data-uv="Hand mixing: the dough teaches your hands more than any machine ever will." style="font-size:11px;color:var(--ink-soft);margin-top:8px;line-height:1.5">A stand mixer builds the gluten up front — about 6–8 minutes to a smooth, elastic dough.</div>
           </div>
           </div>
 
@@ -472,7 +484,7 @@
           <div class="subgroup">
                 <div class="subgroup-title">Completing the dough</div>
                 <div class="mono" data-uv="Keep salt off the yeast until they meet in the dough — dumped straight on top, salt stuns it." style="font-size:11px;color:var(--ink-soft);margin:-6px 0 14px;line-height:1.5">These set the <b>final dough</b> — the whole thing, preferment included. Hydration here is the finished dough's hydration, not just this stage.</div>
-                <div class="field"><label>Dough loss allowance</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="lossAllow" min="0" max="25" step="0.5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="lossAllowRec"></b></span></div><div class="mono" data-uv="Every gram you scrape off the bowl is a gram that never made it into a pizza." style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5">Some dough always gets left behind — on the bowl, the bench, your hands. This makes a little extra so you still hit your target ball weight after the mess. Wetter doughs and hand mixing lose more, so the recommendation rises with both.</div></div>
+                <div class="field"><label>Dough loss allowance</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="lossAllow" min="0" max="25" step="0.5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="lossAllowRec"></b></span></div><div class="mono" data-uv="Every gram you scrape off the bowl is a gram that never made it into a pizza." style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5">Some dough always gets left behind — on the bowl, the bench, your hands. Increasing this value makes a little extra in your recipe, so you still hit your target ball weight after some dough is left behind. Wetter doughs and hand mixing tend to lose more, so the recommendation rises with both. Your real loss is personal, though — the surest way to work this out is to make a batch, weigh what you actually end up with, and use the actual percentage difference figure next time.</div></div>
                 <div class="field"><label>Hydration</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="hydration" min="40" max="100" step="0.5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="hydrationRec"></b></span></div></div>
                 <div class="field"><label id="mainYeastLabel">Yeast</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="mainYeast" min="0" max="5" step="0.01" /><span class="suffix">%</span></div><span class="rec">starting point <b id="mainYeastRec"></b></span></div><div class="mono" id="mainYeastNote" style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5"></div></div>
                 <div class="field"><label>Salt</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="salt" min="0" max="6" step="0.1" /><span class="suffix">%</span></div><span class="rec">recommended <b id="saltRec"></b></span></div></div>
@@ -506,15 +518,35 @@
       <div class="panel">
         <div class="panel-head"><h2 data-uv="Numbers get you close; your hands and your eyes finish the dough.">Your recipe</h2><span class="mono" id="recipeStyle" style="font-size:12px;color:var(--accent)"></span></div>
         <div class="panel-body">
-          <div class="totals" id="totalsBar">
-            <div class="total-cell"><div class="v" id="tDough">—</div><div class="k" id="tDoughK">total dough</div></div>
-            <div class="total-cell"><div class="v" id="tTime">—</div><div class="k">total time</div></div>
-            <div class="total-cell"><div class="v" id="tBall">—</div><div class="k" id="tBallK">per ball</div></div>
+          <div class="section-box recipe-fold">
+            <div class="sec-label"><span class="sec-title">Overview</span></div>
+            <div class="totals" id="totalsBar">
+              <div class="total-cell"><div class="v" id="tDough">—</div><div class="k" id="tDoughK">total dough</div></div>
+              <div class="total-cell"><div class="v" id="tTime">—</div><div class="k">total time</div></div>
+              <div class="total-cell"><div class="v" id="tBall">—</div><div class="k" id="tBallK">per ball</div></div>
+            </div>
+            <div class="method-tag" id="methodTag"></div>
+            <div id="recipeDeviations"></div>
+            <div id="scheduleBlock" style="display:none"></div>
+            <div id="recipeSecret" class="uv-secret-line"></div>
           </div>
-          <div class="method-tag" id="methodTag"></div>
-          <div id="recipeDeviations"></div>
-          <div id="scheduleBlock" style="display:none"></div>
-          <div id="recipeSecret" class="uv-secret-line"></div>
+
+          <div class="section-box recipe-fold">
+            <div class="sec-label"><span class="sec-title">Ingredients</span></div>
+            <div id="recipeSections"></div>
+          </div>
+
+          <div class="section-box recipe-fold">
+            <div class="sec-label"><span class="sec-title">Method</span></div>
+            <div class="method-tools">
+              <span class="toggle"><button id="briefBtn" class="on">Brief</button><button id="expandBtn">Detailed</button></span>
+            </div>
+            <ol class="method" id="method-steps"></ol>
+            <div id="bakeSummary"></div>
+            <div class="note" id="bakeNote"></div>
+            <div id="flagNotes"></div>
+          </div>
+
           <div class="export-row">
             <button class="print-btn" id="copyRecipeBtn" type="button">Copy recipe</button>
             <button class="print-btn" id="saveRecipeBtn" type="button">Save text</button>
@@ -522,16 +554,6 @@
             <span class="export-status" id="exportStatus" aria-live="polite"></span>
           </div>
 
-          <div id="recipeSections"></div>
-
-          <div class="ing-title" style="margin-top:24px">Method
-            <span class="toggle"><button id="briefBtn" class="on">Brief</button><button id="expandBtn">Detailed</button></span>
-          </div>
-          <ol class="method" id="method-steps"></ol>
-
-          <div id="bakeSummary"></div>
-          <div class="note" id="bakeNote"></div>
-          <div id="flagNotes"></div>
           <div class="recipe-help" id="recipeHelp">
             <button class="recipe-help-head" id="recipeHelpToggle" type="button" aria-expanded="false">
               <span><span class="label">Help / quick fixes</span><span class="sub">Dough judgement, topping load, flour warning, and common corrections</span></span>
@@ -543,8 +565,8 @@
       </div>
     </section>
     <section class="col faq-col">
-      <div class="panel faq">
-        <div class="panel-head"><h2 data-uv="No silly questions here — only doughs that haven't risen yet.">Questions &amp; answers</h2></div>
+      <div class="panel faq collapsed" id="faqPanel">
+        <div class="panel-head" id="faqHead" role="button" tabindex="0" aria-expanded="false"><h2 data-uv="No silly questions here — only doughs that haven't risen yet.">Questions &amp; answers</h2><span class="faq-section-chev" aria-hidden="true">▼</span></div>
         <div class="panel-body">
           <p class="faq-intro">Short answers to the things people ask most. Tap one to read more.</p>
           <div class="faq-list" id="faqList"></div>
@@ -576,20 +598,20 @@
 
 const STYLES = {
   neapolitan:{name:"Neapolitan",shape:"round",density:2.39,defaultSize:12,hydration:58,salt:2.5,oil:0,sugar:0,
-    bake:{min:375,max:450,idealMin:400},
+    bake:{min:400,max:450,idealMin:425},
     shapeStep:"Stretch each ball by hand from the centre outward, moving gas toward the rim instead of pressing it out. Do not flatten the rim; that rim becomes the puffy, blistered cornicione.",
     description:"Neapolitan pizza is a small, very thin pizza with a soft centre and a large, puffy, blistered rim. It works best with minimal toppings: tomato, mozzarella, basil, and olive oil. The crust should be soft, lightly chewy, and sometimes slightly wet in the centre. It needs very high heat and a very fast bake."},
   ny:{name:"New York",shape:"round",density:3.2,defaultSize:16,hydration:62,salt:2.5,oil:2,sugar:1,
-    bake:{min:375,max:450,idealMin:375},
+    bake:{min:325,max:375,idealMin:350},
     shapeStep:"Stretch each ball into an even, flat round with a low border. A rolling pin can be used lightly if you want a flatter, more uniform base.",
     description:"New York pizza is a large, thin pizza with a low, narrow border and slices big enough to fold. It usually has moderate sauce, moderate cheese, and restrained toppings. The base should be crisp underneath, flexible in the hand, and chewy through the bite. It bakes hot and fast, but is more forgiving than Neapolitan."},
   detroit:{name:"Detroit",shape:"rectangle",density:6.0,defaultLength:12,defaultWidth:8,hydration:65,salt:2.8,oil:2,sugar:0,
-    bake:{min:250,max:350,idealMin:250},
+    bake:{min:225,max:275,idealMin:250},
     shapeStep:"Press the dough into a well-oiled rectangular pan, pushing it toward the edges and corners. Cheese can go right to the edge so it fries into the crust.",
     description:"Detroit pizza is a thick rectangular pan pizza with a light, airy interior, a crisp fried base, and caramelised cheese edges. Cheese is pushed to the edge of the pan so it fries against the metal. Sauce is often added on top, either before or after baking. It handles heavier toppings better than thin styles, but still needs control so the crumb does not collapse."},
   focaccia:{name:"Focaccia",shape:"rectangle",density:6.0,defaultLength:13,defaultWidth:9,hydration:80,salt:3.0,oil:5,sugar:0,
     hasDepth:true,defaultDepth:1.5,depthMin:1,depthMax:2,depthK:4,
-    bake:{min:200,max:220,idealMin:200},
+    bake:{min:200,max:250,idealMin:225},
     shapeStep:"Spread the dough into a well-oiled pan, rest if it resists, then dimple deeply with your fingertips. Add simple toppings and bake.",
     description:"Focaccia is a thick, oil-rich flatbread with a dimpled surface, open crumb, crisp golden exterior, and moist tender interior. It is bread-forward rather than pizza-forward. Keep toppings simple: salt, herbs, olive oil, or light pizza-style toppings."}
 };
@@ -826,8 +848,11 @@ function calculate(opts){
   let stages={},mainFermentHours;
   if(!isTrad){
     const preset=timePreset(styleKey,methodKey,preferment);
-    const rec=preset ? {bulk:preset.bulk,ball:Math.max(1,Math.round(total-preset.bulk))} : easySplit(total);
-    const recBulk=Math.round(rec.bulk), recBall=Math.max(1,Math.round(rec.ball));
+    // bulk scales with ambient just like the ball — a cold room slows the whole ferment, not only the proof.
+    // (Previously bulk was pinned to preset.bulk and the ball alone absorbed every degree of ambient change.)
+    const presetBulk = preset ? Math.max(1,Math.round(preset.bulk*ambF)) : null;
+    const rec=preset ? {bulk:presetBulk,ball:Math.max(1,Math.round(total-presetBulk))} : easySplit(total);
+    const recBulk=Math.max(1,Math.round(rec.bulk)), recBall=Math.max(1,Math.round(rec.ball));
     const bulk=Math.round(num(stageOverrides.bulk,recBulk)),ball=Math.round(num(stageOverrides.ball,recBall));
     stages={bulk:{rec:recBulk,val:bulk},ball:{rec:recBall,val:ball}};
     mainFermentHours=bulk+ball;
@@ -916,16 +941,17 @@ function calculate(opts){
   const napCap=Math.max(2,Math.round(24*ambF));
   const recRange0 = getRecommendedRange(styleKey,methodKey,preferment);
   const recRange = {min: Math.max(1,Math.round(recRange0.min*ambF)), max: Math.max(2,Math.round(recRange0.max*ambF))};
-  // one consistent message for "you've stepped past what room temperature can do" — point to the fridge, but don't do the fridge math
-  const fridgeLine = `To rest it longer than this the only way is the fridge, which slows fermentation right down. Doughborough stays no-fridge by design, so how long to give it in there is yours to judge — we only flag where room temperature runs out.`;
+  // one consistent message for "you've stepped past what this kitchen temperature can do" — point to the fridge, but don't do the fridge math
+  const ambStr = tF(num(ambientC,AMBIENT_BASELINE_C));
+  const fridgeLine = `To rest it longer, the only lever left is the fridge, which slows fermentation right down. Doughborough stays no-fridge by design — think of the fridge as a time-control device, a way to slow things so the dough is ready when you are. How long to give it in there is yours to judge; we only flag where ${ambStr} runs out.`;
   if(styleKey==="neapolitan"){
     if(total < recRange.min){
-      flags.push({level:"warn",where:"time",msg:`${fmtH(total)} is below the recommended Neapolitan range of ${fmtH(recRange.min)}–${fmtH(recRange.max)} for this kitchen temperature. The dough may not be mature enough for a light, open cornicione.`});
+      flags.push({level:"warn",where:"time",msg:`${fmtH(total)} is below the recommended Neapolitan range of ${fmtH(recRange.min)}–${fmtH(recRange.max)} at ${ambStr}. The dough may not be mature enough for a light, open cornicione.`});
     }
     if(!isTrad && total > napCap){
-      flags.push({level:"warn",where:"time",msg:`${fmtH(total)} is past what a room-temperature Neapolitan can take at this kitchen temperature. ${fridgeLine}`});
+      flags.push({level:"warn",where:"time",msg:`${fmtH(total)} is past what a Neapolitan can take at ${ambStr} without the fridge. ${fridgeLine}`});
     } else if(isTrad && total > limMax){
-      flags.push({level:"warn",where:"time",msg:`${fmtH(total)} is longer than a ${preferment} should run at room temperature here. ${fridgeLine}`});
+      flags.push({level:"warn",where:"time",msg:`${fmtH(total)} is longer than a ${preferment} should run at ${ambStr}. ${fridgeLine}`});
     }
   } else if(isTrad){
     // below the preferment minimum total → not worth the extra steps
@@ -934,11 +960,11 @@ function calculate(opts){
     }
     // over the preferment maximum total → fridge territory
     if(total > limMax){
-      flags.push({level:"warn",where:"time",msg:`${fmtH(total)} is longer than this method should run without the fridge at this temperature — pushed this far at room temperature the yeast exhausts and the dough can collapse. ${fridgeLine}`});
+      flags.push({level:"warn",where:"time",msg:`${fmtH(total)} is longer than this method should run without the fridge at ${ambStr} — pushed this far the yeast exhausts and the dough can collapse. ${fridgeLine}`});
     }
   } else {
     if(total > limMax){
-      flags.push({level:"warn",where:"time",msg:`${fmtH(total)} is about as long as an all-in-one dough should ferment at room temperature here. Beyond this, switch to a preferment (Poolish or Biga) to use the time well — or, to simply rest longer, the fridge. ${fridgeLine}`});
+      flags.push({level:"warn",where:"time",msg:`${fmtH(total)} is about as long as an all-in-one dough should ferment at ${ambStr}. Beyond this, switch to a preferment (Poolish or Biga) to use the time well — or, to simply rest longer, the fridge. ${fridgeLine}`});
     }
   }
   // overproof: main ferment far beyond recommended for the yeast in use
@@ -1171,9 +1197,9 @@ const TROUBLESHOOTING=[
 
 const STYLE_UV_SECRETS={
   neapolitan:"Cornicione checkpoint: open from the centre and herd the gas outward. If you crush the rim, the oven cannot resurrect it.",
-  ny:"Fold-test ghost note: the slice should bend without cracking and without dumping its toppings on your shirt, speaking of dumping on shirts, Ethan will never be a fifi",
+  ny:"Fold-test ghost note: the slice should bend without cracking \u2014 and without dumping its toppings down your shirt.",
   detroit:"Corner-piece law: whoever made the dough gets first claim on the crispy cheese corner.",
-  focaccia:"This focaccia recipe was stolen from the world famous Scottwah Brewstillery and Smokehouse"
+  focaccia:"Dimple like you mean it: press all the way to the pan so the pools of oil and salt have somewhere to sit \u2014 shallow dimples bake flat and dry."
 };
 const METHOD_UV_SECRETS={
   easy:"Direct dough secret: the mixer starts the dough, but time finishes it. Do not rush the final rest.",
@@ -1226,7 +1252,7 @@ $("styleExpand").addEventListener("click",e=>e.stopPropagation());
 function fmtPct(v){return v+"%";}
 function currentLimitKey(){return currentMethod==="easy"?"easy":$("preferment").value;}
 function ambientC(){const el=$("ambient");return el? tempToBase(num(el.value,tempFromBase(AMBIENT_BASELINE_C))) : AMBIENT_BASELINE_C;}
-function flourProteinVal(){return num($("flourProtein").value,12);}
+function flourProteinVal(){return Math.max(7,num($("flourProtein").value,12));}
 function currentTotalH(){return num($("totalHours").value,defaultTotalFor());}
 // --- two-way time binding: total is always the sum of the stage boxes ---
 function anyTimeTouched(){return totalTouched||stageTouched.bulk||stageTouched.ball||stageTouched.preferment;}
@@ -1661,6 +1687,7 @@ $("ballWeight").addEventListener("change",()=>{const el=$("ballWeight");let g=wt
 ["sBulk","sBall"].forEach(id=>$(id).addEventListener("input",()=>{clearTimeframe();stageTouched[id.replace("s","").toLowerCase()]=true;lockAllStages();syncTotalFromStages();render();}));
 $("flourType").addEventListener("change",()=>{const v=$("flourType").value;if(v)$("flourProtein").value=v;refreshStageDefaults();render();});
 $("flourProtein").addEventListener("input",()=>{$("flourType").value="";refreshStageDefaults();render();});
+$("flourProtein").addEventListener("change",()=>{const el=$("flourProtein");if(el.value!==""&&Number(el.value)<7){el.value="7";$("flourType").value="";refreshStageDefaults();render();}});
 $("mainYeast").addEventListener("input",()=>{yeastTouched.main=true;render();});
 $("prefYeast").addEventListener("input",()=>{yeastTouched.preferment=true;render();});
 $("sPreferment").addEventListener("input",()=>{clearTimeframe();stageTouched.preferment=true;yeastTouched.preferment=false;lockAllStages();syncTotalFromStages();render();});
@@ -1672,7 +1699,14 @@ $("prefYeast").addEventListener("input",()=>{prefTouched.yeast=true;render();});
 $("mEasy").onclick=()=>{clearTimeframe();currentMethod="easy";stageTouched={};prefTouched={};yeastTouched={};totalTouched=false;$("totalHours").value=defaultTotalFor();updateTotalRec();syncMethodUI();refreshStageDefaults();render();};
 $("mTrad").onclick=()=>{clearTimeframe();currentMethod="trad";stageTouched={};prefTouched={};yeastTouched={};totalTouched=false;$("totalHours").value=defaultTotalFor();updateTotalRec();syncMethodUI();refreshStageDefaults();render();};
 {const tfEl=$("timeframe"); if(tfEl) tfEl.addEventListener("change",()=>applyTimeframe(tfEl.value));}
-function syncMixUI(){$("mixHand").classList.toggle("active",mixMode==="hand");$("mixStand").classList.toggle("active",mixMode==="stand");$("mixSpiral").classList.toggle("active",mixMode==="spiral");}
+function syncMixUI(){$("mixHand").classList.toggle("active",mixMode==="hand");$("mixStand").classList.toggle("active",mixMode==="stand");$("mixSpiral").classList.toggle("active",mixMode==="spiral");
+  const note=$("mixNote");
+  if(note) note.textContent = mixMode==="hand"
+    ? "By hand uses a short mix plus stretch-and-folds during the bulk to build strength gently \u2014 a mixer does that work up front."
+    : mixMode==="spiral"
+    ? "A spiral mixer works the dough hardest and fastest \u2014 about 4\u20135 minutes. It develops and warms the dough sooner, so watch the dough temperature in a warm kitchen."
+    : "A stand mixer builds the gluten up front \u2014 about 6\u20138 minutes to a smooth, elastic dough.";
+}
 $("mixHand").onclick=()=>{mixMode="hand";syncMixUI();refreshStageDefaults();render();};
 $("mixStand").onclick=()=>{mixMode="stand";syncMixUI();refreshStageDefaults();render();};
 $("mixSpiral").onclick=()=>{mixMode="spiral";syncMixUI();refreshStageDefaults();render();};
@@ -1706,9 +1740,12 @@ function checkDivergences(r){
   const setD=(recId,on)=>{const el=$(recId); if(!el)return; const b=el.closest(".rec"); if(b)b.classList.toggle("diverged",!!on);};
   const fmt=(val,t)=> t==="pct"?fmtPct(val): t==="hrs"?(r1(val)+" hrs"): t==="temp"?tF(val): t==="wt"?(wNum(val)+" "+wtLabel()): String(val);
   const v=id=>{const el=$(id); return el&&el.value!==""?Number(el.value):null;};
-  const single=(recId,label,user,rec,t,eps=0.25)=>{
+  const single=(recId,label,user,rec,t,eps=null)=>{
     if(user==null||isNaN(user)){setD(recId,false);return;}
-    const d=Math.abs(user-rec)>eps; setD(recId,d);
+    // ±3% of the recommended value, floored at 0.5 so small/zero recs still get a usable band.
+    // (A flat absolute tolerance can't fit hydration ~60 and salt ~2.5 at once — proportional scales to each field.)
+    const tol = (eps==null) ? Math.max(Math.abs(rec)*0.03, 0.5) : eps;
+    const d=Math.abs(user-rec)>tol; setD(recId,d);
     if(d) devs.push({label,you:fmt(user,t),rec:fmt(rec,t)});
   };
   const range=(recId,label,user,lo,hi,t)=>{
@@ -1717,9 +1754,10 @@ function checkDivergences(r){
     if(d) devs.push({label,you:fmt(user,t),rec:fmt(lo,t)+"–"+fmt(hi,t)});
   };
   single("hydrationRec","Hydration",v("hydration"),recHydrationFor(s.hydration,flourProteinVal()),"pct");
+  single("mainYeastRec","Yeast",v("mainYeast"),r.mainYeastRec,"pct");
   single("saltRec","Salt",v("salt"),s.salt,"pct");
   single("oilRec","Oil",v("oil"),s.oil,"pct");
-  single("sugarRec","Sugar",v("sugar"),s.sugar,"pct");
+  single("sugarRec",($("sugarLabel")&&/honey/i.test($("sugarLabel").textContent))?"Honey":"Sugar",v("sugar"),s.sugar,"pct");
   if(r.loss) single("lossAllowRec","Dough loss allowance",r.loss.val,r.loss.rec,"pct");
   if(r.vinegar&&r.vinegar.on) single("vinegarRec","Vinegar",r.vinegar.pct,r.vinegar.rec,"pct");
   const f=ambientFactor(ambientC()), L=getRecommendedRange(current,currentMethod,$("preferment").value);
@@ -1727,8 +1765,8 @@ function checkDivergences(r){
   // (individual bulk/ball/preferment recs are derived from the total, so comparing them is circular — total time is the meaningful signal)
   if(currentMethod==="trad"){
     const pf=PREFERMENTS[$("preferment").value];
-    single("poolishPctRec",($("preferment").value==="biga"?"Biga":"Poolish")+" amount",v("poolishPct"),pf.flourPct,"pct",0.6);
-    single("prefHydrationRec","Preferment hydration",v("prefHydration"),pf.hydration,"pct",0.6);
+    single("poolishPctRec",($("preferment").value==="biga"?"Biga":"Poolish")+" amount",v("poolishPct"),pf.flourPct,"pct");
+    single("prefHydrationRec","Preferment hydration",v("prefHydration"),pf.hydration,"pct");
   }
   // bake temperature: only flag if HOTTER than the style wants — below ideal is normal for home ovens and is explained separately
   const ot=tempToBase($("oven").value);
@@ -1802,7 +1840,7 @@ function updatePrintRecipe(r,steps){
   const yt=r.yeastTypeName.toLowerCase();
   let html=`<h1>${esc(r.styleName)} dough</h1><div class="meta">${esc(r.methodName)} · ${esc(r.quantity)} × ${r.shape==="round"?esc(fmtLenNum(r.size.diameter)+lenLabel()+' ball'):esc(fmtLenNum(r.size.length)+'×'+fmtLenNum(r.size.width)+(r.size.depth!=null?'×'+fmtLenNum(r.size.depth):'')+lenLabel()+' pan')} · total dough ${gW(r.totals.doughWeight)} · total time ${fmtHShort(r.totalTime)}</div>`;
   if(lastDevs&&lastDevs.length){
-    html+=`<div style="border:1px solid #c0492f;border-radius:8px;padding:8px 12px;margin:10px 0"><b>Outside our recommendations</b><ul style="margin:6px 0 0;padding-left:18px">${lastDevs.map(d=>`<li>${esc(d.label)}: you set ${esc(d.you)}, recommended ${esc(d.rec)}</li>`).join("")}</ul></div>`;
+    html+=`<div style="border:1px solid #c0492f;border-radius:8px;padding:8px 12px;margin:10px 0"><b>Outside our recommendations</b><ul style="margin:6px 0 0;padding-left:18px">${lastDevs.map(d=>`<li>${esc(d.label)}: you set ${esc(d.you)}, recommended ${esc(d.rec)}</li>`).join("")}</ul><div style="font-size:12px;color:#555;margin-top:6px">All fine — the further you move from the recommended values, the less predictable the result becomes.</div></div>`;
   }
   html+=`<h2>Ingredients</h2>`;
   if(r.isTrad){
@@ -2024,7 +2062,7 @@ function render(){
     if(devs.length){
       let h='<div class="recipe-dev"><div class="recipe-dev-head">Outside our recommendations</div><ul>';
       devs.forEach(d=>h+=`<li><b>${d.label}:</b> you set ${d.you}, recommended ${d.rec}</li>`);
-      h+='</ul><div class="recipe-dev-foot">All fine — this calculator is built to be pushed. This just keeps the recipe honest about where you\u2019ve stepped off the recommended path.</div></div>';
+      h+='</ul><div class="recipe-dev-foot">All fine — this calculator is built to be pushed. Treat these as a map, not a rule: the further you move from the recommended values, the less predictable the result becomes.</div></div>';
       $("recipeDeviations").innerHTML=h;
     } else $("recipeDeviations").innerHTML="";
   }
@@ -2072,7 +2110,20 @@ document.querySelectorAll('.section-box').forEach(box=>{
   label.appendChild(chev);
   label.setAttribute('title','Click to collapse or expand this section');
   label.addEventListener('click',()=>box.classList.toggle('collapsed'));
+  // C3: input sections 2–6 start collapsed (recipe folds have no sec-num, so they stay open)
+  const numEl=box.querySelector('.sec-num');
+  const secN=numEl?parseInt(numEl.textContent,10):0;
+  if(secN>=2&&secN<=6) box.classList.add('collapsed');
 });
+
+// C1: collapsible Q&A section (collapsed by default)
+{ const fh=$('faqHead'), fp=$('faqPanel');
+  if(fh&&fp){
+    const toggleFaq=()=>{ const collapsed=fp.classList.toggle('collapsed'); fh.setAttribute('aria-expanded', String(!collapsed)); };
+    fh.addEventListener('click',toggleFaq);
+    fh.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleFaq(); } });
+  }
+}
 
 /* ---- FAQ (Wave 4d / 4.10): common questions, short answer + expandable detail ---- */
  const FAQ=[
@@ -2122,7 +2173,7 @@ document.querySelectorAll('.section-box').forEach(box=>{
       "Set your baking surface in Section 4 and the bake line adjusts time and expectation to match. Pan styles like focaccia and Detroit don't need a stone at all \u2014 the pan is the surface."]},
   {q:"What temperature should I bake at?",
    s:"It tracks thickness: thin and blazing hot, thick and cooler. Section 4 sets the exact target for your style.",
-   l:["Thin styles want maximum heat to set fast before they dry out \u2014 Neapolitan around 400\u2013450\u00B0C and New York around 375\u00B0C, baked in roughly 90 seconds to a few minutes. Thicker bakes cook from the inside, so they need a gentler oven or the surface burns before the centre is done: Detroit around 250\u00B0C and focaccia around 200\u2013220\u00B0C, taking ten to twenty minutes.",
+   l:["Thin styles want maximum heat to set fast before they dry out \u2014 Neapolitan around 400\u2013450\u00B0C and New York around 350\u00B0C, baked in roughly 90 seconds to a few minutes. Thicker bakes cook from the inside, so they need a gentler oven or the surface burns before the centre is done: Detroit around 250\u00B0C and focaccia around 225\u00B0C, taking ten to twenty minutes.",
       "Enter the temperature you can actually reach in Section 4. If your oven won't hit the ideal, put in its max; the bake line adjusts time and expectation to match."]},
   {q:"Why is my base soggy?",
    s:"Too little heat, no direct heat under the base, or trapped steam with nowhere to escape.",
