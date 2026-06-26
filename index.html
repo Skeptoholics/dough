@@ -17,8 +17,8 @@
   .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);display:inline-block;transform:translateY(-3px)}
   .tag{font-size:14px;color:var(--ink-soft);font-style:italic}
   main{max-width:1180px;margin:0 auto;padding:26px 40px 80px;display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start;}
-  @media(max-width:880px){ main{grid-template-columns:1fr;gap:22px} .col-out{position:static!important;max-height:none!important;overflow:visible!important} }
-  .col{min-width:0}.col-out{position:sticky;top:20px;max-height:calc(100vh - 40px);overflow-y:auto;overflow-x:hidden}
+  @media(max-width:880px){ main{grid-template-columns:1fr;gap:22px} }
+  .col{min-width:0}.col-out{min-width:0}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
   .panel-head{padding:15px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(0deg,rgba(224,215,199,.18),transparent);}
   .panel-head h2{font-size:13px;text-transform:uppercase;letter-spacing:.14em;font-weight:600;color:var(--ink-soft)}
@@ -297,10 +297,12 @@
   .section-box.collapsed .sec-label{margin-bottom:0}
   .section-box.collapsed > *:not(.sec-label){display:none !important}
   .section-box.collapsed .sec-toggle{transform:rotate(-90deg)}
-  /* ---- C2: recipe panel split into light collapsible folds ---- */
-  .col-out .section-box.recipe-fold{border:none;background:none!important;box-shadow:none!important;padding:0;margin:0 0 4px}
-  .col-out .recipe-fold > .sec-label{margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
-  .col-out .recipe-fold.collapsed > .sec-label{margin-bottom:0;border-bottom:none}
+  /* ---- C2: recipe panel split into collapsible folds ---- */
+  .col-out .section-box.recipe-fold{border:none;background:none!important;box-shadow:none!important;padding:0;margin:0 0 14px}
+  .col-out .recipe-fold > .sec-label{margin:0 0 14px;padding:11px 14px;background:var(--field-soft);border:1px solid var(--line);border-radius:10px;cursor:pointer;transition:border-color .15s}
+  .col-out .recipe-fold > .sec-label:hover{border-color:var(--accent)}
+  .col-out .recipe-fold.collapsed > .sec-label{margin-bottom:0}
+  .col-out .recipe-fold > .sec-label .sec-title{font-size:13px}
   .col-out .recipe-fold .sec-toggle{width:26px;height:26px;font-size:15px}
   .method-tools{display:flex;justify-content:flex-end;margin:0 0 10px}
   /* ---- C1: collapsible FAQ section ---- */
@@ -338,7 +340,7 @@
   <div id="uvReadout" aria-live="polite"></div>
   <header>
     <div class="brand"><h1>Doughborough<span class="dot"></span></h1><span class="tag">the home of bespoke doughs</span></div>
-    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v2.12.1</span></div>
+    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v2.13.0</span></div>
   </header>
   <main>
     <section class="col">
@@ -452,6 +454,7 @@
 
           <div class="subgroup">
                 <div class="subgroup-title">Fermentation times</div>
+                <div class="field" id="sPrefermentMirrorField" style="display:none"><label>Preferment time</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sPrefermentMirror" min="1" step="1" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sPrefermentMirrorRec"></b></span></div></div>
                 <div class="field"><label>Bulk ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBulk" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sBulkRec"></b></span></div></div>
                 <div class="field" style="margin-bottom:0"><label id="finalProofLabel">Ball ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBall" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sBallRec"></b></span></div></div>
                 <div class="calc-total" id="calcTotal"></div>
@@ -1440,6 +1443,7 @@ function syncMethodUI(){
   $("mTrad").classList.toggle("active",currentMethod==="trad");
   renderMethodBlurb();
   $("prefGroup").style.display=currentMethod==="trad"?"":"none";
+  {const mf=$("sPrefermentMirrorField");if(mf)mf.style.display=currentMethod==="trad"?"":"none";}
   {const s4=$("section4Preferment");if(s4)s4.style.display=currentMethod==="trad"?"":"none";}
   // finish (chewier/softer) only matters when there's flour left to add last — hide it at 100%
   const prefVal=$("preferment").value, pctNow=num($("poolishPct").value, PREFERMENTS[prefVal].flourPct);
@@ -1691,6 +1695,8 @@ $("flourProtein").addEventListener("change",()=>{const el=$("flourProtein");if(e
 $("mainYeast").addEventListener("input",()=>{yeastTouched.main=true;render();});
 $("prefYeast").addEventListener("input",()=>{yeastTouched.preferment=true;render();});
 $("sPreferment").addEventListener("input",()=>{clearTimeframe();stageTouched.preferment=true;yeastTouched.preferment=false;lockAllStages();syncTotalFromStages();render();});
+// C1: the Section 3 mirror is a remote control for sPreferment — write the value across, then replay the real event
+["input","change"].forEach(ev=>{const m=$("sPrefermentMirror");if(m)m.addEventListener(ev,()=>{$("sPreferment").value=m.value;$("sPreferment").dispatchEvent(new Event(ev));});});
 ["sBulk","sBall","sPreferment"].forEach(id=>$(id).addEventListener("change",()=>{if(anyTimeTouched())syncTotalFromStages();render();}));
 $("prefHydration").addEventListener("input",()=>{prefTouched.hydration=true;render();});
 $("poolishPct").addEventListener("input",()=>{prefTouched.poolishPct=true;syncMethodUI();render();});
@@ -1919,6 +1925,12 @@ function readAnchor(){
 function render(){
   const s=STYLES[current];
   const r=calculate(buildOpts());
+
+  // C1: keep the Section 3 preferment-time mirror in lock-step with sPreferment (don't fight the user mid-type)
+  if($("sPrefermentMirror")){
+    if(document.activeElement!==$("sPrefermentMirror")) $("sPrefermentMirror").value=$("sPreferment").value;
+    if($("sPrefermentMirrorRec")&&$("sPrefermentRec")) $("sPrefermentMirrorRec").textContent=$("sPrefermentRec").textContent;
+  }
 
   // dough ball weight: show recommendation, pre-fill unless the user has edited it
   if($("ballWeightRec")){
