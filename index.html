@@ -340,7 +340,7 @@
   <div id="uvReadout" aria-live="polite"></div>
   <header>
     <div class="brand"><h1>Doughborough<span class="dot"></span></h1><span class="tag">the home of bespoke doughs</span></div>
-    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v2.13.0</span></div>
+    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v2.14.0</span></div>
   </header>
   <main>
     <section class="col">
@@ -427,20 +427,29 @@
 
           <div class="section-box">
           <div class="sec-label" style="margin-top:0"><span class="sec-num">3</span><span class="sec-title">Time and Timers Selection</span></div>
-          <div class="field"><label>How much time do you have?</label><select class="ctrl" id="timeframe">
+          <div class="field"><label>Ambient kitchen temperature</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="ambient" min="5" max="40" step="1" /><span class="suffix temp-unit">°C</span></div><span class="rec">typical room <b id="ambientRec"></b></span></div><div class="mono" data-uv="Dough has no clock — it only feels the temperature. A cold kitchen isn't a problem, it's just a slower one." style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5">Yeast works faster when it's warm and slower when it's cool, so the temperature of your kitchen sets the pace. Set this to how warm the room actually is and the recommended times above and below adjust to suit — a cooler kitchen lengthens them, a warmer one shortens them.</div><div class="mono" id="waterTempLine" style="font-size:11px;color:var(--ink-soft);margin-top:8px;line-height:1.5"></div></div>
+          <div class="field"><label>How much time do you want to take?</label><select class="ctrl" id="timeframe">
                   <option value="">Custom — I'll set it myself</option>
                   <option value="asap">As soon as possible</option>
                   <option value="sameday">Same day</option>
                   <option value="nextday">Next day</option>
                   <option value="2-3day">Two to three days</option>
                 </select><div class="mono" id="timeframeNote" style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5"></div></div>
-          <div class="field"><label>Total time from start to finish</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="totalHours" min="2" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="totalRec"></b></span></div><div class="inline-warn" id="warnTime"></div></div>
-          <div class="field"><label>Ambient kitchen temperature</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="ambient" min="5" max="40" step="1" /><span class="suffix temp-unit">°C</span></div><span class="rec">typical room <b id="ambientRec"></b></span></div><div class="mono" data-uv="Dough has no clock — it only feels the temperature. A cold kitchen isn't a problem, it's just a slower one." style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5">Yeast works faster when it's warm and slower when it's cool, so the temperature of your kitchen sets the pace. Set this to how warm the room actually is and the recommended times above and below adjust to suit — a cooler kitchen lengthens them, a warmer one shortens them.</div><div class="mono" id="waterTempLine" style="font-size:11px;color:var(--ink-soft);margin-top:8px;line-height:1.5"></div></div>
-
+          <div class="field" style="display:none" aria-hidden="true"><label>Total time from start to finish</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="totalHours" min="2" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="totalRec"></b></span></div></div>
+          <div class="subgroup">
+                <div class="subgroup-title">Fermentation times</div>
+                <div class="field" id="sPrefermentMirrorField" style="display:none"><label>Preferment time</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sPrefermentMirror" min="1" step="1" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sPrefermentMirrorRec"></b></span></div></div>
+                <div class="field"><label>Bulk ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBulk" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sBulkRec"></b></span></div></div>
+                <div class="field" style="margin-bottom:0"><label id="finalProofLabel">Ball ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBall" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sBallRec"></b></span></div></div>
+                <div class="calc-total" id="calcTotal"></div>
+                <div class="inline-warn" id="warnFerment"></div>
+                <div class="inline-warn" id="warnTime"></div>
+                <div class="micro-note">Times are targets, not laws. Dough is ready when it has expanded, relaxed, and become easier to stretch. Cold rooms slow it down; hot rooms speed it up.</div>
+              </div>
           <div class="field sched-controls">
-            <label>Schedule around the clock</label>
+            <label>Schedule Your Cook</label>
             <span class="seg">
-              <button type="button" data-sched="none" class="on">No timing</button>
+              <button type="button" data-sched="none" class="on">No timer</button>
               <button type="button" data-sched="startNow">Start now</button>
               <button type="button" data-sched="startAt">Start at…</button>
               <button type="button" data-sched="readyBy">Ready by…</button>
@@ -451,16 +460,6 @@
               <div class="mono" style="font-size:11px;color:var(--ink-soft);margin-top:6px;line-height:1.5">The calculator works each stage forwards or backwards from this time and lists the wall-clock steps in the recipe.</div>
             </div>
           </div>
-
-          <div class="subgroup">
-                <div class="subgroup-title">Fermentation times</div>
-                <div class="field" id="sPrefermentMirrorField" style="display:none"><label>Preferment time</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sPrefermentMirror" min="1" step="1" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sPrefermentMirrorRec"></b></span></div></div>
-                <div class="field"><label>Bulk ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBulk" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sBulkRec"></b></span></div></div>
-                <div class="field" style="margin-bottom:0"><label id="finalProofLabel">Ball ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBall" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sBallRec"></b></span></div></div>
-                <div class="calc-total" id="calcTotal"></div>
-                <div class="inline-warn" id="warnFerment"></div>
-                <div class="micro-note">Times are targets, not laws. Dough is ready when it has expanded, relaxed, and become easier to stretch. Cold rooms slow it down; hot rooms speed it up.</div>
-              </div>
           </div>
 
           <div class="section-box" id="section4Preferment">
