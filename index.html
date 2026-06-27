@@ -340,7 +340,7 @@
   <div id="uvReadout" aria-live="polite"></div>
   <header>
     <div class="brand"><h1>Doughborough<span class="dot"></span></h1><span class="tag">the home of bespoke doughs</span></div>
-    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v2.15.0</span></div>
+    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v2.16.1</span></div>
   </header>
   <main>
     <section class="col">
@@ -740,6 +740,48 @@ const NEAPOLITAN_TIME_PRESETS={
   poolish:{defaultTotal:12,range:{min:10,max:14},preferment:7,bulk:1,ball:4},
   biga:{defaultTotal:20,range:{min:18,max:22},preferment:16,bulk:1,ball:3}
 };
+/* ===== TIMEFRAME × METHOD GRID =====
+   The system: each cell holds per-stage ranges [min,max] in hours, anchored at 25°C
+   (AMBIENT_BASELINE_C); ambientFactor() scales them for the real kitchen. The same ranges
+   are the first-tier guardrail band. yeast:'auto' scales the dose to the ferment time;
+   'boost' multiplies it by YEAST_BOOST. ok:false = "not recommended" (warned, never blocked).
+   Neapolitan is the reference; other styles alias it until they get their own furniture. */
+const YEAST_BOOST=1.5;
+const TIME_GRID={
+  neapolitan:{
+    asap:{
+      direct: {pre:null,   bulk:[1,1],  ball:[3,3],  yeast:"auto",  ok:true},
+      poolish:{pre:[4,6],  bulk:[1,1],  ball:[3,4],  yeast:"boost", ok:true},
+      biga:   {pre:[10,12],bulk:[1,1],  ball:[3,4],  yeast:"boost", ok:true}
+    },
+    sameday:{
+      direct: {pre:null,   bulk:[2,2],  ball:[4,6],  yeast:"auto",  ok:true},
+      poolish:{pre:[6,8],  bulk:[1,1],  ball:[3,5],  yeast:"auto",  ok:true},
+      biga:   {pre:null,   bulk:null,   ball:null,   yeast:"auto",  ok:false}
+    },
+    nextday:{
+      direct: {pre:null,   bulk:[8,12], ball:[6,12], yeast:"auto",  ok:true},
+      poolish:{pre:[10,14],bulk:[6,8],  ball:[6,12], yeast:"auto",  ok:true},
+      biga:   {pre:[12,18],bulk:[6,10], ball:[6,12], yeast:"auto",  ok:true}
+    },
+    "2-3day":{
+      direct: {pre:null,   bulk:null,   ball:null,   yeast:"auto",  ok:false},
+      poolish:{pre:[12,18],bulk:[6,12], ball:[6,12], yeast:"auto",  ok:true},
+      biga:   {pre:[18,24],bulk:[6,12], ball:[6,12], yeast:"auto",  ok:true}
+    }
+  }
+};
+["ny","detroit","focaccia"].forEach(k=>{TIME_GRID[k]=TIME_GRID.neapolitan;});
+function gridCell(styleKey,tf,methodKey,preferment){
+  const g=TIME_GRID[styleKey]; if(!g||!tf||!g[tf]) return null;
+  const mk=methodKey==="easy"?"direct":preferment;   // "direct" | "poolish" | "biga"
+  return g[tf][mk]||null;
+}
+function _gMid(r,ambF){return r?Math.max(1,Math.round(((r[0]+r[1])/2)*ambF)):null;}
+function _gScl(r,ambF){return r?[r[0]*ambF, r[1]*ambF]:null;}   // rational band (no rounding) — round only for display
+function gridDefaults(cell,ambF){return {pre:_gMid(cell.pre,ambF),bulk:_gMid(cell.bulk,ambF),ball:_gMid(cell.ball,ambF)};}
+function gridBand(cell,ambF){return {preferment:_gScl(cell.pre,ambF),bulk:_gScl(cell.bulk,ambF),ball:_gScl(cell.ball,ambF)};}
+const TIMEFRAME_LABELS={asap:"as soon as possible",sameday:"same day",nextday:"next day","2-3day":"two to three days"};
 function timePreset(styleKey,methodKey,prefermentKey){
   if(styleKey==="neapolitan"){
     const k=methodKey==="easy"?"easy":prefermentKey;
@@ -764,7 +806,7 @@ function num(v,f){return v===undefined||v===null||v===""||isNaN(Number(v))?f:Num
    Two tunable constants live here. Baseline is the room temp the presets assume;
    fermentation rate is taken to double per AMBIENT_DOUBLING °C (Q10≈2 rule of thumb).
    Returns a multiplier on recommended times: >1 = cooler/slower (longer), <1 = warmer/faster (shorter). */
-const AMBIENT_BASELINE_C=22, AMBIENT_DOUBLING=10;
+const AMBIENT_BASELINE_C=25, AMBIENT_DOUBLING=10;
 /* mixing-water DDT guide: target dough temp and friction warmth by mix method (°C) */
 const DDT_TARGET=24, FRICTION_C={hand:2,stand:6,spiral:9}, FRICTION_REF_HYD=65;
 function ambientFactor(ambientC){
@@ -848,13 +890,21 @@ function calculate(opts){
 
   // --- TIME ALLOCATION (whole hours) ---
   let stages={},mainFermentHours;
+  // grid lookup (timeframe × method) — per-stage ranges anchored at 25°C, scaled by ambient
+  const _tf=(typeof currentTimeframe!=="undefined")?currentTimeframe:null;
+  const _cell=gridCell(styleKey,_tf,methodKey,preferment);
+  const _gd=(_cell&&_cell.ok)?gridDefaults(_cell,ambF):null;
+  const _band=(_cell&&_cell.ok)?gridBand(_cell,ambF):null;
   if(!isTrad){
     const preset=timePreset(styleKey,methodKey,preferment);
-    // bulk scales with ambient just like the ball — a cold room slows the whole ferment, not only the proof.
-    // (Previously bulk was pinned to preset.bulk and the ball alone absorbed every degree of ambient change.)
-    const presetBulk = preset ? Math.max(1,Math.round(preset.bulk*ambF)) : null;
-    const rec=preset ? {bulk:presetBulk,ball:Math.max(1,Math.round(total-presetBulk))} : easySplit(total);
-    const recBulk=Math.max(1,Math.round(rec.bulk)), recBall=Math.max(1,Math.round(rec.ball));
+    let recBulk, recBall;
+    if(_gd){ recBulk=_gd.bulk; recBall=_gd.ball; }
+    else {
+      // bulk scales with ambient just like the ball — a cold room slows the whole ferment, not only the proof.
+      const presetBulk = preset ? Math.max(1,Math.round(preset.bulk*ambF)) : null;
+      const rec=preset ? {bulk:presetBulk,ball:Math.max(1,Math.round(total-presetBulk))} : easySplit(total);
+      recBulk=Math.max(1,Math.round(rec.bulk)); recBall=Math.max(1,Math.round(rec.ball));
+    }
     const bulk=Math.round(num(stageOverrides.bulk,recBulk)),ball=Math.round(num(stageOverrides.ball,recBall));
     stages={bulk:{rec:recBulk,val:bulk},ball:{rec:recBall,val:ball}};
     mainFermentHours=bulk+ball;
@@ -863,7 +913,8 @@ function calculate(opts){
     const lim=TIME_LIMITS[preferment];
     let recPre, recBulk, recBall;
     const preset=timePreset(styleKey,methodKey,preferment);
-    if(preset){
+    if(_gd){ recPre=_gd.pre; recBulk=_gd.bulk; recBall=_gd.ball; }
+    else if(preset){
       // bulk & ball scale with ambient (cold room slows the final ferment too); preferment absorbs the rest
       recBulk=Math.max(0,Math.round(preset.bulk*ambF));
       recBall=Math.max(1,Math.round(preset.ball*ambF));
@@ -887,7 +938,8 @@ function calculate(opts){
   }
 
   // --- YEAST (user input, recommended from time+type) ---
-  const mainYeastRec=recYeastPctForType(mainFermentHours,yeastType);
+  let mainYeastRec=recYeastPctForType(mainFermentHours,yeastType);
+  if(_cell&&_cell.ok&&_cell.yeast==="boost") mainYeastRec=r2(mainYeastRec*YEAST_BOOST); // fast ferment wants a push
   const mainYeastPct=num(yeastOverrides.main,mainYeastRec);
 
   // flour back-calc uses instant-equivalent of main yeast for mass (tiny anyway)
@@ -947,7 +999,7 @@ function calculate(opts){
   const ambStr = tF(num(ambientC,AMBIENT_BASELINE_C));
   const fridgeLine = `To rest it longer, the only lever left is the fridge, which slows fermentation right down. Doughborough stays no-fridge by design — think of the fridge as a time-control device, a way to slow things so the dough is ready when you are. How long to give it in there is yours to judge; we only flag where ${ambStr} runs out.`;
   if(styleKey==="neapolitan"){
-    if(total < recRange.min){
+    if(!_band && total < recRange.min){
       flags.push({level:"warn",where:"time",msg:`${fmtH(total)} is below the recommended Neapolitan range of ${fmtH(recRange.min)}–${fmtH(recRange.max)} at ${ambStr}. The dough may not be mature enough for a light, open cornicione.`});
     }
     if(!isTrad && total > napCap){
@@ -983,6 +1035,18 @@ function calculate(opts){
   }
   if(vinegarActive && vinegarPct>0 && num(flourProtein,12)>=12){
     flags.push({level:"warn",where:"vinegar",msg:`At ${num(flourProtein,12)}% protein this flour is already strong enough — vinegar adds nothing here and you can leave it out.`});
+  }
+
+  // ---- FIRST-TIER GUARDRAIL: stage values vs the grid band (per timeframe × method) ----
+  if(_band){
+    [["preferment","Preferment"],["bulk","Bulk ferment"],["ball","Ball ferment"]].forEach(([k,lbl])=>{
+      const b=_band[k], st=stages[k]; if(!b||!st) return;
+      const lo=b[0], hi=b[1];   // rational band; inputs are whole hours, so allow a half-hour rounding tolerance
+      if(st.val < lo-0.5 || st.val > hi+0.5)
+        flags.push({level:"warn",where:"ferment",msg:`${lbl} ${fmtH(st.val)} is outside the recommended ${fmtH(Math.round(lo))}–${fmtH(Math.round(hi))} for this method at ${ambStr}. Fine to experiment — let the dough be the judge.`});
+    });
+  } else if(_cell && !_cell.ok && _tf){
+    flags.push({level:"warn",where:"ferment",msg:`This isn't generally recommended for the “${TIMEFRAME_LABELS[_tf]||_tf}” timeframe without refrigeration. You can still try it — just watch the dough closely.`});
   }
 
   return {
@@ -1303,10 +1367,10 @@ function updateTimeframeUI(){
   if($("timeframeNote"))$("timeframeNote").textContent=TIMEFRAME_NOTES[currentTimeframe||""];
 }
 function applyTimeframe(tf){
-  if(!tf){ currentTimeframe=null; updateTimeframeUI(); return; }
+  if(!tf){ currentTimeframe=null; updateTimeframeUI(); render(); return; }
   currentTimeframe=tf;
-  if(tf==="asap"||tf==="sameday"){ currentMethod="easy"; }
-  else { currentMethod="trad"; $("preferment").value = (tf==="nextday")?"poolish":"biga"; }
+  // timeframe and method are independent: selecting a timeframe re-fills the stage times for the
+  // method currently chosen, and never switches the method.
   stageTouched={};prefTouched={};yeastTouched={};totalTouched=false;
   $("totalHours").value=defaultTotalFor();
   updateTotalRec();syncMethodUI();refreshStageDefaults();updateTimeframeUI();render();
@@ -1693,22 +1757,22 @@ $("vinegar").addEventListener("input",()=>{vinTouched=true;render();});
 $("vinegar").addEventListener("change",()=>{const el=$("vinegar");let v=Number(el.value);if(!Number.isFinite(v)||v<0){vinTouched=false;refreshStageDefaults();}render();});
 $("ballWeight").addEventListener("input",()=>{ballTouched=true;render();});
 $("ballWeight").addEventListener("change",()=>{const el=$("ballWeight");let g=wtToBase(el.value);if(!Number.isFinite(g)||g<1){ballTouched=false;}else{el.value=String(wNum(g));}render();});
-["sBulk","sBall"].forEach(id=>$(id).addEventListener("input",()=>{clearTimeframe();stageTouched[id.replace("s","").toLowerCase()]=true;lockAllStages();syncTotalFromStages();render();}));
+["sBulk","sBall"].forEach(id=>$(id).addEventListener("input",()=>{stageTouched[id.replace("s","").toLowerCase()]=true;lockAllStages();syncTotalFromStages();render();}));
 $("flourType").addEventListener("change",()=>{const v=$("flourType").value;if(v)$("flourProtein").value=v;refreshStageDefaults();render();});
 $("flourProtein").addEventListener("input",()=>{$("flourType").value="";refreshStageDefaults();render();});
 $("flourProtein").addEventListener("change",()=>{const el=$("flourProtein");if(el.value!==""&&Number(el.value)<7){el.value="7";$("flourType").value="";refreshStageDefaults();render();}});
 $("mainYeast").addEventListener("input",()=>{yeastTouched.main=true;render();});
 $("prefYeast").addEventListener("input",()=>{yeastTouched.preferment=true;render();});
-$("sPreferment").addEventListener("input",()=>{clearTimeframe();stageTouched.preferment=true;yeastTouched.preferment=false;lockAllStages();syncTotalFromStages();render();});
+$("sPreferment").addEventListener("input",()=>{stageTouched.preferment=true;yeastTouched.preferment=false;lockAllStages();syncTotalFromStages();render();});
 // C1: the Section 3 mirror is a remote control for sPreferment — write the value across, then replay the real event
 ["input","change"].forEach(ev=>{const m=$("sPrefermentMirror");if(m)m.addEventListener(ev,()=>{$("sPreferment").value=m.value;$("sPreferment").dispatchEvent(new Event(ev));});});
 ["sBulk","sBall","sPreferment"].forEach(id=>$(id).addEventListener("change",()=>{if(anyTimeTouched())syncTotalFromStages();render();}));
 $("prefHydration").addEventListener("input",()=>{prefTouched.hydration=true;render();});
 $("poolishPct").addEventListener("input",()=>{prefTouched.poolishPct=true;syncMethodUI();render();});
 $("prefYeast").addEventListener("input",()=>{prefTouched.yeast=true;render();});
-["preferment","poolishStyle","yeastType"].forEach(id=>$(id).addEventListener("change",()=>{if(id==="preferment"){clearTimeframe();prefTouched={};stageTouched={};yeastTouched={};totalTouched=false;$("totalHours").value=defaultTotalFor();updateTotalRec();}syncMethodUI();refreshStageDefaults();render();}));
-$("mEasy").onclick=()=>{clearTimeframe();currentMethod="easy";stageTouched={};prefTouched={};yeastTouched={};totalTouched=false;$("totalHours").value=defaultTotalFor();updateTotalRec();syncMethodUI();refreshStageDefaults();render();};
-$("mTrad").onclick=()=>{clearTimeframe();currentMethod="trad";stageTouched={};prefTouched={};yeastTouched={};totalTouched=false;$("totalHours").value=defaultTotalFor();updateTotalRec();syncMethodUI();refreshStageDefaults();render();};
+["preferment","poolishStyle","yeastType"].forEach(id=>$(id).addEventListener("change",()=>{if(id==="preferment"){prefTouched={};stageTouched={};yeastTouched={};totalTouched=false;$("totalHours").value=defaultTotalFor();updateTotalRec();}syncMethodUI();refreshStageDefaults();render();}));
+$("mEasy").onclick=()=>{currentMethod="easy";stageTouched={};prefTouched={};yeastTouched={};totalTouched=false;$("totalHours").value=defaultTotalFor();updateTotalRec();syncMethodUI();refreshStageDefaults();render();};
+$("mTrad").onclick=()=>{currentMethod="trad";stageTouched={};prefTouched={};yeastTouched={};totalTouched=false;$("totalHours").value=defaultTotalFor();updateTotalRec();syncMethodUI();refreshStageDefaults();render();};
 {const tfEl=$("timeframe"); if(tfEl) tfEl.addEventListener("change",()=>applyTimeframe(tfEl.value));}
 function syncMixUI(){$("mixHand").classList.toggle("active",mixMode==="hand");$("mixStand").classList.toggle("active",mixMode==="stand");$("mixSpiral").classList.toggle("active",mixMode==="spiral");
   const note=$("mixNote");
