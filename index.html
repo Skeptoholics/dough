@@ -340,7 +340,7 @@
   <div id="uvReadout" aria-live="polite"></div>
   <header>
     <div class="brand"><h1>Doughborough<span class="dot"></span></h1><span class="tag">the home of bespoke doughs</span></div>
-    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v2.14.0</span></div>
+    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v2.15.0</span></div>
   </header>
   <main>
     <section class="col">
@@ -1013,6 +1013,12 @@ function elapsed(h){ if(h<=0) return ""; return ` (≈${fmtH(h)} in)`; }
 function buildMethod(ctx){
   const {base,isTrad,p,prefermentObj,poolishStyle,yeastType,stages,quantity,styleKey,expanded,ingredients,stageAmounts,ovenTemp,cookTimeStr,mixMode,waterTempC,waterCue,hotMachine}=ctx;
   const s=[];const hasOil=p.oil>0,hasSugar=p.sugar>0;
+  const durH=[]; const add=(t,d)=>{s.push(t);durH.push(d||0);};
+  const _ing=ingredients||{}; const _doughG=Object.keys(_ing).reduce((a,k)=>a+(typeof _ing[k]==="number"?_ing[k]:0),0)||540;
+  const bufF=1+Math.min(2,Math.max(0,(_doughG-540)/1080)); const mins=m=>Math.round(m*bufF)/60;
+  const _schedOn=(typeof schedMode!=="undefined"&&schedMode!=="none");
+  function _stepClock(ms,startMs){const d=new Date(Math.round(ms/300000)*300000);let h=d.getHours();const ap=h<12?"am":"pm";let hh=h%12||12;const str=hh+":"+String(d.getMinutes()).padStart(2,"0")+ap;return d.toDateString()!==new Date(startMs).toDateString()?d.toLocaleDateString([],{weekday:"short"})+" "+str:str;}
+  function finish(){ if(_schedOn){const H=3600000;const total=durH.reduce((a,b)=>a+b,0)*H;const a=(typeof schedAnchor!=="undefined"&&schedAnchor)?schedAnchor:Date.now();let t=schedMode==="startNow"?Date.now():schedMode==="startAt"?a:a-total;const start=t;for(let i=0;i<s.length;i++){s[i]="At about "+_stepClock(t,start)+", "+s[i];t+=durH[i]*H;}} return s; }
   const byHand = mixMode==="hand";
   // mixing-water temperature cue, woven into the step where the water goes in
   function waterTempStr(){ return waterTempC==null?"":` at about ${tF(waterTempC)} (${waterCue})`; }
@@ -1055,33 +1061,33 @@ function buildMethod(ctx){
 
   function finalProofSteps(elapsedH){
     if(!isPanStyle){
-      s.push(`Divide the dough into ${quantity} ${ballWord} and shape each into a tight ball. Weighing the ${ballWord} is recommended for even sizes.`+why("Tight balls give round pizzas an even final rise and make stretching more predictable."));
+      add(`Divide the dough into ${quantity} ${ballWord} and shape each into a tight ball. Weighing the ${ballWord} is recommended for even sizes.`+why("Tight balls give round pizzas an even final rise and make stretching more predictable."), mins(5*quantity));
       elapsedH+=stages.ball.val;
       let proofWhy="The final proof relaxes the dough so it stretches without tearing and puffs in the oven. Under-proofed dough fights back and stays tight; over-proofed dough goes slack and won't hold its shape.";
       if(styleKey==="neapolitan" && !isTrad)proofWhy="For direct Neapolitan dough, this long ball ferment is critical. It lets the dough ball become relaxed, gassy, and mature enough to inflate the cornicione without tearing.";
       if(styleKey==="neapolitan" && isTrad && prefermentObj && prefermentObj.type==="poolish")proofWhy="The poolish has already built flavour and extensibility, but the final dough still needs this ball ferment to recover, relax, and build enough gas for an open cornicione.";
       if(styleKey==="neapolitan" && isTrad && prefermentObj && prefermentObj.type==="biga")proofWhy="The biga has already matured the full flour load, so this shorter ball ferment is mainly for recovery, relaxation, and fresh gas before baking.";
-      s.push(`Cover the ${ballWord} and rest for the ball ferment — about ${fmtH(stages.ball.val)}, until relaxed, slightly puffy, and lightly gassy.`+(expanded?elapsed(elapsedH):"")+why(proofWhy));
-      s.push(base.shapeStep);
+      add(`Cover the ${ballWord} and rest for the ball ferment — about ${fmtH(stages.ball.val)}, until relaxed, slightly puffy, and lightly gassy.`+((expanded&&!_schedOn)?elapsed(elapsedH):"")+why(proofWhy), stages.ball.val);
+      add(base.shapeStep, mins(8*quantity));
       return elapsedH;
     }
 
     // Pan styles: the final proof should happen in the pan, not as loose dough balls.
-    s.push(`Oil the ${panWord} well. Divide the dough into ${quantity} ${portionWord} if needed, then transfer the dough into the ${panWord}.`+why("For pan styles, the pan is part of the method. The dough should relax and proof where it will bake."));
+    add(`Oil the ${panWord} well. Divide the dough into ${quantity} ${portionWord} if needed, then transfer the dough into the ${panWord}.`+why("For pan styles, the pan is part of the method. The dough should relax and proof where it will bake."), mins(10));
 
     if(isDetroit){
-      s.push(`Gently press the dough partway toward the edges and corners. If it resists, stop — it will spread more easily after the pan proof.`+why("Forcing tight dough tears gluten and knocks out too much gas. Rest does the work."));
+      add(`Gently press the dough partway toward the edges and corners. If it resists, stop — it will spread more easily after the pan proof.`+why("Forcing tight dough tears gluten and knocks out too much gas. Rest does the work."), mins(5));
       elapsedH+=stages.ball.val;
-      s.push(`Cover and pan proof for about ${fmtH(stages.ball.val)}, until puffy, relaxed, and easier to press.`+(expanded?elapsed(elapsedH):"")+why("Detroit needs a panned final proof so the dough can rise into the pan structure and fry against the metal during baking."));
-      s.push(`Press the dough gently to the corners if needed. Add cheese right to the edges, then add sauce and toppings as preferred.`+why("Cheese at the edge fries against the pan and creates the caramelised Detroit crust."));
+      add(`Cover and pan proof for about ${fmtH(stages.ball.val)}, until puffy, relaxed, and easier to press.`+((expanded&&!_schedOn)?elapsed(elapsedH):"")+why("Detroit needs a panned final proof so the dough can rise into the pan structure and fry against the metal during baking."), stages.ball.val);
+      add(`Press the dough gently to the corners if needed. Add cheese right to the edges, then add sauce and toppings as preferred.`+why("Cheese at the edge fries against the pan and creates the caramelised Detroit crust."), mins(5));
       return elapsedH;
     }
 
     if(isFocaccia){
-      s.push(`Gently spread the dough partway toward the edges. If it resists, stop — do not force it.`+why("High-hydration focaccia dough stretches best in stages. Rest prevents tearing and keeps gas in the dough."));
+      add(`Gently spread the dough partway toward the edges. If it resists, stop — do not force it.`+why("High-hydration focaccia dough stretches best in stages. Rest prevents tearing and keeps gas in the dough."), mins(5));
       elapsedH+=stages.ball.val;
-      s.push(`Cover and pan proof for about ${fmtH(stages.ball.val)}, until puffy, relaxed, and visibly gassy.`+(expanded?elapsed(elapsedH):"")+why("Focaccia's final rise belongs in the pan. This gives the bread its open crumb and lets the dough fill the pan without being forced."));
-      s.push(`Drizzle with oil, dimple deeply with oiled fingertips, add simple toppings, and bake.`+why("Dimples trap oil and toppings while preserving the gas that gives focaccia its light interior."));
+      add(`Cover and pan proof for about ${fmtH(stages.ball.val)}, until puffy, relaxed, and visibly gassy.`+((expanded&&!_schedOn)?elapsed(elapsedH):"")+why("Focaccia's final rise belongs in the pan. This gives the bread its open crumb and lets the dough fill the pan without being forced."), stages.ball.val);
+      add(`Drizzle with oil, dimple deeply with oiled fingertips, add simple toppings, and bake.`+why("Dimples trap oil and toppings while preserving the gas that gives focaccia its light interior."), mins(5));
       return elapsedH;
     }
     return elapsedH;
@@ -1089,22 +1095,22 @@ function buildMethod(ctx){
 
   if(!isTrad){
     let elapsedH=0;
-    s.push(`Dissolve all ${gWy(I.yeast)} yeast into all ${gW(I.water)} water${waterTempStr()} and leave 10 minutes${yeastType==="instant"?" (instant yeast can also go straight into the flour — dissolving just guarantees an even start)":""}.`+(I.vinegar!=null?` Stir the ${gW(I.vinegar)} vinegar into the water too.`:"")+why("Yeast wakes up in water, not in dry flour — flour competes with it for moisture and slows it down. Ten minutes gets it active before it meets the flour. Active dry and fresh yeast really do want this head start; instant dry is milled fine enough to skip it."+(I.vinegar!=null?" The vinegar goes in with the water so the acid spreads evenly — it tightens the weak gluten so a fast dough still holds.":"")+(hotMachine?" Aim for a dough around 24°C. In a warm kitchen, cold (even iced) water buys you more machine-kneading time before friction heat pushes the dough too warm and stresses the yeast.":"")));
-    s.push(`Add all ${gW(I.flour)} flour and the ${seasoningStr()} to the water and mix into a rough dough.`+why("Salt, oil and sugar slow gluten development, so in a longer ferment some bakers add them at the end. At room temperature the difference is small, and salt added now also keeps the fermentation steadier — so for this dough, all-in is fine."));
+    add(`Dissolve all ${gWy(I.yeast)} yeast into all ${gW(I.water)} water${waterTempStr()} and leave 10 minutes${yeastType==="instant"?" (instant yeast can also go straight into the flour — dissolving just guarantees an even start)":""}.`+(I.vinegar!=null?` Stir the ${gW(I.vinegar)} vinegar into the water too.`:"")+why("Yeast wakes up in water, not in dry flour — flour competes with it for moisture and slows it down. Ten minutes gets it active before it meets the flour. Active dry and fresh yeast really do want this head start; instant dry is milled fine enough to skip it."+(I.vinegar!=null?" The vinegar goes in with the water so the acid spreads evenly — it tightens the weak gluten so a fast dough still holds.":"")+(hotMachine?" Aim for a dough around 24°C. In a warm kitchen, cold (even iced) water buys you more machine-kneading time before friction heat pushes the dough too warm and stresses the yeast.":"")), mins(15));
+    add(`Add all ${gW(I.flour)} flour and the ${seasoningStr()} to the water and mix into a rough dough.`+why("Salt, oil and sugar slow gluten development, so in a longer ferment some bakers add them at the end. At room temperature the difference is small, and salt added now also keeps the fermentation steadier — so for this dough, all-in is fine."), mins(5));
     if(byHand){
-      s.push(`Mix by hand until it comes together into a rough, shaggy dough with no dry flour left, about 2–3 minutes. It will not be smooth yet — that's fine.`+why("By hand you don't need to knead to smoothness now. The stretch-and-folds during the bulk build the gluten gradually, with far less effort and less risk of a tight, torn dough."));
+      add(`Mix by hand until it comes together into a rough, shaggy dough with no dry flour left, about 2–3 minutes. It will not be smooth yet — that's fine.`+why("By hand you don't need to knead to smoothness now. The stretch-and-folds during the bulk build the gluten gradually, with far less effort and less risk of a tight, torn dough."), mins(3));
     } else {
-      s.push(`Knead by ${mixMode==="spiral"?"spiral mixer for about 4–5 minutes":"stand mixer for about 6–8 minutes (or by hand)"}, until the dough becomes smooth and elastic.`+why("A spiral or stand mixer builds the gluten network quickly. Kneading now traps gas and gives structure, so the bulk can focus on fermentation rather than strength."+(mixMode==="spiral"?" A spiral works the dough harder and faster, so it both develops and warms sooner — watch the dough temperature in a warm kitchen.":"")));
+      add(`Knead by ${mixMode==="spiral"?"spiral mixer for about 4–5 minutes":"stand mixer for about 6–8 minutes (or by hand)"}, until the dough becomes smooth and elastic.`+why("A spiral or stand mixer builds the gluten network quickly. Kneading now traps gas and gives structure, so the bulk can focus on fermentation rather than strength."+(mixMode==="spiral"?" A spiral works the dough harder and faster, so it both develops and warms sooner — watch the dough temperature in a warm kitchen.":"")), mins(mixMode==='spiral'?8:10));
     }
     elapsedH+=stages.bulk.val;
     if(byHand){
-      s.push(`Cover and begin the bulk ferment — about ${fmtH(stages.bulk.val)} somewhere comfortable, not cold. ${foldText(stages.bulk.val,false)}`+(expanded?elapsed(elapsedH):"")+why("Each fold builds tension and lines up the gluten without hard kneading — this is how hand bakers reach the strength a mixer gives, while the long bulk does the fermenting."));
+      add(`Cover and begin the bulk ferment — about ${fmtH(stages.bulk.val)} somewhere comfortable, not cold. ${foldText(stages.bulk.val,false)}`+((expanded&&!_schedOn)?elapsed(elapsedH):"")+why("Each fold builds tension and lines up the gluten without hard kneading — this is how hand bakers reach the strength a mixer gives, while the long bulk does the fermenting."), stages.bulk.val);
     } else {
-      s.push(`Cover and rest somewhere comfortable, not cold, for the bulk ferment — about ${fmtH(stages.bulk.val)}.`+(expanded?elapsed(elapsedH):"")+why("This is the first and longest stretch of fermentation. The whole mass ferments together, building flavour and gas. Too short and the dough is bland and dense; too long and the yeast starts to exhaust and the dough can over-soften."));
+      add(`Cover and rest somewhere comfortable, not cold, for the bulk ferment — about ${fmtH(stages.bulk.val)}.`+((expanded&&!_schedOn)?elapsed(elapsedH):"")+why("This is the first and longest stretch of fermentation. The whole mass ferments together, building flavour and gas. Too short and the dough is bland and dense; too long and the yeast starts to exhaust and the dough can over-soften."), stages.bulk.val);
     }
     finalProofSteps(elapsedH);
-    s.push(bakeStep());
-    return s;
+    add(bakeStep(), 0);
+    return finish();
   }
 
   const pf=prefermentObj,isBiga=pf.type==="biga";
@@ -1112,31 +1118,31 @@ function buildMethod(ctx){
   const remWater=stageAmounts?stageAmounts.water.final:0;
   const finalYeast=stageAmounts?stageAmounts.finalYeast:I.yeast;
   let elapsedH=0;
-  s.push(`Make the ${pf.name.toLowerCase()}: dissolve ${gWy(pf.yeast)} yeast in ${gW(pf.water)} lukewarm water, leave 10 minutes, then mix in ${gW(pf.flour)} flour${isBiga?" to a stiff, shaggy dough":" to a smooth batter"}.`+why(isBiga?" A stiff biga takes a large share of the flour at low hydration. It ferments slowly and evenly, building strength and a deep, nutty flavour.":" A loose poolish uses part of the flour at high hydration. It ferments fast and adds extensibility and an aromatic, slightly sweet note."));
+  add(`Make the ${pf.name.toLowerCase()}: dissolve ${gWy(pf.yeast)} yeast in ${gW(pf.water)} lukewarm water, leave 10 minutes, then mix in ${gW(pf.flour)} flour${isBiga?" to a stiff, shaggy dough":" to a smooth batter"}.`+why(isBiga?" A stiff biga takes a large share of the flour at low hydration. It ferments slowly and evenly, building strength and a deep, nutty flavour.":" A loose poolish uses part of the flour at high hydration. It ferments fast and adds extensibility and an aromatic, slightly sweet note."), mins(15));
   elapsedH+=pf.hours;
-  s.push(`Cover and leave the ${pf.name.toLowerCase()} about ${fmtH(pf.hours)} at room temperature, until risen, bubbly and smelling fermented.`+(expanded?elapsed(elapsedH):"")+why(` Below about ${fmtH(pf.minHours)} it hasn't fermented enough to be worth the extra step. The preferment is doing the slow flavour work here, which is why the final dough then needs much less time.`));
+  add(`Cover and leave the ${pf.name.toLowerCase()} about ${fmtH(pf.hours)} at room temperature, until risen, bubbly and smelling fermented.`+((expanded&&!_schedOn)?elapsed(elapsedH):"")+why(` Below about ${fmtH(pf.minHours)} it hasn't fermented enough to be worth the extra step. The preferment is doing the slow flavour work here, which is why the final dough then needs much less time.`), pf.hours);
 
   const pname=pf.name.toLowerCase();
   if(remFlour<=0){
     // all the flour is already in the preferment (e.g. a 100% biga) — finish choice doesn't apply
-    s.push(`Dissolve ${gWy(finalYeast)} yeast in the remaining ${gW(remWater)} water${waterTempStr()}, leave 10 minutes, then add it to the ${pname} with the ${seasoningStr()} and mix to a cohesive dough. No more flour — it's all in the ${pname}.`+why(` Everything was already in the ${pname}, so finishing only means loosening it with the rest of the water and bringing in the seasonings.`));
+    add(`Dissolve ${gWy(finalYeast)} yeast in the remaining ${gW(remWater)} water${waterTempStr()}, leave 10 minutes, then add it to the ${pname} with the ${seasoningStr()} and mix to a cohesive dough. No more flour — it's all in the ${pname}.`+why(` Everything was already in the ${pname}, so finishing only means loosening it with the rest of the water and bringing in the seasonings.`), mins(8));
   } else if(poolishStyle==="stiff"){
-    s.push(`Add the remaining ${gW(remFlour)} flour to the ${pname} and work it into a firm, dry dough. ${byHand?"Work it a few minutes until it firms up, then rest 10 minutes — the folds in the bulk will finish building the strength.":"Knead until strong, then rest 10 minutes."}`+why(" Forming the dough with as little water as possible first forces the gluten strands together hard, building a stronger, chewier network. This trick comes from stiff-noodle doughs."));
-    s.push(`Now add the remaining ${gW(remWater)} water${waterTempStr()}, ${gWy(finalYeast)} yeast (dissolved and rested 10 minutes), and the ${seasoningStr()}, and mix until smooth.`+why(" Adding the water only after the gluten is already strong keeps that chew."));
+    add(`Add the remaining ${gW(remFlour)} flour to the ${pname} and work it into a firm, dry dough. ${byHand?"Work it a few minutes until it firms up, then rest 10 minutes — the folds in the bulk will finish building the strength.":"Knead until strong, then rest 10 minutes."}`+why(" Forming the dough with as little water as possible first forces the gluten strands together hard, building a stronger, chewier network. This trick comes from stiff-noodle doughs."), mins(8));
+    add(`Now add the remaining ${gW(remWater)} water${waterTempStr()}, ${gWy(finalYeast)} yeast (dissolved and rested 10 minutes), and the ${seasoningStr()}, and mix until smooth.`+why(" Adding the water only after the gluten is already strong keeps that chew."), mins(8));
   } else {
-    s.push(`Add the remaining ${gW(remWater)} water${waterTempStr()} and ${gWy(finalYeast)} yeast (dissolved and rested 10 minutes) to the ${pname} and mix well until all the water is incorporated.`+why(" Bringing all the water in first, before the bulk of the flour, keeps the gluten looser and the final crumb softer and more delicate."));
-    s.push(`Then add the remaining ${gW(remFlour)} flour and the ${seasoningStr()}, and mix to a dough.`);
+    add(`Add the remaining ${gW(remWater)} water${waterTempStr()} and ${gWy(finalYeast)} yeast (dissolved and rested 10 minutes) to the ${pname} and mix well until all the water is incorporated.`+why(" Bringing all the water in first, before the bulk of the flour, keeps the gluten looser and the final crumb softer and more delicate."), mins(8));
+    add(`Then add the remaining ${gW(remFlour)} flour and the ${seasoningStr()}, and mix to a dough.`, mins(8));
   }
 
   elapsedH+=stages.bulk.val;
   if(byHand){
-    s.push(`Cover and rest for the bulk ferment — about ${fmtH(stages.bulk.val)} somewhere comfortable, not cold. ${foldText(stages.bulk.val,true)}`+(expanded?elapsed(elapsedH):"")+why(" The preferment already did most of the fermenting, so the final dough needs only a short bulk. A fold or two early on tightens it up without a real knead."));
+    add(`Cover and rest for the bulk ferment — about ${fmtH(stages.bulk.val)} somewhere comfortable, not cold. ${foldText(stages.bulk.val,true)}`+((expanded&&!_schedOn)?elapsed(elapsedH):"")+why(" The preferment already did most of the fermenting, so the final dough needs only a short bulk. A fold or two early on tightens it up without a real knead."), stages.bulk.val);
   } else {
-    s.push(`Cover and rest somewhere comfortable, not cold, for the bulk ferment — about ${fmtH(stages.bulk.val)}.`+(expanded?elapsed(elapsedH):"")+why(" The preferment already did most of the fermenting, so the final dough needs only a short bulk to come together."));
+    add(`Cover and rest somewhere comfortable, not cold, for the bulk ferment — about ${fmtH(stages.bulk.val)}.`+((expanded&&!_schedOn)?elapsed(elapsedH):"")+why(" The preferment already did most of the fermenting, so the final dough needs only a short bulk to come together."), stages.bulk.val);
   }
   finalProofSteps(elapsedH);
-  s.push(bakeStep());
-  return s;
+  add(bakeStep(), 0);
+  return finish();
 }
 function fmtH(h){if(h==null)return"";if(h<1)return Math.round(h*60)+" min";if(h===Math.round(h))return h+(h===1?" hour":" hours");return h+" hours";}
 
@@ -1922,6 +1928,7 @@ function readAnchor(){
 }
 
 function render(){
+  readAnchor();   // refresh wall-clock anchor before calculate() builds the timestamped method
   const s=STYLES[current];
   const r=calculate(buildOpts());
 
@@ -2030,18 +2037,9 @@ function render(){
   $("calcTotal").innerHTML="Total time start to finish: <b>"+fmtHShort(r.totalTime)+"</b> — this is the sum of the fermentation stages, the time the dough needs before it's ready.";
 
   
-  // ---- SCHEDULE (wall-clock) ----
-  readAnchor();
+  // schedule timestamps now live inline in the method steps; keep the old block hidden
   const schedEl=$("scheduleBlock");
-  if(schedEl){
-    const sch=buildSchedule(r);
-    if(!sch){ schedEl.innerHTML=""; schedEl.style.display="none"; }
-    else{
-      schedEl.style.display="";
-      let rows=sch.steps.map(st=>`<div class="sched-row"><span class="sched-when mono">${fmtClock(st.at)}</span><span class="sched-what">${esc(st.label)}</span></div>`).join("");
-      schedEl.innerHTML=`<div class="sched-head">Schedule</div>${rows}<div class="sched-foot mono">Total ${fmtHShort(r.totalTime)} · ready ${fmtClock(sch.ready)}</div>`;
-    }
-  }
+  if(schedEl){ schedEl.innerHTML=""; schedEl.style.display="none"; }
 
   // method
   const steps=mode==="expanded"?r.methodExpanded:r.method;
