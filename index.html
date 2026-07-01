@@ -285,6 +285,8 @@
   .sec-label{display:flex;align-items:center;gap:10px;margin:0 0 16px;}
   .sec-num{flex:0 0 auto;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-family:'Spline Sans Mono',monospace;font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:500;box-shadow:0 2px 6px rgba(192,73,47,.28)}
   .sec-title{font-size:13px;text-transform:uppercase;letter-spacing:.12em;font-weight:600;color:var(--ink-soft)}
+.sec-reset{margin-left:auto;flex:0 0 auto;font-family:'Spline Sans Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft);background:transparent;border:1px solid var(--line);border-radius:6px;padding:3px 9px;cursor:pointer;transition:color .15s,border-color .15s}
+.sec-reset:hover{color:var(--accent);border-color:var(--accent)}
   .sec-sub{font-size:12.5px;font-style:italic;color:var(--ink-soft);margin:-8px 0 16px}
   .section-box{border:1px solid var(--line);border-radius:13px;padding:18px;margin-bottom:18px;background:var(--field-soft);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
   .section-box > .sec-label:first-child{margin-top:0}
@@ -308,8 +310,8 @@
   /* ---- C1: collapsible FAQ section ---- */
   .faq .panel-head{cursor:pointer;user-select:none}
   .faq .panel-head h2{margin-right:auto}
-  .faq-section-chev{font-family:'Spline Sans Mono',monospace;color:var(--accent);font-size:14px;transition:transform .2s ease}
-  .faq:not(.collapsed) .faq-section-chev{transform:rotate(180deg)}
+  .faq-section-chev{font-family:'Spline Sans Mono',monospace;color:var(--accent);font-size:14px;transition:transform .2s ease;transform:rotate(-90deg)}
+  .faq:not(.collapsed) .faq-section-chev{transform:rotate(0deg)}
   .faq.collapsed .panel-body{display:none}
 
   /* ---- v2: unit + schedule segmented toggles ---- */
@@ -340,7 +342,7 @@
   <div id="uvReadout" aria-live="polite"></div>
   <header>
     <div class="brand"><h1>Doughborough<span class="dot"></span></h1><span class="tag">the home of bespoke doughs</span></div>
-    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v2.16.1</span></div>
+    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v2.18.8</span></div>
   </header>
   <main>
     <section class="col">
@@ -383,7 +385,7 @@
           </div>
 
           <div class="section-box">
-          <div class="sec-label" style="margin-top:0"><span class="sec-num">2</span><span class="sec-title">Flour and Method Selection</span></div>
+          <div class="sec-label" style="margin-top:0"><span class="sec-num">2</span><span class="sec-title">Flour and Method Selection</span><button type="button" class="sec-reset" title="Reset this section to defaults" onclick="event.stopPropagation();resetFlourMethod()">↺ reset</button></div>
 
           <div class="field"><label>Flour protein</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="flourProtein" min="7" max="18" step="0.5" /><span class="suffix">%</span></div><span class="rec">on the pack's nutrition panel</span></div></div>
 
@@ -425,8 +427,28 @@
           </div>
           </div>
 
+          <div class="section-box" id="section4Preferment">
+          <div class="sec-label" style="margin-top:0"><span class="sec-num">3</span><span class="sec-title">Preferment Recipe Control</span></div>
+          <div class="micro-note" id="noPrefNote" style="display:none">You're making a simple all-in-one dough, so there's no separate preferment to build. Pick Poolish or Biga under Flour and Method above if you'd like one.</div>
+          <div class="subgroup" id="prefGroup" style="display:none">
+                <div class="subgroup-title">Preferment</div>
+                <div class="field"><label>Type</label><select class="ctrl" id="preferment">
+                  <option value="poolish">Poolish — liquid, aromatic</option>
+                  <option value="biga">Biga — stiff, strong, nutty</option>
+                </select><div class="micro-note" id="prefTypeNote"></div></div>
+                <div class="field" id="poolishStyleField"><label id="poolishStyleLabel">Poolish finish</label><select class="ctrl" id="poolishStyle">
+                  <option value="stiff">Chewier dough — add flour first</option>
+                  <option value="wet">Softer dough — add water first</option>
+                </select></div>
+                <div class="field" id="poolishPctField"><label id="poolishPctLabel">Poolish amount (% of total flour)</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="poolishPct" min="10" max="100" step="5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="poolishPctRec"></b></span></div><div class="mono" style="font-size:11px;color:var(--ink-soft);margin-top:6px;line-height:1.5">This is a share of the <b>total</b> flour held in the preferment; the remaining flour goes in when you complete the dough. A biga is traditionally most or all of the flour; a poolish is usually a smaller share.</div></div>
+                <div class="field"><label>Preferment hydration</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="prefHydration" min="40" max="120" step="1" /><span class="suffix">%</span></div><span class="rec">recommended <b id="prefHydrationRec"></b></span></div></div>
+                <div class="field"><label>Preferment time</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sPreferment" min="1" step="1" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sPrefermentRec"></b></span></div></div>
+                <div class="field" style="margin-bottom:0"><label>Preferment yeast</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="prefYeast" min="0" max="3" step="0.01" /><span class="suffix">%</span></div><span class="rec">starting point <b id="prefYeastRec"></b></span></div></div>
+              </div>
+          </div>
+
           <div class="section-box">
-          <div class="sec-label" style="margin-top:0"><span class="sec-num">3</span><span class="sec-title">Time and Timers Selection</span></div>
+          <div class="sec-label" style="margin-top:0"><span class="sec-num">4</span><span class="sec-title">Time and Timers Selection</span><button type="button" class="sec-reset" title="Reset this section to defaults" onclick="event.stopPropagation();resetTime()">↺ reset</button></div>
           <div class="field"><label>Ambient kitchen temperature</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="ambient" min="5" max="40" step="1" /><span class="suffix temp-unit">°C</span></div><span class="rec">typical room <b id="ambientRec"></b></span></div><div class="mono" data-uv="Dough has no clock — it only feels the temperature. A cold kitchen isn't a problem, it's just a slower one." style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5">Yeast works faster when it's warm and slower when it's cool, so the temperature of your kitchen sets the pace. Set this to how warm the room actually is and the recommended times above and below adjust to suit — a cooler kitchen lengthens them, a warmer one shortens them.</div><div class="mono" id="waterTempLine" style="font-size:11px;color:var(--ink-soft);margin-top:8px;line-height:1.5"></div></div>
           <div class="field"><label>How much time do you want to take?</label><select class="ctrl" id="timeframe">
                   <option value="">Custom — I'll set it myself</option>
@@ -438,9 +460,9 @@
           <div class="field" style="display:none" aria-hidden="true"><label>Total time from start to finish</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="totalHours" min="2" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="totalRec"></b></span></div></div>
           <div class="subgroup">
                 <div class="subgroup-title">Fermentation times</div>
-                <div class="field" id="sPrefermentMirrorField" style="display:none"><label>Preferment time</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sPrefermentMirror" min="1" step="1" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sPrefermentMirrorRec"></b></span></div></div>
-                <div class="field"><label>Bulk ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBulk" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sBulkRec"></b></span></div></div>
-                <div class="field" style="margin-bottom:0"><label id="finalProofLabel">Ball ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBall" min="0" step="0.5" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sBallRec"></b></span></div></div>
+                <div class="field" id="sPrefermentMirrorField" style="display:none"><label>Preferment time</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sPrefermentMirror" min="1" step="1" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sPrefermentMirrorRec"></b></span></div><div class="inline-warn" id="warnPreferment"></div></div>
+                <div class="field"><label>Bulk ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBulk" min="0" step="0.25" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sBulkRec"></b></span></div><div class="inline-warn" id="warnBulk"></div></div>
+                <div class="field" style="margin-bottom:0"><label id="finalProofLabel">Ball ferment</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sBall" min="0" step="0.25" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sBallRec"></b></span></div><div class="inline-warn" id="warnBall"></div></div>
                 <div class="calc-total" id="calcTotal"></div>
                 <div class="inline-warn" id="warnFerment"></div>
                 <div class="inline-warn" id="warnTime"></div>
@@ -462,33 +484,14 @@
           </div>
           </div>
 
-          <div class="section-box" id="section4Preferment">
-          <div class="sec-label" style="margin-top:0"><span class="sec-num">4</span><span class="sec-title">Preferment Recipe Control</span></div>
-          <div class="subgroup" id="prefGroup" style="display:none">
-                <div class="subgroup-title">Preferment</div>
-                <div class="field"><label>Type</label><select class="ctrl" id="preferment">
-                  <option value="poolish">Poolish — liquid, aromatic</option>
-                  <option value="biga">Biga — stiff, strong, nutty</option>
-                </select><div class="micro-note" id="prefTypeNote"></div></div>
-                <div class="field" id="poolishStyleField"><label id="poolishStyleLabel">Poolish finish</label><select class="ctrl" id="poolishStyle">
-                  <option value="stiff">Chewier dough — add flour first</option>
-                  <option value="wet">Softer dough — add water first</option>
-                </select></div>
-                <div class="field" id="poolishPctField"><label id="poolishPctLabel">Poolish amount (% of total flour)</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="poolishPct" min="10" max="100" step="5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="poolishPctRec"></b></span></div><div class="mono" style="font-size:11px;color:var(--ink-soft);margin-top:6px;line-height:1.5">This is a share of the <b>total</b> flour held in the preferment; the remaining flour goes in when you complete the dough. A biga is traditionally most or all of the flour; a poolish is usually a smaller share.</div></div>
-                <div class="field"><label>Preferment hydration</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="prefHydration" min="40" max="120" step="1" /><span class="suffix">%</span></div><span class="rec">recommended <b id="prefHydrationRec"></b></span></div></div>
-                <div class="field"><label>Preferment time</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sPreferment" min="1" step="1" /><span class="suffix">hrs</span></div><span class="rec">recommended <b id="sPrefermentRec"></b></span></div></div>
-                <div class="field" style="margin-bottom:0"><label>Preferment yeast</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="prefYeast" min="0" max="3" step="0.01" /><span class="suffix">%</span></div><span class="rec">starting point <b id="prefYeastRec"></b></span></div></div>
-              </div>
-          </div>
-
           <div class="section-box">
-          <div class="sec-label" style="margin-top:0"><span class="sec-num">5</span><span class="sec-title">Final Recipe Control</span></div>
+          <div class="sec-label" style="margin-top:0"><span class="sec-num">5</span><span class="sec-title">Final Recipe Control</span><button type="button" class="sec-reset" title="Reset this section to defaults" onclick="event.stopPropagation();resetIngredients()">↺ reset</button></div>
           <div class="subgroup">
                 <div class="subgroup-title">Completing the dough</div>
                 <div class="mono" data-uv="Keep salt off the yeast until they meet in the dough — dumped straight on top, salt stuns it." style="font-size:11px;color:var(--ink-soft);margin:-6px 0 14px;line-height:1.5">These set the <b>final dough</b> — the whole thing, preferment included. Hydration here is the finished dough's hydration, not just this stage.</div>
                 <div class="field"><label>Dough loss allowance</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="lossAllow" min="0" max="25" step="0.5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="lossAllowRec"></b></span></div><div class="mono" data-uv="Every gram you scrape off the bowl is a gram that never made it into a pizza." style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5">Some dough always gets left behind — on the bowl, the bench, your hands. Increasing this value makes a little extra in your recipe, so you still hit your target ball weight after some dough is left behind. Wetter doughs and hand mixing tend to lose more, so the recommendation rises with both. Your real loss is personal, though — the surest way to work this out is to make a batch, weigh what you actually end up with, and use the actual percentage difference figure next time.</div></div>
                 <div class="field"><label>Hydration</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="hydration" min="40" max="100" step="0.5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="hydrationRec"></b></span></div></div>
-                <div class="field"><label id="mainYeastLabel">Yeast</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="mainYeast" min="0" max="5" step="0.01" /><span class="suffix">%</span></div><span class="rec">starting point <b id="mainYeastRec"></b></span></div><div class="mono" id="mainYeastNote" style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5"></div></div>
+                <div class="field"><label id="mainYeastLabel">Yeast</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="mainYeast" min="0" max="5" step="0.01" /><span class="suffix">%</span></div><span class="rec">starting point <b id="mainYeastRec"></b></span></div><div class="mono" id="mainYeastNote" style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5"></div><div class="inline-warn" id="warnYeast"></div></div>
                 <div class="field"><label>Salt</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="salt" min="0" max="6" step="0.1" /><span class="suffix">%</span></div><span class="rec">recommended <b id="saltRec"></b></span></div></div>
                 <div class="field"><label>Oil</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="oil" min="0" max="15" step="0.5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="oilRec"></b></span></div><div class="mono" data-uv="Fat coats the gluten and slows it down — a little softens, too much and the dough goes short and cakey." style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5">Any oil or soft animal fat works (lard, dripping); <b>olive oil</b> is the recommendation for flavour. Skip it entirely for a true Neapolitan — it isn't traditional and isn't needed at that heat. Avoid <b>butter</b> for Neapolitan especially: its milk solids scorch at pizza-oven temperatures.</div></div>
                 <div class="field" style="margin-bottom:0"><label id="sugarLabel">Sugar</label><div class="input-line"><div class="suffix-wrap"><input class="ctrl" type="number" id="sugar" min="0" max="8" step="0.5" /><span class="suffix">%</span></div><span class="rec">recommended <b id="sugarRec"></b></span></div><div class="mono" id="sugarNote" style="font-size:11px;color:var(--ink-soft);margin-top:7px;line-height:1.5"></div></div>
@@ -498,7 +501,7 @@
           </div>
 
           <div class="section-box">
-          <div class="sec-label" style="margin-top:0"><span class="sec-num">6</span><span class="sec-title">Oven Bake Setup</span></div>
+          <div class="sec-label" style="margin-top:0"><span class="sec-num">6</span><span class="sec-title">Oven Bake Setup</span><button type="button" class="sec-reset" title="Reset this section to defaults" onclick="event.stopPropagation();resetBake()">↺ reset</button></div>
           <div class="field"><label>Oven type</label><select class="ctrl" id="ovenType">
                   <option value="home">Home oven</option>
                   <option value="pizza">Pizza oven</option>
@@ -554,6 +557,33 @@
             <button class="print-btn" id="saveRecipeBtn" type="button">Save text</button>
             <button class="print-btn" id="printRecipeBtn" type="button">Print clean recipe</button>
             <span class="export-status" id="exportStatus" aria-live="polite"></span>
+          </div>
+
+          <div class="recipe-help" id="howToHelp">
+            <button class="recipe-help-head" id="howToToggle" type="button" aria-expanded="false">
+              <span><span class="label">How to use / instructions</span><span class="sub">What each section and each warning means, and what to do about it</span></span>
+              <span class="chev">▼</span>
+            </button>
+            <div class="recipe-help-body" id="howToBlock" hidden>
+              <div class="guide-card"><h3>The idea</h3><div class="guide-body">Work down the page. You tell Doughborough your pizza, your flour, your kitchen and how much time you have; it works out the recipe and a fermentation schedule to match. Every number it fills in is a suggestion — you can type over any of them and everything else adjusts around your change. There's no single "right" path: you decide your limiting factor (the time you have, or how warm your kitchen is) and the calculator fits the rest to it.</div></div>
+              <div class="guide-card"><h3>Section 1 — Size, shape and amount</h3><div class="guide-body">Pick the pizza style, your units, and how many pizzas. Set the size (diameter for round, length × width for rectangular) and the dough-ball weight — the weight of one ball, which sets how thick or thin the base is. Everything downstream scales from these.</div></div>
+              <div class="guide-card"><h3>Section 2 — Flour and method</h3><div class="guide-body">Enter your flour's protein %; the hydration adjusts to suit it, since weaker flour holds less water. Choose your method: <b>Simple</b> is one all-in-one dough; <b>Preferment</b> builds a poolish or biga ahead of time for more flavour. Hydration, kneading style and the optional vinegar tweak live here too. Vinegar only helps a weak flour on a short, fast dough — it does nothing for strong flour or a long ferment, so it stays off unless you switch it on.</div></div>
+              <div class="guide-card"><h3>Section 3 — Preferment recipe control</h3><div class="guide-body">Active only when you've chosen Poolish or Biga in Section 2 — otherwise it shows a short note. It sets how much of your flour goes into the preferment, its hydration, how long it ferments and its yeast. A poolish is wet and aromatic; a biga is stiff, stronger and ferments more slowly, which is why biga suits the longest no-fridge timelines.</div></div>
+              <div class="guide-card"><h3>Section 4 — Time and timers</h3><div class="guide-body"><b>Ambient kitchen temperature</b> is the key input: it sets the pace of everything. A warmer kitchen shortens the times, a cooler one lengthens them, so set it to how warm the room actually is. <b>How much time do you have?</b> picks the overall approach, from "as soon as possible" to a multi-day preferment. The stages below — preferment (if any), bulk and ball — are the actual timers, and the total is always their sum. Change any stage and the total, the yeast and the warnings all update with it.</div></div>
+              <div class="guide-card"><h3>Sections 5 &amp; 6 — Final recipe and oven</h3><div class="guide-body">Section 5 is the final-dough recipe — yeast, salt, oil and so on. Fine-tune it or leave the suggestions. Section 6 is your oven and baking surface; it tailors the temperature and the bake advice to what you actually have, whether that's a steel, a stone, a deck, or a standard home oven.</div></div>
+              <div class="guide-card"><h3>How the warnings work</h3><div class="guide-body">A warning always appears <b>directly under the field you'd change to clear it</b> — so if a bulk-ferment warning shows, the fix is in the bulk box right above it. They're guidance, not locks: nothing stops you carrying on, and the dough is always the final judge. What each one means:
+                <ul>
+                  <li><b>"Needs about X to hydrate"</b> — the bulk + ball time is too short for the flour to come together. Give it more time, or accept a denser result.</li>
+                  <li><b>"Past what [style] can take … without the fridge"</b> — the ferment is longer than the dough can hold at this temperature. Shorten it, cool the kitchen, or move it to the fridge. Doughborough is deliberately no-fridge, so if you chill it, how long is your call.</li>
+                  <li><b>"Outside the recommended range — fine to experiment"</b> — a soft heads-up that a stage is longer or shorter than the usual window for this method. Not an error: leave it if it's deliberate, or nudge back toward the range if you're unsure.</li>
+                  <li><b>Preferment "longer / too short"</b> — your poolish or biga is outside its healthy window. Adjust the preferment time, or switch method.</li>
+                  <li><b>"Not generally recommended for this timeframe"</b> — the method and timeframe you've paired don't fit well without a fridge. Pick a different timeframe or method, or carry on and watch the dough closely.</li>
+                  <li><b>Yeast "geared for a shorter ferment"</b> — the yeast is set too high for the time chosen, so the dough may over-ferment. Drop the yeast toward the suggested figure, or shorten the ferment.</li>
+                  <li><b>Vinegar note</b> — appears only if you've switched vinegar on where it won't help. Turn it off, or shorten the ferment.</li>
+                </ul>
+                Rule of thumb: a "past what it can take" or "needs to hydrate" line is a real limit worth respecting; an "outside the recommended range" line is just a nudge. If two things are off on the same stage, you'll only ever see the more important one.</div></div>
+              <div class="guide-card"><h3>If in doubt</h3><div class="guide-body">Set your kitchen temperature honestly, pick the timeframe that suits your day, and trust the suggested numbers the first time. Once you've baked a batch, use the "Help / quick fixes" panel below to steer the next one — thinner rim, more colour, softer centre, and so on.</div></div>
+            </div>
           </div>
 
           <div class="recipe-help" id="recipeHelp">
@@ -778,7 +808,7 @@ function gridCell(styleKey,tf,methodKey,preferment){
   return g[tf][mk]||null;
 }
 function _gMid(r,ambF){return r?Math.max(1,Math.round(((r[0]+r[1])/2)*ambF)):null;}
-function _gScl(r,ambF){return r?[r[0]*ambF, r[1]*ambF]:null;}   // rational band (no rounding) — round only for display
+function _gScl(r,ambF){return r?[Math.max(1,r[0]*ambF), Math.max(1,r[1]*ambF)]:null;}   // rational band, floored at 1h to match _gMid's floor — round only for display
 function gridDefaults(cell,ambF){return {pre:_gMid(cell.pre,ambF),bulk:_gMid(cell.bulk,ambF),ball:_gMid(cell.ball,ambF)};}
 function gridBand(cell,ambF){return {preferment:_gScl(cell.pre,ambF),bulk:_gScl(cell.bulk,ambF),ball:_gScl(cell.ball,ambF)};}
 const TIMEFRAME_LABELS={asap:"as soon as possible",sameday:"same day",nextday:"next day","2-3day":"two to three days"};
@@ -829,7 +859,12 @@ function resolveSize(b,sz,shape){if(shape==="round"){return{diameter:sz&&sz.diam
 function convYeast(g,t){const v=g*(YEAST[t]?YEAST[t].factor:1);const r=r1(v);return (v>0&&r===0)?0.1:r;}
 /* recommended yeast % (instant baseline) from ferment hours, then convert for type */
 function recYeastPctInstant(h){if(!h||h<=0)return 1.2;return r2(0.1*(24/h));}
-function recYeastPctForType(h,type){return r2(recYeastPctInstant(h)*(YEAST[type]?YEAST[type].factor:1));}
+function recYeastPctForType(h,type,ambF){return r2(recYeastPctInstant(h)*(ambF||1)*(YEAST[type]?YEAST[type].factor:1));}
+// asap floor: the flour must at least hydrate before the dough is usable. Fitted to Mark's points
+// (55%→2h, 80%→1h at 25°C), clamped to 1–2h so the asap yeast stays in the agreed 1.2–2.4% band.
+function hydrationFloor25(hyd){return Math.max(1,Math.min(2,1.6+0.04*(65-num(hyd,65))));}
+// recommended rest times round to: 15-min blocks under 1h, 30-min blocks 1–2h, nearest hour beyond.
+function roundRest(h){h=num(h,0);if(h<=0)return 0;if(h<1)return Math.round(h*4)/4;if(h<=2)return Math.round(h*2)/2;return Math.round(h);}
 
 function easySplit(totalH){
   let ball=0,bulk=0;
@@ -894,18 +929,24 @@ function calculate(opts){
   const _tf=(typeof currentTimeframe!=="undefined")?currentTimeframe:null;
   const _cell=gridCell(styleKey,_tf,methodKey,preferment);
   const _gd=(_cell&&_cell.ok)?gridDefaults(_cell,ambF):null;
-  const _band=(_cell&&_cell.ok)?gridBand(_cell,ambF):null;
+  let _band=(_cell&&_cell.ok)?gridBand(_cell,ambF):null;
+  // asap = shortest viable: its only hard limit is the hydration floor (its own warning below),
+  // so it carries no symmetric band — taking longer than asap is fine, going under the floor is not.
+  if(_tf==="asap") _band=null;
   if(!isTrad){
     const preset=timePreset(styleKey,methodKey,preferment);
     let recBulk, recBall;
-    if(_gd){ recBulk=_gd.bulk; recBall=_gd.ball; }
+    if(_gd){ recBulk=_gd.bulk; recBall=_gd.ball;
+      if(_tf==="asap"){ const fl=roundRest(hydrationFloor25(p.hydration)*ambF); recBulk=roundRest(0.4*fl); recBall=fl-recBulk; } // asap total = rounded hydration floor; ball = remainder so the parts always sum to the total the warning checks
+    }
     else {
       // bulk scales with ambient just like the ball — a cold room slows the whole ferment, not only the proof.
       const presetBulk = preset ? Math.max(1,Math.round(preset.bulk*ambF)) : null;
       const rec=preset ? {bulk:presetBulk,ball:Math.max(1,Math.round(total-presetBulk))} : easySplit(total);
       recBulk=Math.max(1,Math.round(rec.bulk)); recBall=Math.max(1,Math.round(rec.ball));
     }
-    const bulk=Math.round(num(stageOverrides.bulk,recBulk)),ball=Math.round(num(stageOverrides.ball,recBall));
+    if(recBall<recBulk){const _s=recBulk;recBulk=recBall;recBall=_s;} // ball proof (appretto) runs at least as long as the bulk (puntata) — the larger computed stage is always the ball
+    const bulk=num(stageOverrides.bulk,recBulk),ball=num(stageOverrides.ball,recBall);
     stages={bulk:{rec:recBulk,val:bulk},ball:{rec:recBall,val:ball}};
     mainFermentHours=bulk+ball;
   } else {
@@ -913,7 +954,9 @@ function calculate(opts){
     const lim=TIME_LIMITS[preferment];
     let recPre, recBulk, recBall;
     const preset=timePreset(styleKey,methodKey,preferment);
-    if(_gd){ recPre=_gd.pre; recBulk=_gd.bulk; recBall=_gd.ball; }
+    if(_gd){ recPre=_gd.pre; recBulk=_gd.bulk; recBall=_gd.ball;
+      if(_tf==="asap"){ const fl=roundRest(hydrationFloor25(p.hydration)*ambF); recBulk=roundRest(0.4*fl); recBall=fl-recBulk; } // asap total = rounded hydration floor; ball = remainder so the parts always sum to the total the warning checks
+    }
     else if(preset){
       // bulk & ball scale with ambient (cold room slows the final ferment too); preferment absorbs the rest
       recBulk=Math.max(0,Math.round(preset.bulk*ambF));
@@ -932,14 +975,14 @@ function calculate(opts){
       // ensure bulk doesn't exceed ball below the 8 mark in the remainder (ball-priority)
       if(recBulk>recBall && remainder<8){ recBall=Math.max(recBall,Math.ceil(remainder/2)); recBulk=remainder-recBall; }
     }
-    const pre=Math.round(num(stageOverrides.preferment,recPre)),bulk=Math.round(num(stageOverrides.bulk,recBulk)),ball=Math.round(num(stageOverrides.ball,recBall));
+    if(recBall<recBulk){const _s=recBulk;recBulk=recBall;recBall=_s;} // ball proof (appretto) runs at least as long as the bulk (puntata); preferment is separate
+    const pre=num(stageOverrides.preferment,recPre),bulk=num(stageOverrides.bulk,recBulk),ball=num(stageOverrides.ball,recBall);
     stages={preferment:{rec:recPre,val:pre},bulk:{rec:recBulk,val:bulk},ball:{rec:recBall,val:ball}};
     mainFermentHours=bulk+ball;
   }
 
-  // --- YEAST (user input, recommended from time+type) ---
-  let mainYeastRec=recYeastPctForType(mainFermentHours,yeastType);
-  if(_cell&&_cell.ok&&_cell.yeast==="boost") mainYeastRec=r2(mainYeastRec*YEAST_BOOST); // fast ferment wants a push
+  // --- YEAST (derived from ambient + final-ferment time) ---
+  let mainYeastRec=recYeastPctForType(mainFermentHours,yeastType,ambF);
   const mainYeastPct=num(yeastOverrides.main,mainYeastRec);
 
   // flour back-calc uses instant-equivalent of main yeast for mass (tiny anyway)
@@ -971,7 +1014,7 @@ function calculate(opts){
     const pfHydration=num(overrides.prefHydration,pf.hydration);
     const pfFlour=totalFlour*(pfFlourPct/100);
     const pfWater=pfFlour*(pfHydration/100);
-    const pfYeastRec=recYeastPctForType(stages.preferment.val,yeastType);
+    const pfYeastRec=recYeastPctForType(stages.preferment.val,yeastType,ambF);
     const pfYeastPct=num(yeastOverrides.preferment,pfYeastRec);
     const pfYeastInstantEquiv=pfYeastPct/(YEAST[yeastType].factor||1);
     const pfYeastG=convYeast(pfFlour*(pfYeastInstantEquiv/100),yeastType);
@@ -987,66 +1030,77 @@ function calculate(opts){
 
   const ingredients={flour:r0(totalFlour),water:r0(waterMinusVinegar),salt:r1(saltG),yeast:mainYeastG,oil:p.oil>0?r1(oilG):null,sugar:p.sugar>0?r1(sugarG):null,vinegar:vinegarPct>0?r1(vinegarG):null};
 
-  // --- RED FLAGS / GUARD RAILS ---
-  // bounds are scaled by the ambient factor so they stay coherent with the recommended times
+  // === FERMENT WARNINGS — one concern per message, under the input that fixes it (rebuilt to spec) ===
   const flags=[];
+  const ambStr = tF(num(ambientC,AMBIENT_BASELINE_C));
   const lim = TIME_LIMITS[isTrad?preferment:"easy"];
   const limMin=Math.max(1,Math.round(lim.min*ambF)), limMax=Math.max(2,Math.round(lim.max*ambF));
   const napCap=Math.max(2,Math.round(24*ambF));
-  const recRange0 = getRecommendedRange(styleKey,methodKey,preferment);
-  const recRange = {min: Math.max(1,Math.round(recRange0.min*ambF)), max: Math.max(2,Math.round(recRange0.max*ambF))};
-  // one consistent message for "you've stepped past what this kitchen temperature can do" — point to the fridge, but don't do the fridge math
-  const ambStr = tF(num(ambientC,AMBIENT_BASELINE_C));
-  const fridgeLine = `To rest it longer, the only lever left is the fridge, which slows fermentation right down. Doughborough stays no-fridge by design — think of the fridge as a time-control device, a way to slow things so the dough is ready when you are. How long to give it in there is yours to judge; we only flag where ${ambStr} runs out.`;
-  if(styleKey==="neapolitan"){
-    if(!_band && total < recRange.min){
-      flags.push({level:"warn",where:"time",msg:`${fmtH(total)} is below the recommended Neapolitan range of ${fmtH(recRange.min)}–${fmtH(recRange.max)} at ${ambStr}. The dough may not be mature enough for a light, open cornicione.`});
-    }
-    if(!isTrad && total > napCap){
-      flags.push({level:"warn",where:"time",msg:`${fmtH(total)} is past what a Neapolitan can take at ${ambStr} without the fridge. ${fridgeLine}`});
-    } else if(isTrad && total > limMax){
-      flags.push({level:"warn",where:"time",msg:`${fmtH(total)} is longer than a ${preferment} should run at ${ambStr}. ${fridgeLine}`});
-    }
-  } else if(isTrad){
-    // below the preferment minimum total → not worth the extra steps
-    if(total < limMin){
-      flags.push({level:"warn",where:"time",msg:`At ${fmtH(total)} total, a ${preferment} can't get the time it needs to be worth the extra steps. Below about ${fmtH(limMin)}, you're better off with the all-in-one (Simple) dough and giving it the whole time to ferment.`});
-    }
-    // over the preferment maximum total → fridge territory
-    if(total > limMax){
-      flags.push({level:"warn",where:"time",msg:`${fmtH(total)} is longer than this method should run without the fridge at ${ambStr} — pushed this far the yeast exhausts and the dough can collapse. ${fridgeLine}`});
-    }
-  } else {
-    if(total > limMax){
-      flags.push({level:"warn",where:"time",msg:`${fmtH(total)} is about as long as an all-in-one dough should ferment at ${ambStr}. Beyond this, switch to a preferment (Poolish or Biga) to use the time well — or, to simply rest longer, the fridge. ${fridgeLine}`});
-    }
-  }
-  // overproof: main ferment far beyond recommended for the yeast in use
-  const recMain=stages.bulk.rec+stages.ball.rec;
-  if(mainFermentHours>recMain*1.5&&recMain>0){
-    flags.push({level:"warn",where:"ferment",msg:`Fermenting the final dough ${fmtH(mainFermentHours)} is well over the recommended ${fmtH(recMain)} for this much yeast — it can exhaust and collapse. Lower the yeast or shorten the time.`});
-  }
+  const fridge = "Past this, the only lever left is the fridge — Doughborough stays no-fridge by design, so how long to chill is your call.";
+  const styleName = styleKey==="neapolitan"?"a Neapolitan":styleKey==="ny"?"a New York dough":styleKey==="detroit"?"a Detroit dough":styleKey==="focaccia"?"a focaccia":"this dough";
+  // the one true total = the sum of the actual stage values
+  const prefTime = isTrad ? num(stages.preferment.val,0) : 0;
+  const finalFerment = num(stages.bulk.val,0) + num(stages.ball.val,0);
+  const totalTime = prefTime + finalFerment;
+  // a stage that already carries a hard length flag must not also show the soft band note
+  const hardFlagged = {preferment:false,bulk:false,ball:false};
+  const flag=(where,msg,hard)=>{ flags.push({level:"warn",where,msg}); if(hard)(Array.isArray(where)?where:[where]).forEach(k=>{ if(k in hardFlagged) hardFlagged[k]=true; }); };
 
-  const totalTime = isTrad ? (stages.preferment.val+stages.bulk.val+stages.ball.val) : (stages.bulk.val+stages.ball.val);
-
-  // vinegar guard-rails
-  if(vinegarActive && total>VINEGAR_MAX_HOURS){
-    flags.push({level:"warn",where:"time",msg:`Vinegar only strengthens weak flour over a short, fast ferment. At ${fmtH(total)} it won't help and can leave a sour edge — turn it off, or shorten below ${VINEGAR_MAX_HOURS} hours.`});
+  // 1) hydration floor — bulk+ball needs a minimum just to come together (asap's only real limit)
+  if(_tf){
+    const floor=roundRest(hydrationFloor25(p.hydration)*ambF);
+    if(finalFerment>0 && finalFerment < floor-0.25)
+      flag(["bulk","ball"], `At ${ambStr} and ${Math.round(num(p.hydration,65))}% hydration the dough needs about ${fmtH(floor)} of bulk + ball just to hydrate — less than that and it won't come together.`, true);
   }
-  if(vinegarActive && vinegarPct>0 && num(flourProtein,12)>=12){
-    flags.push({level:"warn",where:"vinegar",msg:`At ${num(flourProtein,12)}% protein this flour is already strong enough — vinegar adds nothing here and you can leave it out.`});
+  // 2) past what the kitchen can take — HARD cap. Two independent checks, both supersede the soft band:
+  //    (a) the final dough (bulk + ball) for EVERY method; (b) the preferment window for trad.
+  const finalCap = !isTrad
+    ? (styleKey==="neapolitan" ? napCap : Math.max(2,Math.round(TIME_LIMITS["easy"].max*ambF)))  // direct: beyond this, steer to a preferment
+    : Math.max(2,Math.round(24*ambF));                                                            // trad: the dough's full ferment cap (the preferment is counted separately)
+  if(finalFerment > finalCap)
+    flag(["bulk","ball"], `${fmtH(finalFerment)} of bulk + ball is past what ${styleName} can take at ${ambStr} without the fridge. ${fridge}`, true);
+  if(isTrad){
+    if(prefTime > limMax)
+      flag(["preferment"], `A ${preferment} of ${fmtH(prefTime)} is longer than it should run at ${ambStr} — the yeast exhausts and the dough can collapse. ${fridge}`, true);
+    else if(prefTime>0 && prefTime < limMin)
+      flag(["preferment"], `A ${preferment} of ${fmtH(prefTime)} is too short to be worth the extra steps — below about ${fmtH(limMin)} you're better off with the Simple all-in-one dough.`, true);
   }
-
-  // ---- FIRST-TIER GUARDRAIL: stage values vs the grid band (per timeframe × method) ----
+  // 3) soft band note — a stage outside its recommended range, unless it already drew a hard flag
+  // combos with no grid band (asap, and not-recommended pairings) get a soft range built around their recommendation,
+  // so bulk + ball always have a guardrail
+  if(!_band && _tf){
+    const ab=rec=>{const r=Math.max(0.25,num(rec,0.5)); return [r, Math.max(r+0.5, r*1.5)];};
+    _band={bulk:ab(stages.bulk.rec), ball:ab(stages.ball.rec)};
+    if(isTrad && stages.preferment) _band.preferment=ab(stages.preferment.rec);
+  }
   if(_band){
     [["preferment","Preferment"],["bulk","Bulk ferment"],["ball","Ball ferment"]].forEach(([k,lbl])=>{
-      const b=_band[k], st=stages[k]; if(!b||!st) return;
-      const lo=b[0], hi=b[1];   // rational band; inputs are whole hours, so allow a half-hour rounding tolerance
-      if(st.val < lo-0.5 || st.val > hi+0.5)
-        flags.push({level:"warn",where:"ferment",msg:`${lbl} ${fmtH(st.val)} is outside the recommended ${fmtH(Math.round(lo))}–${fmtH(Math.round(hi))} for this method at ${ambStr}. Fine to experiment — let the dough be the judge.`});
+      const b=_band[k], st=stages[k]; if(!b||!st||hardFlagged[k]) return;
+      const lo=b[0],hi=b[1];
+      const tol=Math.max(0.1, Math.min(0.5, lo*0.4));   // big stages: 0.5h rounding slack; tiny hot-ambient stages: tighter, so a low push still trips
+      if(st.val < lo-tol || st.val > hi+tol){
+        const rlo=Math.round(lo),rhi=Math.round(hi);
+        const range = rlo===rhi?fmtH(rlo):`${fmtH(rlo)}\u2013${fmtH(rhi)}`;
+        flag([k], `${lbl} ${fmtH(st.val)} is outside the recommended ${range} for this method at ${ambStr}. Fine to experiment.`, false);
+      }
     });
-  } else if(_cell && !_cell.ok && _tf){
-    flags.push({level:"warn",where:"ferment",msg:`This isn't generally recommended for the “${TIMEFRAME_LABELS[_tf]||_tf}” timeframe without refrigeration. You can still try it — just watch the dough closely.`});
+  }
+  // not-recommended method+timeframe pairing — always noted (independent of the band)
+  if(_cell && !_cell.ok && _tf){
+    flag("ferment", `This isn't generally recommended for the \u201c${TIMEFRAME_LABELS[_tf]||_tf}\u201d timeframe without the fridge. You can still try it — just watch the dough closely.`, false);
+  }
+  // 4) over-proof — the yeast is geared for a shorter ferment than the dough is set to run
+  if(mainYeastRec>0 && mainYeastPct > mainYeastRec*1.5){
+    const yfac=(YEAST[yeastType]&&YEAST[yeastType].factor)||1;
+    const suitTime=Math.max(1,Math.round((2.4*yfac*ambF)/mainYeastPct));
+    flag(["yeast","bulk","ball"], `At ${r2(mainYeastPct)}% the yeast is geared for about ${fmtH(suitTime)} of final ferment, but you've set ${fmtH(finalFerment)} — long enough to over-ferment and collapse. Drop to about ${r2(mainYeastRec)}%, or shorten to about ${fmtH(suitTime)}.`, false);
+  }
+  // 5) vinegar — manual only; helps weak flour over a short ferment
+  if(vinegarActive && finalFerment>VINEGAR_MAX_HOURS){
+    flag(["bulk","ball","vinegar"], `Vinegar helps weak flour over a short, fast ferment. At ${fmtH(finalFerment)} it won't help — turn it off, or shorten below ${VINEGAR_MAX_HOURS} hours.`, false);
+  }
+  if(vinegarActive && vinegarPct>0 && num(flourProtein,12)>=12){
+    flag("vinegar", `At ${num(flourProtein,12)}% protein this flour is already strong — vinegar adds nothing here, you can leave it out.`, false);
   }
 
   return {
@@ -1054,7 +1108,7 @@ function calculate(opts){
     shape:shp,size:sz,quantity,percentages:p,
     yeastType,yeastTypeName:YEAST[yeastType].name,
     isTrad,preferment:prefermentObj,poolishStyle,
-    totalHours:total,totalTime:r1(totalTime),stages,
+    totalHours:total,totalTime:totalTime,stages,
     loss:{rec:recLoss,val:r1(lossPct),netDough:r0(netDough)},
     vinegar:{on:vinegarActive,pct:r1(vinegarPct),rec:recVinegar,grams:r0(vinegarG),protein:num(flourProtein,12)},
     water:{tempC:waterTempC,cue:waterCue,ddt:DDT_TARGET,hotMachine},
@@ -1343,13 +1397,7 @@ function syncVinegarUI(){
   const isTrad=currentMethod!=="easy";
   const field=$("vinegarField");
   if(field) field.style.display=isTrad?"none":"";       // hidden for preferment; engine also gates it off
-  if(!vinToggleTouched && !isTrad){
-    const weak=flourProteinVal()<12;
-    // suggest on for weak flour at a short ferment; turn off only for strong flour.
-    // weak + >6h is left as-is (sticky) so an on dough stays on and the >6h warning shows — experiment allowed.
-    if(weak && currentTotalH()<=VINEGAR_MAX_HOURS) $("vinegarOn").checked=true;
-    else if(!weak) $("vinegarOn").checked=false;
-  }
+  // vinegar is a manual choice — never auto-toggled. It stays off unless the user turns it on.
   const on=$("vinegarOn").checked && !isTrad;
   const wrap=$("vinegarPctWrap");
   if(wrap) wrap.style.display=on?"":"none";
@@ -1395,7 +1443,7 @@ function recalcRecommendations(){
   // compute a fresh calc with NO stage/pref overrides to get recommended stage values
   const s=STYLES[current];
   const baseCalc=calculate({styleKey:current,methodKey:currentMethod,quantity:num($("qty").value,2),
-    size:getSize(),overrides:{},yeastType:$("yeastType").value,preferment:$("preferment").value,
+    size:getSize(),overrides:(touched.hydration?{hydration:$("hydration").value}:{}),yeastType:$("yeastType").value,preferment:$("preferment").value,
     poolishStyle:$("poolishStyle").value,totalHours:num($("totalHours").value,defaultTotalFor()),
     ovenTemp:tempToBase($("oven").value),shape:userShape,mixMode,ambientC:ambientC(),flourProtein:flourProteinVal()});
   return baseCalc;
@@ -1457,6 +1505,50 @@ function selectStyle(k){
   render();
 }
 
+function resetFlourMethod(){
+  // Section 2 — Flour and Method Selection — back to load defaults: blank flour protein (treated as 12%),
+  // no chosen flour type, vinegar off, instant yeast, all-in-one (Simple) method, stand mixer.
+  $("flourProtein").value=""; $("flourType").value="";
+  if($("yeastType")) $("yeastType").value="instant";
+  if($("vinegarOn")) $("vinegarOn").checked=false;
+  vinTouched=false; vinToggleTouched=false;
+  if(typeof syncVinegarUI==="function") syncVinegarUI();
+  mixMode="stand"; if(typeof syncMixUI==="function") syncMixUI();
+  currentMethod="easy";
+  stageTouched={}; prefTouched={}; yeastTouched={}; totalTouched=false;
+  $("totalHours").value=defaultTotalFor(); updateTotalRec();
+  syncMethodUI(); refreshStageDefaults(); render();
+}
+function resetTime(){
+  // restore the Time & Timers section to defaults: ambient back to typical room, timeframe to Custom,
+  // stage timers cleared to recommended. (Ambient is reset too — it's a section default; if Mark wants
+  // the identified-environment ambient to persist through a reset, this is the one line to drop.)
+  $("ambient").value=Math.round(tempFromBase(AMBIENT_BASELINE_C));
+  $("ambientRec").textContent=tF(AMBIENT_BASELINE_C);
+  currentTimeframe=null;
+  stageTouched={};prefTouched={};yeastTouched={};totalTouched=false;
+  $("totalHours").value=defaultTotalFor();
+  updateTotalRec();syncMethodUI();refreshStageDefaults();updateTimeframeUI();render();
+}
+function resetIngredients(){
+  const s=STYLES[current];
+  touched={};yeastTouched={};vinTouched=false;vinToggleTouched=false;lossTouched=false;
+  const hr=recHydrationFor(s.hydration,flourProteinVal());
+  $("hydration").value=hr;$("hydrationRec").textContent=fmtPct(hr);
+  $("salt").value=s.salt;$("saltRec").textContent=fmtPct(s.salt);
+  $("oil").value=s.oil;$("oilRec").textContent=fmtPct(s.oil);
+  $("sugar").value=s.sugar;$("sugarRec").textContent=fmtPct(s.sugar);
+  if(typeof syncVinegarUI==="function") syncVinegarUI();
+  refreshStageDefaults();render();
+}
+function resetBake(){
+  const s=STYLES[current];
+  $("oven").value=Math.round(tempFromBase(s.bake.idealMin));$("ovenRec").textContent=tF(s.bake.idealMin)+"–"+tF(s.bake.max);
+  if($("bakeBase"))$("bakeBase").value=PAN_STYLES.includes(current)?"tray":"steel";
+  if($("ovenType"))$("ovenType").value="home";
+  syncBakeUI();render();
+}
+
 function refreshStageDefaults(){
   // populate stage time inputs + preferment fields with recommended (only if not touched)
   const rc=recalcRecommendations();
@@ -1474,14 +1566,14 @@ function refreshStageDefaults(){
   if($("vinegarRec"))$("vinegarRec").textContent=vinRec+"%";
   if(!vinTouched&&$("vinegar"))$("vinegar").value=vinRec;
   if(!stageTouched.bulk){$("sBulk").value=rc.stages.bulk.val;}
-  $("sBulkRec").textContent=rc.stages.bulk.rec+" hrs";
+  $("sBulkRec").textContent=fmtH(rc.stages.bulk.rec);
   if(!stageTouched.ball){$("sBall").value=rc.stages.ball.val;}
-  $("sBallRec").textContent=rc.stages.ball.rec+" hrs";
+  $("sBallRec").textContent=fmtH(rc.stages.ball.rec);
   if(!yeastTouched.main){$("mainYeast").value=rc.mainYeastRec;}
   $("mainYeastRec").textContent=rc.mainYeastRec+"%";
   if(currentMethod==="trad"){
     if(!stageTouched.preferment){$("sPreferment").value=rc.stages.preferment.val;}
-    $("sPrefermentRec").textContent=rc.stages.preferment.rec+" hrs";
+    $("sPrefermentRec").textContent=fmtH(rc.stages.preferment.rec);
     const pf=PREFERMENTS[$("preferment").value];
     if(!prefTouched.hydration){$("prefHydration").value=pf.hydration;}
     $("prefHydrationRec").textContent=pf.hydration+"%";
@@ -1513,7 +1605,7 @@ function syncMethodUI(){
   renderMethodBlurb();
   $("prefGroup").style.display=currentMethod==="trad"?"":"none";
   {const mf=$("sPrefermentMirrorField");if(mf)mf.style.display=currentMethod==="trad"?"":"none";}
-  {const s4=$("section4Preferment");if(s4)s4.style.display=currentMethod==="trad"?"":"none";}
+  {const s4=$("section4Preferment");if(s4)s4.style.display="";const npn=$("noPrefNote");if(npn)npn.style.display=currentMethod==="trad"?"none":"";}
   // finish (chewier/softer) only matters when there's flour left to add last — hide it at 100%
   const prefVal=$("preferment").value, pctNow=num($("poolishPct").value, PREFERMENTS[prefVal].flourPct);
   $("poolishStyleField").style.display=(currentMethod==="trad" && pctNow<100)?"":"none";
@@ -1739,6 +1831,8 @@ function markUVDirty(){uvDirty=true;}
 ["qty","diameter","panL","panW","panDepth","oven"].forEach(id=>{const el=$(id);if(el)el.addEventListener("input",()=>{refreshStageDefaults();render();});});
 $("totalHours").addEventListener("input",()=>{clearTimeframe();totalTouched=true;stageTouched={};yeastTouched={};refreshStageDefaults();render();});
 advIds.forEach(id=>$(id).addEventListener("input",()=>{touched[id]=true;render();}));
+// hydration drives the asap floor, so its stage recommendations must refresh as it changes (not only on blur)
+$("hydration").addEventListener("input",()=>{refreshStageDefaults();});
 $("lossAllow").addEventListener("input",()=>{lossTouched=true;render();});
 $("lossAllow").addEventListener("change",()=>{const el=$("lossAllow");let v=Number(el.value);if(!Number.isFinite(v)||v<0){lossTouched=false;refreshStageDefaults();}render();});
 $("ambient").addEventListener("input",()=>{
@@ -1792,6 +1886,14 @@ $("recipeHelpToggle").onclick=()=>{
   box.classList.toggle("open",open);
   body.hidden=!open;
   $("recipeHelpToggle").setAttribute("aria-expanded",open?"true":"false");
+};
+$("howToToggle").onclick=()=>{
+  const box=$("howToHelp");
+  const body=$("howToBlock");
+  const open=!box.classList.contains("open");
+  box.classList.toggle("open",open);
+  body.hidden=!open;
+  $("howToToggle").setAttribute("aria-expanded",open?"true":"false");
 };
 $("reset").onclick=()=>selectStyle(current);
 $("briefBtn").onclick=()=>{mode="brief";$("briefBtn").classList.add("on");$("expandBtn").classList.remove("on");render();};
@@ -1863,15 +1965,19 @@ function syncBakeUI(){
 }
 // distribute warning flags to inline slots at the controls that trigger them
 function renderInlineFlags(flags){
-  const slots={time:$("warnTime"),ferment:$("warnFerment"),vinegar:$("warnVinegar"),fallback:$("flagNotes")};
+  // Custom (timeframe = none) = full manual control, no guard rails: drop every time/temperature warning.
+  if((typeof currentTimeframe==="undefined") || !currentTimeframe){
+    const TEMPORAL=new Set(["time","yeast","bulk","ball","ferment","preferment"]);
+    flags=(flags||[]).filter(f=>{const ws=Array.isArray(f.where)?f.where:[f.where];return !ws.some(x=>TEMPORAL.has(x));});
+  }
+  const slots={yeast:$("warnYeast"),preferment:$("warnPreferment"),bulk:$("warnBulk"),ball:$("warnBall"),time:$("warnTime"),ferment:$("warnFerment"),vinegar:$("warnVinegar"),fallback:$("flagNotes")};
   Object.values(slots).forEach(el=>{if(el)el.innerHTML="";});
+  const mkNote=(f)=>{const d=document.createElement("div");d.className="note "+(f.level==="adjust"?"adjust":"warn");d.innerHTML=`<span class="icon">!</span><span>${f.msg}</span>`;return d;};
   (flags||[]).forEach(f=>{
-    const el=slots[f.where]||slots.fallback;
-    if(!el)return;
-    const d=document.createElement("div");
-    d.className="note "+(f.level==="adjust"?"adjust":"warn");
-    d.innerHTML=`<span class="icon">!</span><span>${f.msg}</span>`;
-    el.appendChild(d);
+    const wheres=Array.isArray(f.where)?f.where:[f.where];
+    let placed=false;
+    wheres.forEach(wk=>{const el=slots[wk]; if(!el)return; placed=true; el.appendChild(mkNote(f));});
+    if(!placed && slots.fallback) slots.fallback.appendChild(mkNote(f));
   });
 }
 function ingList(container, items){
@@ -1995,6 +2101,13 @@ function render(){
   readAnchor();   // refresh wall-clock anchor before calculate() builds the timestamped method
   const s=STYLES[current];
   const r=calculate(buildOpts());
+  // yeast field + its "starting point" track the ACTUAL final-ferment time, so the auto-adjustment to the
+  // chosen time is visible (and matches what the recipe uses). The rec hint always shows the time-appropriate
+  // dose — the same number the over-proof warning suggests — even when the user has hand-set the yeast.
+  if($("mainYeastRec")) $("mainYeastRec").textContent = r.mainYeastRec + "%";
+  { const _cust=((typeof currentTimeframe==="undefined") || !currentTimeframe);
+    document.querySelectorAll('.rec').forEach(el=>{el.style.display=_cust?'none':'';}); }
+  if(!yeastTouched.main && $("mainYeast")) $("mainYeast").value = r.mainYeastPct;
 
   // C1: keep the Section 3 preferment-time mirror in lock-step with sPreferment (don't fight the user mid-type)
   if($("sPrefermentMirror")){
@@ -2141,7 +2254,9 @@ function render(){
   }
   // mixing-water guidance under the ambient input
   if($("waterTempLine") && r.water){
-    $("waterTempLine").innerHTML=`Mixing water: aim for about <b>${tF(r.water.tempC)}</b> — ${r.water.cue}. Target dough temperature about ${tF(r.water.ddt)}.`;
+    let _wl=`Mixing water: aim for about <b>${tF(r.water.tempC)}</b> — ${r.water.cue}. Target dough temperature about ${tF(r.water.ddt)}.`;
+    if(r.water.hotMachine) _wl+=` <b>A ${mixMode} mixer adds friction heat fast in a kitchen this warm</b> — start with the coldest, even iced, water and stop kneading the moment the dough nears ${tF(r.water.ddt)}: heat at this stage stresses the yeast and sets the gluten weaker as it forms.`;
+    $("waterTempLine").innerHTML=_wl;
   }
 
   // practical guidance
@@ -2269,7 +2384,7 @@ function renderFAQ(){
     const longHtml=it.l.map(p=>`<p>${esc(p)}</p>`).join("");
     return `<div class="faq-item" data-faq="${i}">`+
       `<button type="button" class="faq-q" aria-expanded="false">`+
-      `<span class="faq-qtext">${esc(it.q)}</span><span class="faq-chev" aria-hidden="true">\u25BE</span></button>`+
+      `<span class="faq-qtext">${i+1}. ${esc(it.q)}</span><span class="faq-chev" aria-hidden="true">\u25BE</span></button>`+
       `<div class="faq-short">${esc(it.s)}</div>`+
       `<div class="faq-long">${longHtml}</div>`+
     `</div>`;
