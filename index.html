@@ -342,7 +342,7 @@
   <div id="uvReadout" aria-live="polite"></div>
   <header>
     <div class="brand"><h1>Doughborough<span class="dot"></span></h1><span class="tag">the home of bespoke doughs</span></div>
-    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v2.18.8</span></div>
+    <div class="theme-wrap"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch colour mode">Dark mode</button><button class="theme-toggle uv-toggle" id="uvToggle" type="button" aria-label="Toggle UV search light">UV Search Light</button><span class="tag mono" style="font-size:12px">v2.18.9</span></div>
   </header>
   <main>
     <section class="col">
@@ -428,7 +428,7 @@
           </div>
 
           <div class="section-box" id="section4Preferment">
-          <div class="sec-label" style="margin-top:0"><span class="sec-num">3</span><span class="sec-title">Preferment Recipe Control</span></div>
+          <div class="sec-label" style="margin-top:0"><span class="sec-num">3</span><span class="sec-title">Preferment Recipe Control</span><button type="button" class="sec-reset" title="Reset this section to defaults" onclick="event.stopPropagation();resetPreferment()">↺ reset</button></div>
           <div class="micro-note" id="noPrefNote" style="display:none">You're making a simple all-in-one dough, so there's no separate preferment to build. Pick Poolish or Biga under Flour and Method above if you'd like one.</div>
           <div class="subgroup" id="prefGroup" style="display:none">
                 <div class="subgroup-title">Preferment</div>
@@ -1517,6 +1517,17 @@ function resetFlourMethod(){
   currentMethod="easy";
   stageTouched={}; prefTouched={}; yeastTouched={}; totalTouched=false;
   $("totalHours").value=defaultTotalFor(); updateTotalRec();
+  syncMethodUI(); refreshStageDefaults(); render();
+}
+function resetPreferment(){
+  // Section 3 — Preferment Recipe Control — back to defaults: poolish type, chewier finish, and the
+  // recommended amount / hydration / time / yeast. Scoped to the preferment only — the Simple vs
+  // Preferment method choice lives in Section 2, and the bulk/ball timers are left as they are.
+  if($("preferment")) $("preferment").value="poolish";
+  if($("poolishStyle")) $("poolishStyle").value="stiff";
+  prefTouched={};
+  stageTouched.preferment=false;
+  yeastTouched.preferment=false;
   syncMethodUI(); refreshStageDefaults(); render();
 }
 function resetTime(){
