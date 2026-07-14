@@ -222,6 +222,32 @@
   .cta-band p{color:rgba(245,240,230,0.9);font-size:18px;max-width:34em;margin:0 auto 30px;position:relative}
   .cta-band .btn-primary{position:relative}
 
+
+
+  /* ---- developer contact ---- */
+  .contact-block{padding:20px 0 56px}
+  .contact-card{background:linear-gradient(160deg,var(--char-2),var(--char-3));border:1px solid var(--line-2);border-radius:20px;padding:clamp(28px,5vw,52px);box-shadow:var(--shadow)}
+  .contact-top{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+  .contact-copy{max-width:42em}
+  .contact-copy h2{font-size:clamp(28px,4.2vw,44px);margin:12px 0 12px}
+  .contact-copy p{color:var(--cream-dim);font-size:16px}
+  .contact-toggle{border:0;cursor:pointer}
+  .contact-form-wrap{display:none;margin-top:30px;padding-top:30px;border-top:1px solid var(--line)}
+  .contact-card.open .contact-form-wrap{display:block}
+  .contact-grid{display:grid;grid-template-columns:1fr;gap:18px}
+  @media(min-width:720px){.contact-grid.two{grid-template-columns:1fr 1fr}}
+  .contact-field label{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--crust-soft);margin-bottom:8px}
+  .contact-field input,.contact-field select,.contact-field textarea{width:100%;border:1px solid var(--line-2);border-radius:10px;background:var(--char);color:var(--cream);font:inherit;padding:13px 14px;outline:none;transition:border-color .16s,box-shadow .16s}
+  .contact-field textarea{min-height:160px;resize:vertical}
+  .contact-field input:focus,.contact-field select:focus,.contact-field textarea:focus{border-color:var(--proof);box-shadow:0 0 0 3px rgba(242,193,78,.12)}
+  .contact-field select{color-scheme:dark}
+  .contact-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:20px}
+  .contact-submit{border:0;cursor:pointer}
+  .contact-submit[disabled]{opacity:.65;cursor:wait}
+  .contact-status{font-size:13px;color:var(--cream-dim)}
+  .contact-privacy{font-size:12px;color:var(--crust-soft);margin-top:12px}
+  .contact-hp{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+
   /* ---- footer ---- */
   footer{border-top:1px solid var(--line);padding:52px 0 40px;margin-top:20px}
   .foot-grid{display:grid;grid-template-columns:1fr;gap:32px}
@@ -388,6 +414,72 @@
       <a href="/calculator.html" class="btn-primary">Start with the calculator
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
+    </div>
+  </div>
+</section>
+
+
+<!-- CONTACT THE DEVELOPER -->
+<section class="contact-block" id="contact">
+  <div class="wrap">
+    <div class="contact-card" id="contactCard">
+      <div class="contact-top">
+        <div class="contact-copy">
+          <span class="eyebrow">Questions, faults or suggestions</span>
+          <h2 class="display">Email the developer.</h2>
+          <p>Found a calculation that looks wrong, a step that is unclear, or an improvement worth considering? Send it directly through the form. The developer's email address is not displayed publicly.</p>
+        </div>
+        <button class="btn-primary contact-toggle" id="contactToggle" type="button" aria-expanded="false" aria-controls="contactFormWrap">
+          Email the developer
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg>
+        </button>
+      </div>
+
+      <div class="contact-form-wrap" id="contactFormWrap">
+        <!-- Replace YOUR_FORM_ID below with the endpoint ID supplied by Formspree. -->
+        <form id="developerContactForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+          <div class="contact-grid two">
+            <div class="contact-field">
+              <label for="contactName">Name</label>
+              <input id="contactName" name="name" type="text" autocomplete="name" maxlength="100" required>
+            </div>
+            <div class="contact-field">
+              <label for="contactEmail">Your email</label>
+              <input id="contactEmail" name="email" type="email" autocomplete="email" maxlength="200" required>
+            </div>
+          </div>
+          <div class="contact-grid two" style="margin-top:18px">
+            <div class="contact-field">
+              <label for="contactTopic">Topic</label>
+              <select id="contactTopic" name="topic" required>
+                <option value="">Choose one</option>
+                <option>Calculation or recipe concern</option>
+                <option>Technical fault</option>
+                <option>Suggestion or feature request</option>
+                <option>General question</option>
+              </select>
+            </div>
+            <div class="contact-field">
+              <label for="contactSubject">Subject</label>
+              <input id="contactSubject" name="subject" type="text" maxlength="160" required>
+            </div>
+          </div>
+          <div class="contact-field" style="margin-top:18px">
+            <label for="contactMessage">Message</label>
+            <textarea id="contactMessage" name="message" maxlength="5000" required></textarea>
+          </div>
+          <div class="contact-hp" aria-hidden="true">
+            <label for="contactWebsite">Leave this field empty</label>
+            <input id="contactWebsite" name="website" type="text" tabindex="-1" autocomplete="off">
+          </div>
+          <input type="hidden" name="_subject" value="Doughborough website message">
+          <div class="contact-actions">
+            <button class="btn-primary contact-submit" id="contactSubmit" type="submit">Send message</button>
+            <span class="contact-status" id="contactStatus" role="status" aria-live="polite"></span>
+          </div>
+          <p class="contact-privacy">Your reply address is used only to respond to this message.</p>
+        </form>
+      </div>
     </div>
   </div>
 </section>
@@ -647,6 +739,43 @@ document.querySelectorAll('[data-open]').forEach(a=>a.addEventListener('click',e
 document.getElementById('readerClose').addEventListener('click',closeArticle);
 backdrop.addEventListener('click',closeArticle);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeArticle();});
+
+/* ============ CONTACT THE DEVELOPER ============ */
+const contactCard=document.getElementById('contactCard');
+const contactToggle=document.getElementById('contactToggle');
+const contactForm=document.getElementById('developerContactForm');
+const contactSubmit=document.getElementById('contactSubmit');
+const contactStatus=document.getElementById('contactStatus');
+
+contactToggle.addEventListener('click',()=>{
+  const open=contactCard.classList.toggle('open');
+  contactToggle.setAttribute('aria-expanded',String(open));
+  contactToggle.firstChild.textContent=open?'Close contact form ':'Email the developer ';
+  if(open)setTimeout(()=>document.getElementById('contactName').focus(),0);
+});
+
+contactForm.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const endpoint=contactForm.getAttribute('action')||'';
+  if(endpoint.includes('YOUR_FORM_ID')){
+    contactStatus.textContent='This form needs its Formspree endpoint before it can send.';
+    return;
+  }
+  if(document.getElementById('contactWebsite').value)return;
+  contactSubmit.disabled=true;
+  contactStatus.textContent='Sending…';
+  try{
+    const response=await fetch(endpoint,{method:'POST',body:new FormData(contactForm),headers:{Accept:'application/json'}});
+    if(!response.ok)throw new Error('Submission failed');
+    contactForm.reset();
+    contactStatus.textContent='Message sent.';
+  }catch(err){
+    contactStatus.textContent='The message could not be sent. Please try again.';
+  }finally{
+    contactSubmit.disabled=false;
+  }
+});
+
 </script>
 </body>
 </html>
