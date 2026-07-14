@@ -33,20 +33,65 @@
 </script>
 <style>
   :root{
-    --char:#1C1815;        /* deep warm charcoal base */
-    --char-2:#26211C;      /* raised charcoal */
-    --char-3:#322B24;      /* card charcoal */
-    --proof:#F2C14E;       /* proof-yellow, the rise moment */
-    --proof-soft:#E8B94A;
-    --blush:#C4633F;       /* fermentation terracotta — accent only */
-    --cream:#F5F0E6;       /* warm off-white surface */
-    --cream-dim:#D9D2C4;
-    --crust:#8A6D52;       /* muted crust brown */
-    --crust-soft:#A88B6E;
-    --line:rgba(245,240,230,0.10);
-    --line-2:rgba(245,240,230,0.18);
-    --shadow:0 24px 60px -20px rgba(0,0,0,0.55);
+    /* Calculator light palette — this is the default on every visit. */
+    --char:#f4efe6;
+    --char-2:#fbf8f2;
+    --char-3:#ffffff;
+    --proof:#c0492f;
+    --proof-soft:#e8c9bf;
+    --blush:#caa24a;
+    --cream:#2a241d;
+    --cream-dim:#6b6155;
+    --crust:#c0492f;
+    --crust-soft:#6b6155;
+    --line:#e0d7c7;
+    --line-2:#d4c7b5;
+    --field:#ffffff;
+    --accent-ink:#ffffff;
+    --nav-bg:rgba(244,239,230,.88);
+    --reader-bg:#fbf8f2;
+    --reader-text:#2a241d;
+    --reader-soft:#4f463c;
+    --reader-note:rgba(232,201,191,.32);
+    --overlay:rgba(23,19,15,.62);
+    --cta-start:#c0492f;
+    --cta-end:#9e3d29;
+    --cta-button-bg:#ffffff;
+    --cta-button-text:#c0492f;
+    --accent-shadow:rgba(192,73,47,.34);
+    --shadow:0 1px 2px rgba(42,36,29,.04),0 8px 28px rgba(42,36,29,.06);
     --maxw:1180px;
+    color-scheme:light;
+  }
+  html[data-theme="dark"]{
+    /* Calculator dark palette. */
+    --char:#17130f;
+    --char-2:#211b15;
+    --char-3:#2b231b;
+    --proof:#e16a4d;
+    --proof-soft:#6d3b31;
+    --blush:#d2aa52;
+    --cream:#f3eadc;
+    --cream-dim:#b8aa98;
+    --crust:#e16a4d;
+    --crust-soft:#b8aa98;
+    --line:#3d3328;
+    --line-2:#514335;
+    --field:#2b231b;
+    --accent-ink:#ffffff;
+    --nav-bg:rgba(23,19,15,.86);
+    --reader-bg:#211b15;
+    --reader-text:#f3eadc;
+    --reader-soft:#c9bba8;
+    --reader-note:rgba(225,106,77,.12);
+    --overlay:rgba(6,4,3,.75);
+    --cta-start:#b84d34;
+    --cta-end:#78311f;
+    --cta-button-bg:#f3eadc;
+    --cta-button-text:#9e3d29;
+    --accent-shadow:rgba(225,106,77,.38);
+    --shadow:0 1px 2px rgba(0,0,0,.25),0 10px 32px rgba(0,0,0,.32);
+    color-scheme:dark;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
@@ -58,6 +103,7 @@
     -webkit-font-smoothing:antialiased;
     overflow-x:hidden;
     width:100%;
+    background-image:radial-gradient(circle at 12% 18%,rgba(202,162,74,.05),transparent 40%),radial-gradient(circle at 88% 82%,rgba(192,73,47,.05),transparent 42%);
   }
   img,svg{max-width:100%}
   ::selection{background:var(--proof);color:var(--char)}
@@ -75,7 +121,7 @@
   /* ---- nav ---- */
   nav{
     position:sticky;top:0;z-index:50;
-    background:rgba(28,24,21,0.82);backdrop-filter:blur(14px);
+    background:var(--nav-bg);backdrop-filter:blur(14px);
     border-bottom:1px solid var(--line);
   }
   .nav-inner{display:flex;align-items:center;justify-content:space-between;height:70px}
@@ -83,16 +129,16 @@
   .brand .mark{
     width:30px;height:30px;flex:none;border-radius:50%;
     background:radial-gradient(circle at 34% 30%, var(--proof), var(--blush) 78%);
-    box-shadow:0 0 0 1px rgba(242,193,78,0.35), inset 0 0 8px rgba(0,0,0,0.25);
+    box-shadow:0 0 0 1px var(--accent-shadow), inset 0 0 8px rgba(0,0,0,0.18);
   }
   .nav-links{display:flex;align-items:center;gap:30px;font-size:15px}
   .nav-links a{color:var(--cream-dim);transition:color .18s}
   .nav-links a:hover{color:var(--cream)}
   .nav-cta{
-    background:var(--proof);color:var(--char);font-weight:600;
+    background:var(--proof);color:var(--accent-ink);font-weight:600;
     padding:9px 18px;border-radius:8px;font-size:14px;transition:transform .16s, box-shadow .16s;
   }
-  .nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 22px -8px rgba(242,193,78,0.6)}
+  .nav-cta:hover{transform:translateY(-1px);box-shadow:0 8px 22px -8px var(--accent-shadow)}
   .nav-links .link-plain{display:none}
   @media(min-width:820px){.nav-links .link-plain{display:inline}}
 
@@ -107,11 +153,11 @@
   .lede{font-size:clamp(17px,2.1vw,20px);color:var(--cream-dim);max-width:30em;margin-bottom:30px}
   .hero-cta-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
   .btn-primary{
-    background:var(--proof);color:var(--char);font-weight:600;font-size:16px;
+    background:var(--proof);color:var(--accent-ink);font-weight:600;font-size:16px;
     padding:15px 28px;border-radius:11px;display:inline-flex;align-items:center;gap:10px;
     transition:transform .16s, box-shadow .16s;
   }
-  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 34px -12px rgba(242,193,78,0.65)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 34px -12px var(--accent-shadow)}
   .btn-primary svg{transition:transform .2s}
   .btn-primary:hover svg{transform:translateX(3px)}
   .btn-ghost{
@@ -147,9 +193,9 @@
   input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:5px;
     background:linear-gradient(90deg,var(--blush),var(--proof));outline:none}
   input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;
-    background:var(--cream);border:3px solid var(--proof);cursor:ew-resize;box-shadow:0 3px 8px rgba(0,0,0,0.4);transition:transform .1s}
+    background:var(--field);border:3px solid var(--proof);cursor:ew-resize;box-shadow:0 3px 8px rgba(0,0,0,0.4);transition:transform .1s}
   input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.12)}
-  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--cream);border:3px solid var(--proof);cursor:ew-resize}
+  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--field);border:3px solid var(--proof);cursor:ew-resize}
 
   /* ---- section frame ---- */
   section.block{padding:76px 0}
@@ -185,42 +231,42 @@
   .guide:hover .read svg{transform:translateX(3px)}
 
   /* ---- article reader (expandable) ---- */
-  .reader-backdrop{position:fixed;inset:0;background:rgba(10,8,6,0.72);backdrop-filter:blur(6px);z-index:100;opacity:0;pointer-events:none;transition:opacity .28s}
+  .reader-backdrop{position:fixed;inset:0;background:var(--overlay);backdrop-filter:blur(6px);z-index:100;opacity:0;pointer-events:none;transition:opacity .28s}
   .reader-backdrop.open{opacity:1;pointer-events:auto}
   .reader{
     position:fixed;top:0;right:0;height:100%;width:min(660px,100%);z-index:101;
-    background:var(--cream);color:var(--char);transform:translateX(100%);transition:transform .34s cubic-bezier(.4,0,.15,1);
+    background:var(--reader-bg);color:var(--reader-text);transform:translateX(100%);transition:transform .34s cubic-bezier(.4,0,.15,1);
     overflow-y:auto;box-shadow:-30px 0 80px -20px rgba(0,0,0,0.6);
   }
   .reader.open{transform:translateX(0)}
   .reader-inner{padding:56px clamp(28px,5vw,60px) 80px}
-  .reader-close{position:sticky;top:20px;float:right;margin-left:16px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(28,24,21,0.18);background:var(--cream);color:var(--char);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .16s}
-  .reader-close:hover{background:#EBE4D6}
+  .reader-close{position:sticky;top:20px;float:right;margin-left:16px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--field);color:var(--reader-text);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .16s}
+  .reader-close:hover{background:var(--proof-soft)}
   .reader .a-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--blush);margin-bottom:14px}
   .reader h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(30px,5vw,42px);line-height:1.08;letter-spacing:-0.02em;margin-bottom:8px}
-  .reader .a-answer{font-size:19px;line-height:1.55;color:#2C2620;background:#EDE6D8;border-left:3px solid var(--proof);padding:18px 22px;border-radius:0 10px 10px 0;margin:24px 0 30px;font-weight:500}
+  .reader .a-answer{font-size:19px;line-height:1.55;color:var(--reader-text);background:var(--reader-note);border-left:3px solid var(--proof);padding:18px 22px;border-radius:0 10px 10px 0;margin:24px 0 30px;font-weight:500}
   .reader h2{font-family:'Fraunces',serif;font-weight:600;font-size:26px;margin:34px 0 12px;line-height:1.2}
-  .reader p{font-size:16.5px;line-height:1.72;color:#3A332B;margin-bottom:16px}
+  .reader p{font-size:16.5px;line-height:1.72;color:var(--reader-soft);margin-bottom:16px}
   .reader ul{margin:0 0 18px 20px}
-  .reader li{font-size:16.5px;line-height:1.7;color:#3A332B;margin-bottom:8px}
-  .reader strong{color:var(--char);font-weight:600}
-  .reader .a-cta{display:inline-flex;align-items:center;gap:9px;background:var(--char);color:var(--cream);font-weight:600;padding:15px 26px;border-radius:11px;margin-top:20px;transition:transform .16s,box-shadow .16s;font-size:15.5px}
+  .reader li{font-size:16.5px;line-height:1.7;color:var(--reader-soft);margin-bottom:8px}
+  .reader strong{color:var(--reader-text);font-weight:600}
+  .reader .a-cta{display:inline-flex;align-items:center;gap:9px;background:var(--proof);color:var(--accent-ink);font-weight:600;padding:15px 26px;border-radius:11px;margin-top:20px;transition:transform .16s,box-shadow .16s;font-size:15.5px}
   .reader .a-cta:hover{transform:translateY(-2px);box-shadow:0 12px 28px -10px rgba(28,24,21,0.5)}
   .reader .a-cta svg{transition:transform .2s}
   .reader .a-cta:hover svg{transform:translateX(3px)}
-  .reader .a-meta{font-size:13px;color:#8A7D68;font-family:'IBM Plex Mono',monospace;margin-top:40px;padding-top:20px;border-top:1px solid rgba(28,24,21,0.12)}
+  .reader .a-meta{font-size:13px;color:var(--crust-soft);font-family:'IBM Plex Mono',monospace;margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
 
   /* ---- styles strip ---- */
   .styles-strip{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
   .style-chip{font-family:'Fraunces',serif;font-size:16px;color:var(--cream);border:1px solid var(--line-2);border-radius:30px;padding:8px 18px;background:var(--char-2);transition:background .18s,color .18s}
-  .style-chip:hover{background:var(--proof);color:var(--char)}
+  .style-chip:hover{background:var(--proof);color:var(--accent-ink)}
 
   /* ---- big CTA band ---- */
-  .cta-band{background:linear-gradient(155deg,var(--blush),#9E4C2E);border-radius:22px;padding:clamp(40px,6vw,72px);text-align:center;position:relative;overflow:hidden}
-  .cta-band::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 78% 18%, rgba(242,193,78,0.28), transparent 55%);pointer-events:none}
+  .cta-band{background:linear-gradient(155deg,var(--cta-start),var(--cta-end));color:var(--accent-ink);border-radius:22px;padding:clamp(40px,6vw,72px);text-align:center;position:relative;overflow:hidden}
+  .cta-band::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 78% 18%, rgba(255,255,255,.14), transparent 55%);pointer-events:none}
   .cta-band h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(30px,5vw,50px);line-height:1.05;margin-bottom:18px;position:relative}
-  .cta-band p{color:rgba(245,240,230,0.9);font-size:18px;max-width:34em;margin:0 auto 30px;position:relative}
-  .cta-band .btn-primary{position:relative}
+  .cta-band p{color:rgba(255,255,255,.9);font-size:18px;max-width:34em;margin:0 auto 30px;position:relative}
+  .cta-band .btn-primary{position:relative;background:var(--cta-button-bg);color:var(--cta-button-text)}
 
 
 
@@ -237,10 +283,10 @@
   .contact-grid{display:grid;grid-template-columns:1fr;gap:18px}
   @media(min-width:720px){.contact-grid.two{grid-template-columns:1fr 1fr}}
   .contact-field label{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--crust-soft);margin-bottom:8px}
-  .contact-field input,.contact-field select,.contact-field textarea{width:100%;border:1px solid var(--line-2);border-radius:10px;background:var(--char);color:var(--cream);font:inherit;padding:13px 14px;outline:none;transition:border-color .16s,box-shadow .16s}
+  .contact-field input,.contact-field select,.contact-field textarea{width:100%;border:1px solid var(--line-2);border-radius:10px;background:var(--field);color:var(--cream);font:inherit;padding:13px 14px;outline:none;transition:border-color .16s,box-shadow .16s}
   .contact-field textarea{min-height:160px;resize:vertical}
-  .contact-field input:focus,.contact-field select:focus,.contact-field textarea:focus{border-color:var(--proof);box-shadow:0 0 0 3px rgba(242,193,78,.12)}
-  .contact-field select{color-scheme:dark}
+  .contact-field input:focus,.contact-field select:focus,.contact-field textarea:focus{border-color:var(--proof);box-shadow:0 0 0 3px var(--proof-soft)}
+  .contact-field select{color-scheme:inherit}
   .contact-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:20px}
   .contact-submit{border:0;cursor:pointer}
   .contact-submit[disabled]{opacity:.65;cursor:wait}
@@ -258,6 +304,26 @@
   .foot-col a:hover{color:var(--proof)}
   .foot-legal{margin-top:44px;padding-top:24px;border-top:1px solid var(--line);color:var(--crust-soft);font-size:13px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
 
+
+  /* ---- light / dark mode ---- */
+  .theme-toggle{
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    min-height:38px;padding:7px 11px;border:1px solid var(--line-2);border-radius:999px;
+    background:var(--field);color:var(--cream-dim);font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;cursor:pointer;transition:border-color .16s,color .16s,background .16s;
+  }
+  .theme-toggle:hover{border-color:var(--proof);color:var(--proof)}
+  .theme-toggle .theme-icon{font-size:15px;line-height:1}
+  html[data-theme="dark"] body{
+    background-image:radial-gradient(circle at 12% 18%,rgba(210,170,82,.08),transparent 40%),radial-gradient(circle at 88% 82%,rgba(225,106,77,.08),transparent 42%);
+  }
+  @media(max-width:620px){
+    .nav-links{gap:9px}
+    .theme-toggle .theme-label{display:none}
+    .theme-toggle{width:38px;padding:7px}
+    .nav-cta{padding:9px 12px}
+  }
+
   @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
   :focus-visible{outline:2px solid var(--proof);outline-offset:3px;border-radius:4px}
 </style>
@@ -271,6 +337,7 @@
       <a href="#how" class="link-plain">How it works</a>
       <a href="#guides" class="link-plain">Guides</a>
       <a href="#styles" class="link-plain">Styles</a>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode" aria-pressed="false"><span class="theme-icon" id="themeIcon" aria-hidden="true">☾</span><span class="theme-label" id="themeLabel">Dark mode</span></button>
       <a href="/calculator.html" class="nav-cta">Open calculator</a>
     </div>
   </div>
@@ -308,25 +375,25 @@
         <svg class="curve" id="curve" viewBox="0 0 460 240" role="img" aria-label="Fermentation speed against temperature">
           <defs>
             <linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#F2C14E" stop-opacity="0.34"/>
-              <stop offset="100%" stop-color="#F2C14E" stop-opacity="0"/>
+              <stop offset="0%" style="stop-color:var(--proof)" stop-opacity="0.34"/>
+              <stop offset="100%" style="stop-color:var(--proof)" stop-opacity="0"/>
             </linearGradient>
           </defs>
           <!-- gridlines -->
-          <g stroke="rgba(245,240,230,0.08)" stroke-width="1">
+          <g stroke="var(--line)" stroke-width="1">
             <line x1="40" y1="30" x2="40" y2="200"/>
             <line x1="40" y1="200" x2="440" y2="200"/>
           </g>
           <path id="area" fill="url(#fill)"></path>
-          <path id="line" fill="none" stroke="#F2C14E" stroke-width="2.6" stroke-linecap="round"></path>
-          <line id="marker" stroke="#C4633F" stroke-width="2" stroke-dasharray="4 4"></line>
-          <circle id="dot" r="6" fill="#F5F0E6" stroke="#C4633F" stroke-width="3"></circle>
+          <path id="line" fill="none" stroke="var(--proof)" stroke-width="2.6" stroke-linecap="round"></path>
+          <line id="marker" stroke="var(--blush)" stroke-width="2" stroke-dasharray="4 4"></line>
+          <circle id="dot" r="6" fill="var(--field)" stroke="var(--blush)" stroke-width="3"></circle>
           <!-- axis labels -->
-          <text x="40" y="222" fill="#A88B6E" font-family="IBM Plex Mono" font-size="11">10°C</text>
-          <text x="240" y="222" fill="#A88B6E" font-family="IBM Plex Mono" font-size="11" text-anchor="middle">22°C</text>
-          <text x="440" y="222" fill="#A88B6E" font-family="IBM Plex Mono" font-size="11" text-anchor="end">35°C</text>
-          <text x="34" y="36" fill="#A88B6E" font-family="IBM Plex Mono" font-size="11" text-anchor="end">fast</text>
-          <text x="34" y="200" fill="#A88B6E" font-family="IBM Plex Mono" font-size="11" text-anchor="end">slow</text>
+          <text x="40" y="222" fill="var(--crust-soft)" font-family="IBM Plex Mono" font-size="11">10°C</text>
+          <text x="240" y="222" fill="var(--crust-soft)" font-family="IBM Plex Mono" font-size="11" text-anchor="middle">22°C</text>
+          <text x="440" y="222" fill="var(--crust-soft)" font-family="IBM Plex Mono" font-size="11" text-anchor="end">35°C</text>
+          <text x="34" y="36" fill="var(--crust-soft)" font-family="IBM Plex Mono" font-size="11" text-anchor="end">fast</text>
+          <text x="34" y="200" fill="var(--crust-soft)" font-family="IBM Plex Mono" font-size="11" text-anchor="end">slow</text>
         </svg>
       </div>
       <div class="slider-row">
@@ -436,8 +503,8 @@
       </div>
 
       <div class="contact-form-wrap" id="contactFormWrap">
-        <!-- Replace YOUR_FORM_ID below with the endpoint ID supplied by Formspree. -->
-        <form id="developerContactForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+        <!-- FormSubmit delivers messages to the developer without printing the address on the page. -->
+        <form id="developerContactForm" action="" method="POST">
           <div class="contact-grid two">
             <div class="contact-field">
               <label for="contactName">Name</label>
@@ -470,9 +537,11 @@
           </div>
           <div class="contact-hp" aria-hidden="true">
             <label for="contactWebsite">Leave this field empty</label>
-            <input id="contactWebsite" name="website" type="text" tabindex="-1" autocomplete="off">
+            <input id="contactWebsite" name="_honey" type="text" tabindex="-1" autocomplete="off">
           </div>
           <input type="hidden" name="_subject" value="Doughborough website message">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_url" value="https://doughborough.com/">
           <div class="contact-actions">
             <button class="btn-primary contact-submit" id="contactSubmit" type="submit">Send message</button>
             <span class="contact-status" id="contactStatus" role="status" aria-live="polite"></span>
@@ -523,6 +592,23 @@
 </article>
 
 <script>
+/* ============ LIGHT / DARK MODE ============ */
+const themeToggle=document.getElementById('themeToggle');
+const themeIcon=document.getElementById('themeIcon');
+const themeLabel=document.getElementById('themeLabel');
+function setLandingTheme(theme){
+  const dark=theme==='dark';
+  if(dark)document.documentElement.dataset.theme='dark';
+  else delete document.documentElement.dataset.theme;
+  themeIcon.textContent=dark?'☀':'☾';
+  themeLabel.textContent=dark?'Light mode':'Dark mode';
+  themeToggle.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');
+  themeToggle.setAttribute('aria-pressed',String(dark));
+}
+// Always begin in the calculator's light theme; the toggle applies only to this visit.
+setLandingTheme('light');
+themeToggle.addEventListener('click',()=>setLandingTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'));
+
 /* ============ SIGNATURE: live fermentation curve ============ */
 /* Same activity shape the real engine uses: relative yeast speed vs temperature,
    anchored at 25°C = 1.0, log-interpolated between measured points. */
@@ -754,11 +840,17 @@ contactToggle.addEventListener('click',()=>{
   if(open)setTimeout(()=>document.getElementById('contactName').focus(),0);
 });
 
+// The address is encoded so it is not printed plainly in the HTML.
+// FormSubmit will send a one-time activation email to this inbox on first use.
+const contactRecipient=atob('bWFya2hsZm9vZHNAZ21haWwuY29t');
+const contactEndpoint='https://formsubmit.co/ajax/'+contactRecipient;
+contactForm.setAttribute('action',contactEndpoint);
+
 contactForm.addEventListener('submit',async e=>{
   e.preventDefault();
   const endpoint=contactForm.getAttribute('action')||'';
-  if(endpoint.includes('YOUR_FORM_ID')){
-    contactStatus.textContent='This form needs its Formspree endpoint before it can send.';
+  if(!endpoint){
+    contactStatus.textContent='The contact service is not configured.';
     return;
   }
   if(document.getElementById('contactWebsite').value)return;
