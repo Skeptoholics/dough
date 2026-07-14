@@ -1,0 +1,27 @@
+DOUGHBOROUGH FLAT GITHUB PACKAGE
+
+Upload every file in this ZIP directly into the main/root directory of the GitHub repository.
+There are no subfolders.
+
+Main files:
+- index.html
+- calculator.html
+- favicon.svg
+- og-image.png
+- robots.txt
+- sitemap.xml
+
+Guide pages are also in the main directory:
+- how-much-dough-for-12-inch-pizza.html
+- how-long-to-cold-ferment-pizza-dough.html
+- how-much-yeast-for-pizza-dough.html
+- why-pizza-dough-is-not-rising.html
+- dough-hydration-explained.html
+- poolish-vs-biga.html
+
+If the repository already contains a CNAME file for doughborough.com, keep that file.
+
+The calculator accepts links such as:
+- /calculator.html?style=baguette
+- /calculator.html?style=softbread&format=rolls
+- /calculator.html?mode=cold

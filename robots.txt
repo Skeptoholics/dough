@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://doughborough.com/sitemap.xml
